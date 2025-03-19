@@ -1,7 +1,7 @@
 :author: Reyes Amador
 :email: reyesamju@hotmail.com
 :revdate: 13/03/2025
-:revnumber: 1.0
+:revnumber: 1.5
 :doctype: book
 :encoding: utf-8
 :lang: ca
@@ -12,7 +12,8 @@
 
 = EntreBicis
 
-Aquí irá la imagen
+image::logo_black.png[] image::logo_white.png[]
+
 
 == Contextualització de l’organització client
 És una organització social en Vilanova i la Geltrú que potencia el suport entre persones, empreses i associacions de Catalunya. EntreBicis vol fomentar la mobilitat ecològica (bicis, patinets, etc) de les persones, amb l'ús i compartint les bicis entre els usuaris.
