@@ -40,7 +40,7 @@
 }
 
 .nav-link:hover {
-    background-color: #388E3C; /* Color más oscuro para el hover */
+    background-color: #3E8E20; /* Color más oscuro para el hover */
     color: white !important;
 }
 
@@ -84,19 +84,21 @@
     border-collapse: collapse;
 }
 
-.table th {
-    text-align: left;
+.table thead th{
+    background-color: white;
+    color: black;
     font-weight: bold;
+    text-align: center;
 }
 
-.table-dark th {
-    background-color: black;
-    color: white;
-    text-align: left;
+.table tbody td{
+    text-align: center;
+    vertical-align: middle;
 }
 
-.table-bordered td, .table-bordered th {
-    border: 1px solid black;
+.table,.table td, .table th {
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .btn-success {
@@ -108,6 +110,10 @@
 
 .btn-success i {
     font-size: 20px;
+}
+
+.table .btn-success {
+    margin-right: 5px; /* Espacio entre botones */
 }
 
 .btn-success:hover {
