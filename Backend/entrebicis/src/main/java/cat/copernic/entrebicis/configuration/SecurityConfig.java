@@ -25,13 +25,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/images/**", "/css/**", "/js/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/login").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")  // Página personalizada
-                .defaultSuccessUrl("/admin", true)
+                .defaultSuccessUrl("/admin/users", true)
                 .permitAll()
             )
             .logout(logout -> logout

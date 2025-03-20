@@ -1,31 +1,73 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <title>Login - Entrebicis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e5e5e5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        .login-container img {
+            width: 220px;
+            display: block;
+            margin: 0 auto;
+        }
+        .form-control {
+            border: 2px solid #1A5304;
+            border-radius: 5px;
+        }
+        .btn-login {
+            background-color: #4EA72B;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .btn-login:hover {
+            background-color: #1A5304;
+            color: white !important;
+        }
+    </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4" style="width: 350px;">
-        <h2 class="text-center">Iniciar sesión</h2>
+<body>
+    
+    <div class="logo-container">
+        <img th:src="@{/images/logo_black.png}" alt="Logo Entrebicis">
+    </div>
+
+    <div class="login-container">
         <form th:action="@{/login}" method="post">
             <div class="mb-3">
-                <label for="username" class="form-label">Correo</label>
+                <label for="username" class="form-label">Correu electrònic</label>
                 <input type="email" id="username" name="username" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
+                <label for="password" class="form-label">Contrasenya</label>
                 <input type="password" id="password" name="password" class="form-control" required>
             </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-            </div>
+            <button type="submit" class="btn btn-login">LOGIN</button>
         </form>
-        <div th:if="${param.error}" class="text-danger text-center mt-2">
-            Usuario o contraseña incorrectos.
-        </div>
-        <div th:if="${param.logout}" class="text-success text-center mt-2">
-            Sesión cerrada correctamente.
-        </div>
     </div>
+
 </body>
 </html>
+
