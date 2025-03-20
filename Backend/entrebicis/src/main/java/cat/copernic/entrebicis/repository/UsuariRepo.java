@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.repository;
 
 import cat.copernic.entrebicis.entities.Usuari;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UsuariRepo extends JpaRepository<Usuari, String> {
     
+    Optional<Usuari> findByEmail(String email);
 }
