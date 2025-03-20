@@ -1,7 +1,9 @@
 <div th:fragment="header (pageTitle)">
     <header class="topbar">
         <h1 th:text="${pageTitle}">Títol de la Pàgina</h1>
-        <a th:href="@{/logout}" class="btn btn-success">Tancar sessió</a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-success">Cerrar sesión</button>
+        </form>
     </header>
     <div class="header-divider"></div>
 </div>
