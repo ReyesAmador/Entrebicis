@@ -35,13 +35,7 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/admin/usuaris", true)
                 .permitAll()
             )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true) // Invalida la sesión
-                .deleteCookies("JSESSIONID") // Elimina la cookie de sesión
-                .permitAll()
-            );
+            .logout(logout -> logout.disable());
 
         return http.build();
     }

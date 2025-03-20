@@ -46,6 +46,10 @@
             background-color: #1A5304;
             color: white !important;
         }
+        
+        .alert{
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -55,6 +59,9 @@
     </div>
 
     <div class="login-container">
+        <div th:if="${logoutSuccess}" class="alert alert-success">
+            <span th:text="${logoutSuccess}"></span>
+        </div>
         <form th:action="@{/login}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Correu electrònic</label>
