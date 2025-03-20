@@ -8,6 +8,7 @@ import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
 import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,5 +42,9 @@ public class UsuariLogic {
             
             usuariRepo.save(admin);
         }
+    }
+    
+    public List<Usuari> obtenirTotsUsuaris(){
+        return usuariRepo.findAll();
     }
 }

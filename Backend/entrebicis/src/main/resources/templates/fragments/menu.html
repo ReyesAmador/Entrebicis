@@ -1,0 +1,29 @@
+<div th:fragment="menu (activePage)">
+    <nav class="sidebar">
+        <div class="logo">
+            <img th:src="@{/images/logo_white.png}" alt="Entrebicis">
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activePage == 'usuaris' ? 'active' : ''}" th:href="@{/admin/usuaris}">
+                    <i class="bi bi-person"></i> Usuaris
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activePage == 'rutes' ? 'active' : ''}" th:href="@{/admin/rutes}">
+                    <i class="bi bi-map"></i> Rutes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activePage == 'recompenses' ? 'active' : ''}" th:href="@{/admin/recompenses}">
+                    <i class="bi bi-gift"></i> Recompenses
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activePage == 'parametres' ? 'active' : ''}" th:href="@{/admin/parametres}">
+                    <i class="bi bi-gear"></i> Paràmetres
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

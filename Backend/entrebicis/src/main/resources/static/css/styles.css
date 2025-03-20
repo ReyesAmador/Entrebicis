@@ -1,0 +1,50 @@
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #4EA72B; /* Color verde principal */
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.nav {
+    width: 100%;
+    padding-left: 0;
+}
+
+.nav-item {
+    width: 100%;
+}
+
+.nav-link {
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.nav-link i {
+    font-size: 20px;
+}
+
+.nav-link:hover {
+    background-color: #388E3C; /* Color más oscuro para el hover */
+    color: white !important;
+}
+
+.nav-link.active {
+    background-color: #1A5304; /* Color de la opción seleccionada */
+}
+
