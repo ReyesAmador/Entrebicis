@@ -1,0 +1,7 @@
+<div th:fragment="header (pageTitle)">
+    <header class="topbar">
+        <h1 th:text="${pageTitle}">Títol de la Pàgina</h1>
+        <a th:href="@{/logout}" class="btn btn-success">Tancar sessió</a>
+    </header>
+    <div class="header-divider"></div>
+</div>
