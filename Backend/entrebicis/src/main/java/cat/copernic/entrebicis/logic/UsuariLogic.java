@@ -50,10 +50,18 @@ public class UsuariLogic {
     }
     
     public Usuari crearUsuari(Usuari usuari){
+        if(usuariRepo.existsByEmail(usuari.getEmail()))
+            throw new DuplicateException("El correu ja està registrat.");
+        
         if(usuariRepo.existsByMobil(usuari.getMobil()))
-            throw new DuplicateException("El número del mòbil ja està en ús");
+            throw new DuplicateException("El número del mòbil ja està en ús.");
+        
+        if (usuari.getSaldo() < 0)
+            throw new IllegalArgumentException("El saldo no pot ser negatiu.");
         
         usuari.setParaula(passwordEncoder.encode(usuari.getParaula())); //Encriptar contrasenya
+        
+        usuari.setRol(Rol.CICLISTA);
         
         return usuariRepo.save(usuari);
     }
