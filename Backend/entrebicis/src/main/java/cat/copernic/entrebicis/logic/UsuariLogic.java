@@ -11,6 +11,7 @@ import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -70,5 +71,42 @@ public class UsuariLogic {
         usuari.setRol(Rol.CICLISTA);
         
         return usuariRepo.save(usuari);
+    }
+    
+    public Optional<Usuari> findByEmail(String email) {
+        return usuariRepo.findById(email);
+    }
+    
+    public String actualitzarUsuari(String email, Usuari usuariModificat, MultipartFile imatgeFile){
+        Usuari usuariActual = usuariRepo.findById(email)
+        .orElseThrow(() -> new IllegalArgumentException("Usuari no trobat: " + email));
+        
+        if (usuariModificat.getSaldo() < 0) {
+            return "El saldo no pot ser negatiu.";
+        }
+
+        if (usuariModificat.getMobil() != null &&
+            !usuariModificat.getMobil().equals(usuariActual.getMobil()) &&
+            usuariRepo.existsByMobil(usuariModificat.getMobil())) {
+            return "El número de mòbil ja està en ús.";
+        }
+        
+        try {
+            if (imatgeFile != null && !imatgeFile.isEmpty()) {
+                usuariActual.setImatge(imatgeFile.getBytes());
+            }
+        } catch (IOException e) {
+            return "Error llegint la imatge: " + e.getMessage();
+        }
+        
+        // Actualitzar camps
+        usuariActual.setNom(usuariModificat.getNom());
+        usuariActual.setSaldo(usuariModificat.getSaldo());
+        usuariActual.setObservacions(usuariModificat.getObservacions());
+        usuariActual.setPoblacio(usuariModificat.getPoblacio());
+        usuariActual.setMobil(usuariModificat.getMobil());
+
+        usuariRepo.save(usuariActual);
+        return null; // null indica que no hi ha errors
     }
 }
