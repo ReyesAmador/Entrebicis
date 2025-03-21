@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
+import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -46,5 +47,14 @@ public class UsuariLogic {
     
     public List<Usuari> obtenirTotsUsuaris(){
         return usuariRepo.findAll();
+    }
+    
+    public Usuari crearUsuari(Usuari usuari){
+        if(usuariRepo.existsByMobil(usuari.getMobil()))
+            throw new DuplicateException("El número del mòbil ja està en ús");
+        
+        usuari.setParaula(passwordEncoder.encode(usuari.getParaula())); //Encriptar contrasenya
+        
+        return usuariRepo.save(usuari);
     }
 }
