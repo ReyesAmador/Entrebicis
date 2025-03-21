@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,7 +36,7 @@ public class Usuari {
     @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_]).{4,}$",
         message = "La contrasenya ha de tenir almenys 4 caràcters, una minúscula, una majúscula i un símbol.")
-    @NotBlank
+    @NotBlank(message = "No ha d'estar buit")
     @Column(nullable = false)
     private String paraula;
     private String nom;
@@ -45,6 +46,9 @@ public class Usuari {
     @Column(columnDefinition = "LONGBLOB")
     private byte[] imatge;
     private double saldo;
+    @Size(max = 2000, message = "Les observacions no poden superar els 2000 caràcters.")
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String observacions;
     @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "El número de mòbil ha de ser vàlid i contenir entre 9 y 15 digits")
     @Column(unique = true)
