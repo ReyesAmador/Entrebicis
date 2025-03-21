@@ -56,13 +56,14 @@ public class UsuariController {
         try{
             usuariLogic.crearUsuari(usuari);
         }catch(DuplicateException e){
-            if(e.getMessage().contains("correu"))
+            if(e.getMessage().toLowerCase().contains("correu"))
                 result.rejectValue("email", "error.usuari", e.getMessage());
-            if(e.getMessage().contains("mobil"))
+            if(e.getMessage().toLowerCase().contains("mòbil"))
                 result.rejectValue("mobil", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
         }catch(IllegalArgumentException e){
-            result.rejectValue("saldo", "error.usuari", e.getMessage());
+            if(e.getMessage().toLowerCase().contains("saldo"))
+                result.rejectValue("saldo", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
         }
         
