@@ -9,10 +9,12 @@ import cat.copernic.entrebicis.enums.Rol;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -49,7 +51,7 @@ public class UsuariLogic {
         return usuariRepo.findAll();
     }
     
-    public Usuari crearUsuari(Usuari usuari){
+    public Usuari crearUsuari(Usuari usuari, MultipartFile imatge) throws IOException{
         if(usuariRepo.existsByEmail(usuari.getEmail()))
             throw new DuplicateException("El correu ja està registrat.");
         
@@ -58,6 +60,10 @@ public class UsuariLogic {
         
         if (usuari.getSaldo() < 0)
             throw new IllegalArgumentException("El saldo no pot ser negatiu.");
+        
+        if(imatge != null && !imatge.isEmpty()){
+            usuari.setImatge(imatge.getBytes()); //Guardar imatge en bytes[]
+        }
         
         usuari.setParaula(passwordEncoder.encode(usuari.getParaula())); //Encriptar contrasenya
         

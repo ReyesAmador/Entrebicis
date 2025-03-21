@@ -8,6 +8,7 @@ import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -47,14 +50,15 @@ public class UsuariController {
     
     @PostMapping("/crear")
     public String crearUsuari(@Valid @ModelAttribute("usuari") Usuari usuari, 
-            BindingResult result, Model model, RedirectAttributes redirectAtt){
+            BindingResult result, @RequestParam("imatgeFile") MultipartFile imatge,
+            Model model, RedirectAttributes redirectAtt){
         
         //Si falla alguna validació automàtica
         if(result.hasErrors())
             return "formulari-crear-usuari";
         
         try{
-            usuariLogic.crearUsuari(usuari);
+            usuariLogic.crearUsuari(usuari,imatge);
         }catch(DuplicateException e){
             if(e.getMessage().toLowerCase().contains("correu"))
                 result.rejectValue("email", "error.usuari", e.getMessage());
@@ -64,6 +68,9 @@ public class UsuariController {
         }catch(IllegalArgumentException e){
             if(e.getMessage().toLowerCase().contains("saldo"))
                 result.rejectValue("saldo", "error.usuari", e.getMessage());
+            return "formulari-crear-usuari";
+        }catch(IOException e){
+            result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
             return "formulari-crear-usuari";
         }
         

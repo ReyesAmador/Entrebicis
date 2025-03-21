@@ -12,7 +12,7 @@
     <div th:replace="fragments/header :: header ('Crear usuari')"></div>
 
     <div class="content" style="margin-left: 260px; padding: 20px;">
-        <form th:action="@{/admin/usuaris/crear}" th:object="${usuari}" method="post">
+        <form th:action="@{/admin/usuaris/crear}" th:object="${usuari}" method="post" enctype="multipart/form-data">
             <div class="row">
                 <!-- Columna izquierda: Datos principales -->
                 <div class="col-md-6">
@@ -56,6 +56,12 @@
                     <div class="mb-3">
                         <label class="form-label">Altres</label>
                         <textarea class="form-control border-success" th:field="*{observacions}" rows="10"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Pujar imatge</label>
+                        <input type="file" class="form-control border-success" name="imatgeFile" accept="image/*">
+                        <div class="text-danger" th:if="${#fields.hasErrors('imatge')}" th:errors="*{imatge}"></div>
                     </div>
                 </div>
             </div>

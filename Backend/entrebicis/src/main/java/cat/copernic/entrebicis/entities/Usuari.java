@@ -43,7 +43,7 @@ public class Usuari {
     private Rol rol;
     @Lob
     @Column(columnDefinition = "LONGBLOB")
-    private Byte[] imatge;
+    private byte[] imatge;
     private double saldo;
     private String observacions;
     @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "El número de mòbil ha de ser vàlid i contenir entre 9 y 15 digits")
