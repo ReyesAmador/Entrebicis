@@ -77,6 +77,13 @@
     color: white !important;
 }
 
+input[type="number"].text-center {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    height: 40px;
+    line-height: 1.2;
+}
+
 /*ESTO ES PARA LA TABLA*/
 
 .table {
