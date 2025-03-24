@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.entities.ParametresSistema;
 import cat.copernic.entrebicis.repository.ParametresSistemaRepo;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +20,20 @@ public class ParametresSistemaLogic {
     @Autowired
     ParametresSistemaRepo repo;
     
-    public ParametresSistema obtenirParametres(){
-        return repo.findById(1L).orElseGet(() -> {
+    @PostConstruct
+    public void inicialitzarParametres(){
+        if(repo.findById(1L).isEmpty()){
             ParametresSistema p = new ParametresSistema();
             p.setVelocitatMaxima(60);
             p.setTempsMaximAturat(5);
             p.setConversio(1);
             p.setTempsMaximRecollida(72);
-            return repo.save(p);
-        });
+            repo.save(p);
+        };
+    }
+    
+    public ParametresSistema obtenirParametres() {
+        return repo.findById(1L).orElseThrow();
     }
     
     public void guardarParametres(ParametresSistema par){
