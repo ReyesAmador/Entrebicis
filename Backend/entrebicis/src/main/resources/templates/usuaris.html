@@ -22,6 +22,7 @@
             <span th:text="${missatgeSuccess}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tancar"></button>
         </div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     </div>    
 
     <table class="table">
@@ -39,7 +40,7 @@
                 <td th:text="${usuari.email}"></td>
                 <td th:text="${usuari.rol}"></td>
                 <td>
-                    <a href="#" class="btn btn-sm btn-success">
+                    <a th:href="@{'/admin/usuaris/visualitzar/' + ${usuari.email}}" class="btn btn-sm btn-success">
                         <i class="bi bi-eye"></i>
                     </a>
                     <a th:href="@{'/admin/usuaris/editar/' + ${usuari.email}}" class="btn btn-sm btn-success">

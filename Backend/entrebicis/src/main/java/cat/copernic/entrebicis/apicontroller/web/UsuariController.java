@@ -7,6 +7,7 @@ package cat.copernic.entrebicis.apicontroller.web;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
+import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.validation.Valid;
 import java.io.ByteArrayInputStream;
@@ -94,12 +95,32 @@ public class UsuariController {
     }
     
     @GetMapping("/editar/{email}")
-    public String mostrarFormulari(@PathVariable String email, Model model){
-        Usuari usuari = usuariLogic.findByEmail(email).orElseThrow(
-        ()-> new IllegalArgumentException ("Usuari no trobat amb email: " +email));
+    public String mostrarFormulari(@PathVariable String email, Model model, RedirectAttributes redirectAtt){
+        try{
+            Usuari usuari = usuariLogic.findByEmail(email);
         
-        model.addAttribute("usuari", usuari);
+            model.addAttribute("usuari", usuari);
+            model.addAttribute("lectura", false);
+        }catch(NotFoundUsuariException e){
+            redirectAtt.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/usuaris";
+        }
+ 
+        return "formulari-modificar-usuari";
+    }
+    
+    @GetMapping("visualitzar/{email}")
+    public String visualitzarUsuari(@PathVariable String email, Model model, RedirectAttributes redirectAtt){
+        try{
+            Usuari usuari = usuariLogic.findByEmail(email);
         
+            model.addAttribute("usuari", usuari);
+            model.addAttribute("lectura", true);
+        }catch(NotFoundUsuariException e){
+            redirectAtt.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/usuaris";
+        }
+ 
         return "formulari-modificar-usuari";
     }
     
@@ -138,27 +159,27 @@ public class UsuariController {
     @GetMapping("/imatge/{email}")
     @ResponseBody
     public ResponseEntity<byte[]> mostrarImatgeUsuari(@PathVariable String email) {
-        Usuari usuari = usuariLogic.findByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("Usuari no trobat: " + email));
+        try {
+            Usuari usuari = usuariLogic.findByEmail(email);
 
-        byte[] imatge = usuari.getImatge();
-        if (imatge == null) {
+            byte[] imatge = usuari.getImatge();
+            if (imatge == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            MediaType mediaType;
+            try {
+                String mimeType = detectarMimeType(imatge);
+                mediaType = (mimeType != null) ? MediaType.parseMediaType(mimeType) : MediaType.APPLICATION_OCTET_STREAM;
+            } catch (IOException e) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
+
+            return ResponseEntity.ok().contentType(mediaType).body(imatge);
+
+        } catch (NotFoundUsuariException e) {
             return ResponseEntity.notFound().build();
         }
-        
-        // Detectar MIME
-        MediaType mediaType;
-        try {
-            String mimeType = detectarMimeType(imatge);
-            mediaType = (mimeType != null) ? MediaType.parseMediaType(mimeType) : MediaType.APPLICATION_OCTET_STREAM;
-        } catch (IOException e) {
-            mediaType = MediaType.APPLICATION_OCTET_STREAM;
-        }
-
-        return ResponseEntity
-        .ok()
-        .contentType(mediaType)
-        .body(imatge);
     }
     
     private String detectarMimeType(byte[] imatge) throws IOException {

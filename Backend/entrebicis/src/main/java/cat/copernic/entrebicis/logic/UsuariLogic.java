@@ -8,6 +8,7 @@ import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
 import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
+import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -82,13 +83,14 @@ public class UsuariLogic {
         return usuariRepo.save(usuari);
     }
     
-    public Optional<Usuari> findByEmail(String email) {
-        return usuariRepo.findById(email);
+    public Usuari findByEmail(String email) {
+        return usuariRepo.findById(email).orElseThrow(
+        () -> new NotFoundUsuariException("Usuari no trobat amb email: " +email));
     }
     
     public Usuari actualitzarUsuari(String email, Usuari usuariModificat, MultipartFile imatgeFile) throws IOException{
         Usuari usuariActual = usuariRepo.findById(email)
-        .orElseThrow(() -> new IllegalArgumentException("Usuari no trobat: " + email));
+        .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat: " + email));
         
         if (usuariModificat.getSaldo() < 0) {
             throw new IllegalArgumentException("El saldo no pot ser negatiu.");
