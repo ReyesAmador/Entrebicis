@@ -72,11 +72,6 @@
             <div class="d-flex justify-content-center mt-3">
                 <button type="submit" class="btn btn-success px-4">Desar canvis</button>
             </div>
-            <div th:if="${#fields.hasErrors()}" class="alert alert-danger mt-3">
-                <ul>
-                    <li th:each="err : ${#fields.errors()}" th:text="${err}"></li>
-                </ul>
-            </div>
         </form>
         
     </div>

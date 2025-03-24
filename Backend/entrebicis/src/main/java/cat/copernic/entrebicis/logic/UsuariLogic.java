@@ -30,7 +30,7 @@ public class UsuariLogic {
     
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
-    private String regex= "^(?=.*[a-z])(?=.*[A-Z])(?=.*[\\\\W_]).{4,}$";
+    private static final String regex= "^(?=\\S{4,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_]).*$";
     
     @Transactional
     public void crearUsuariAdmin(){
@@ -69,11 +69,11 @@ public class UsuariLogic {
             usuari.setImatge(imatge.getBytes()); //Guardar imatge en bytes[]
         }
         
-        if(usuari.getParaula() == null || usuari.getParaula().isEmpty())
+        if(usuari.getParaula() == null || usuari.getParaula().isBlank())
             throw new CampBuitException("La contrasenya no pot estar buida.");
         
-        if(usuari.getParaula().matches(regex))
-            throw new IllegalArgumentException("La contrasenya ha de tenir almenys 4 caràcters, una minúscula, una majúscula i un símbol.");
+        if(!usuari.getParaula().matches(regex))
+            throw new IllegalArgumentException("La contrasenya ha de tenir almenys 4 caràcters (sense espais), una minúscula, una majúscula i un símbol.");
         
         usuari.setParaula(passwordEncoder.encode(usuari.getParaula())); //Encriptar contrasenya
         

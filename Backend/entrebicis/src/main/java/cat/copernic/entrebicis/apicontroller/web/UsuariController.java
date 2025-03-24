@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.apicontroller.web;
 
 import cat.copernic.entrebicis.entities.Usuari;
+import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.validation.Valid;
@@ -71,9 +72,15 @@ public class UsuariController {
             if(e.getMessage().toLowerCase().contains("mòbil"))
                 result.rejectValue("mobil", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
+        }catch(CampBuitException e){
+            if(e.getMessage().toLowerCase().contains("contrasenya"))
+                result.rejectValue("paraula", "error.usuari", e.getMessage());
+            return "formulari-crear-usuari";
         }catch(IllegalArgumentException e){
             if(e.getMessage().toLowerCase().contains("saldo"))
                 result.rejectValue("saldo", "error.usuari", e.getMessage());
+            if(e.getMessage().toLowerCase().contains("contrasenya"))
+                result.rejectValue("paraula", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
         }catch(IOException e){
             result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
