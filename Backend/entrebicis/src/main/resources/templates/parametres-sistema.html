@@ -27,24 +27,28 @@
                     <label class="form-label">Velocitat màxima validada (km/h)</label>
                     <input type="number" class="form-control border-success text-center mx-auto" 
                            style="max-width: 96px;" th:field="*{velocitatMaxima}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('velocitatMaxima')}" th:errors="*{velocitatMaxima}"></div>
                 </div>
 
                 <div class="mb-4 text-center">
                     <label class="form-label">Temps màxim d'aturada (en minuts)</label>
                     <input type="number" class="form-control border-success text-center mx-auto" 
                            style="max-width: 96px;" th:field="*{tempsMaximAturat}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('tempsMaximAturat')}" th:errors="*{tempsMaximAturat}"></div>
                 </div>
 
                 <div class="mb-4 text-center">
                     <label class="form-label">Conversió saldo - quilòmetres</label>
                     <input type="number" step="0.1" class="form-control border-success text-center mx-auto" 
                            style="max-width: 96px;" th:field="*{conversio}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('conversio')}" th:errors="*{conversio}"></div>
                 </div>
 
                 <div class="mb-4 text-center">
                     <label class="form-label">Temps màxim recollida (en hores)</label>
                     <input type="number" class="form-control border-success text-center mx-auto" 
                            style="max-width: 96px;" th:field="*{tempsMaximRecollida}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('tempsMaximRecollida')}" th:errors="*{tempsMaximRecollida}"></div>
                 </div>
 
                 <div class="d-flex justify-content-center mt-4">

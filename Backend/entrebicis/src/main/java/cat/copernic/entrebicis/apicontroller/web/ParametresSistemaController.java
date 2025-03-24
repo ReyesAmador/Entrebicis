@@ -35,11 +35,13 @@ public class ParametresSistemaController {
     }
     
     @PostMapping
-    public String guardarParametres(@Valid @ModelAttribute ParametresSistema parametres,
+    public String guardarParametres(@Valid @ModelAttribute("parametres") ParametresSistema parametres,
                                     BindingResult result,
+                                    Model model,
                                     RedirectAttributes redirectAttrs){
-        if(result.hasErrors())
+        if(result.hasErrors()){
             return "parametres-sistema";
+        }
         logic.guardarParametres(parametres);
         redirectAttrs.addFlashAttribute("missatge", "Paràmetres guardats correctament");
         return "redirect:/admin/parametres";
