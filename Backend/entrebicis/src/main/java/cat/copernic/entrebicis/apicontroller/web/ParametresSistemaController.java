@@ -6,9 +6,11 @@ package cat.copernic.entrebicis.apicontroller.web;
 
 import cat.copernic.entrebicis.entities.ParametresSistema;
 import cat.copernic.entrebicis.logic.ParametresSistemaLogic;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +35,11 @@ public class ParametresSistemaController {
     }
     
     @PostMapping
-    public String guardarParametres(@ModelAttribute ParametresSistema parametres,
+    public String guardarParametres(@Valid @ModelAttribute ParametresSistema parametres,
+                                    BindingResult result,
                                     RedirectAttributes redirectAttrs){
+        if(result.hasErrors())
+            return "parametres-sistema";
         logic.guardarParametres(parametres);
         redirectAttrs.addFlashAttribute("missatge", "Paràmetres guardats correctament");
         return "redirect:/admin/parametres";
