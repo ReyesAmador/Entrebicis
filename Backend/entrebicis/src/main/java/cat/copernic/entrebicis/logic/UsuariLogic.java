@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
+import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,8 @@ public class UsuariLogic {
     UsuariRepo usuariRepo;
     
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    
+    private String regex= "^(?=.*[a-z])(?=.*[A-Z])(?=.*[\\\\W_]).{4,}$";
     
     @Transactional
     public void crearUsuariAdmin(){
@@ -66,6 +69,12 @@ public class UsuariLogic {
             usuari.setImatge(imatge.getBytes()); //Guardar imatge en bytes[]
         }
         
+        if(usuari.getParaula() == null || usuari.getParaula().isEmpty())
+            throw new CampBuitException("La contrasenya no pot estar buida.");
+        
+        if(usuari.getParaula().matches(regex))
+            throw new IllegalArgumentException("La contrasenya ha de tenir almenys 4 caràcters, una minúscula, una majúscula i un símbol.");
+        
         usuari.setParaula(passwordEncoder.encode(usuari.getParaula())); //Encriptar contrasenya
         
         usuari.setRol(Rol.CICLISTA);
@@ -77,28 +86,25 @@ public class UsuariLogic {
         return usuariRepo.findById(email);
     }
     
-    public String actualitzarUsuari(String email, Usuari usuariModificat, MultipartFile imatgeFile){
+    public Usuari actualitzarUsuari(String email, Usuari usuariModificat, MultipartFile imatgeFile) throws IOException{
         Usuari usuariActual = usuariRepo.findById(email)
         .orElseThrow(() -> new IllegalArgumentException("Usuari no trobat: " + email));
         
         if (usuariModificat.getSaldo() < 0) {
-            return "El saldo no pot ser negatiu.";
+            throw new IllegalArgumentException("El saldo no pot ser negatiu.");
         }
 
         if (usuariModificat.getMobil() != null &&
             !usuariModificat.getMobil().equals(usuariActual.getMobil()) &&
             usuariRepo.existsByMobil(usuariModificat.getMobil())) {
-            return "El número de mòbil ja està en ús.";
+            throw new DuplicateException("El número del mòbil ja està en ús.");
         }
         
-        try {
+
             if (imatgeFile != null && !imatgeFile.isEmpty()) {
                 usuariActual.setImatge(imatgeFile.getBytes());
             }
-        } catch (IOException e) {
-            return "Error llegint la imatge: " + e.getMessage();
-        }
-        
+         
         // Actualitzar camps
         usuariActual.setNom(usuariModificat.getNom());
         usuariActual.setSaldo(usuariModificat.getSaldo());
@@ -106,7 +112,6 @@ public class UsuariLogic {
         usuariActual.setPoblacio(usuariModificat.getPoblacio());
         usuariActual.setMobil(usuariModificat.getMobil());
 
-        usuariRepo.save(usuariActual);
-        return null; // null indica que no hi ha errors
+        return usuariRepo.save(usuariActual);
     }
 }

@@ -11,10 +11,8 @@ import jakarta.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
-import java.net.http.HttpHeaders;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -100,24 +98,33 @@ public class UsuariController {
     
     @PostMapping("/editar/{email}")
     public String processarModificarUsuari(@PathVariable String email,
-            @ModelAttribute("usuari") Usuari usuariModificat,
+            @Valid @ModelAttribute("usuari") Usuari usuariModificat,
+            BindingResult result,
             @RequestParam("imatgeFile") MultipartFile imatgeFile,
+            Model model,
             RedirectAttributes redirectAtt){
         
-        try{
-            String error = usuariLogic.actualitzarUsuari(email, usuariModificat, imatgeFile);
+        if(result.hasErrors())
+            return "formulari-modificar-usuari";
         
-            if (error != null) {
-                redirectAtt.addFlashAttribute("error", error);
-                return "redirect:/admin/usuaris/editar/" + email;
-            }
-
-            redirectAtt.addFlashAttribute("missatgeSuccess", "Usuari actualitzat correctament.");
-            return "redirect:/admin/usuaris";
-        }catch(IllegalArgumentException e){
-            redirectAtt.addFlashAttribute("error", e.getMessage());
-            return "redirect:/admin/usuaris";
+        try{
+            usuariLogic.actualitzarUsuari(email, usuariModificat, imatgeFile);
+        
+        }catch (DuplicateException e) {
+            if (e.getMessage().toLowerCase().contains("mòbil"))
+                result.rejectValue("mobil", "error.usuari", e.getMessage());
+            return "formulari-modificar-usuari";
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().toLowerCase().contains("saldo"))
+                result.rejectValue("saldo", "error.usuari", e.getMessage());
+            return "formulari-modificar-usuari";
+        } catch (IOException e) {
+            result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
+            return "formulari-modificar-usuari";
         }
+        
+        redirectAtt.addFlashAttribute("missatgeSuccess", "Usuari actualitzat correctament.");
+        return "redirect:/admin/usuaris";
         
     }
     

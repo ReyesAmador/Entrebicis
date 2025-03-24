@@ -33,10 +33,6 @@ public class Usuari {
     @Email(message = "El correu ha de ser vàlid")
     private String email;
     //aquesta es la password
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_]).{4,}$",
-        message = "La contrasenya ha de tenir almenys 4 caràcters, una minúscula, una majúscula i un símbol.")
-    @NotBlank(message = "No ha d'estar buit")
     @Column(nullable = false)
     private String paraula;
     private String nom;
