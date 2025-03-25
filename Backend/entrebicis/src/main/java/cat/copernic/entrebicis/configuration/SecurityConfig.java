@@ -33,7 +33,13 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")  // Página personalizada
                 .defaultSuccessUrl("/admin/usuaris", true)
+                .failureUrl("/login?error=true")
                 .permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.sendRedirect("/login?denied=true");
+                })
             )
             .logout(logout -> logout.disable());
 
