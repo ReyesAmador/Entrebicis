@@ -38,7 +38,8 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.sendRedirect("/login?denied=true");
+                    request.getSession().setAttribute("deniedMessage", true);
+                    response.sendRedirect("/login");
                 })
             )
             .logout(logout -> logout.disable());
