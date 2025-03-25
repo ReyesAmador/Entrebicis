@@ -71,6 +71,9 @@
                 <label for="password" class="form-label">Contrasenya</label>
                 <input type="password" id="password" name="password" class="form-control" required>
             </div>
+            <div th:if="${errorMessage}" class="alert alert-danger text-center">
+                <p th:text="${errorMessage}"></p>
+            </div>
             <button type="submit" class="btn btn-login">LOGIN</button>
         </form>
     </div>
