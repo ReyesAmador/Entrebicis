@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -47,7 +48,6 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.pr
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel(),
     onLoginSuccess: () -> Unit
 ){
     val context = LocalContext.current
@@ -81,7 +81,7 @@ fun LoginScreen(
         Image(
             painter = painterResource(id = R.drawable.logo_white),
             contentDescription = "Logo Entrebicis",
-            modifier = Modifier.height(120.dp)
+            modifier = Modifier.size(220.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,7 +105,7 @@ fun LoginScreen(
             textStyle = MaterialTheme.typography.labelMedium,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
-                unfocusedContainerColor = MaterialTheme.colorScheme.tertiary,
+                unfocusedContainerColor = Color.White,
                 focusedTextColor = MaterialTheme.colorScheme.secondary,
                 unfocusedTextColor = MaterialTheme.colorScheme.secondary,
                 focusedIndicatorColor = Color.Transparent,
@@ -135,7 +135,7 @@ fun LoginScreen(
                 .height(52.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
-                unfocusedContainerColor = MaterialTheme.colorScheme.tertiary,
+                unfocusedContainerColor = Color.White,
                 focusedTextColor = MaterialTheme.colorScheme.secondary,
                 unfocusedTextColor = MaterialTheme.colorScheme.secondary,
                 focusedIndicatorColor = Color.Transparent,

@@ -35,7 +35,6 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit,
-    viewModel: LoginViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val viewModel: LoginViewModel = viewModel(
