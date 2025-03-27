@@ -19,7 +19,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     
-    private final String SECRET_KEY = "entrebicis-secret";
+    private final String SECRET_KEY = "entrebicis-secret-key-2025-strong-xx";
     
     public String generateToken(UserDetails userDetails){
         
