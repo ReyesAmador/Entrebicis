@@ -42,5 +42,9 @@ val Typography = Typography(
         fontFamily = Avenir,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
+    ),
+    labelMedium = TextStyle( // Botón
+        fontFamily = Avenir,
+        fontSize = 20.sp
     )
 )
