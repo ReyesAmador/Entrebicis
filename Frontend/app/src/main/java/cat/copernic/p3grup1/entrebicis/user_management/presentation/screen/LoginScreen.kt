@@ -1,5 +1,6 @@
 package cat.copernic.p3grup1.entrebicis.user_management.presentation.screen
 
+import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.LoginViewModel
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideLoginViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -47,6 +50,11 @@ fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
     onLoginSuccess: () -> Unit
 ){
+    val context = LocalContext.current
+    val viewModel: LoginViewModel = viewModel(
+        factory = provideLoginViewModelFactory(context.applicationContext as Application)
+    )
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }

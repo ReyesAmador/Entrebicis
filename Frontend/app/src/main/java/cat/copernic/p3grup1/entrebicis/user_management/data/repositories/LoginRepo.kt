@@ -11,10 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class LoginRepo {
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private val api: UserApi = RetrofitClient.retrofit.create(UserApi::class.java)
+class LoginRepo(private val api: UserApi) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun login (email: String, paraula: String) : Result<LoginResponse>{
