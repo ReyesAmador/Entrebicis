@@ -17,7 +17,7 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.Login
 fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = "login",
+        startDestination = "splash",
         modifier = modifier
     ) {
 
