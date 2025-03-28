@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,11 +44,6 @@ class LoginViewModel(
 
     fun getToken(): String? {
         return prefs.getString("token", null)
-    }
-
-    fun logout() {
-        prefs.edit().clear().apply()
-        _loginSuccess.value = false
     }
 
     fun clearError() {
