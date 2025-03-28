@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote
 
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -18,9 +19,9 @@ data class LoginResponse(
 
 interface UserApi {
 
-    @POST("api/login")
+    @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
-    @GET("api/usuari")
+    @GET("usuari")
     suspend fun getUsuari(@Header("Authorization") token: String): Response<Usuari>
 }
