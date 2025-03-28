@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
+import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.LoginViewModel
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideLoginViewModelFactory
 

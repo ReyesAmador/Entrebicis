@@ -1,5 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.home.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,12 +30,17 @@ import androidx.navigation.NavHostController
 import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     onLogout: () -> Unit,
     homeViewModel: HomeViewModel = viewModel()) {
-    val username = homeViewModel.username
-    val punts = homeViewModel.punts
+
+    val usuari by homeViewModel.usuari.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeViewModel.carregarUsuari()
+    }
 
     Column(
         modifier = Modifier
@@ -47,18 +57,19 @@ fun HomeScreen(
         )
 
 
-        Text("Benvingut, $username", style = MaterialTheme.typography.headlineLarge)
+        Text("Benvingut, ${usuari?.nom ?: "..."}", style = MaterialTheme.typography.headlineLarge)
 
         Spacer(Modifier.height(16.dp))
 
         Text(
-            "Tens $punts punts",
+            "Tens ${usuari?.saldo ?: 0} punts",
             style = MaterialTheme.typography.headlineMedium,
             color = Color.White,
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.secondary,
-                    shape = RoundedCornerShape(50))
+                    shape = RoundedCornerShape(50)
+                )
                 .padding(horizontal = 24.dp, vertical = 8.dp)
         )
 
