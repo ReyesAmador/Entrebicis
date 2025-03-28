@@ -21,11 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(
+    onLogout: () -> Unit,
+    homeViewModel: HomeViewModel = viewModel()) {
     val username = homeViewModel.username
     val punts = homeViewModel.punts
 
@@ -77,7 +80,10 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
         Spacer(Modifier.height(90.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                homeViewModel.logout()
+                onLogout()
+            },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp),
             elevation = ButtonDefaults.buttonElevation(

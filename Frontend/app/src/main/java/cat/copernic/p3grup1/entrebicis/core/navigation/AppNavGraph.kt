@@ -46,7 +46,14 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             )
         }
 
-        composable(BottomNavItem.Home.route) { HomeScreen() }
+        composable(BottomNavItem.Home.route) {
+            HomeScreen(
+                onLogout = {
+                    navController.navigate("login"){
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            ) }
         composable(BottomNavItem.Route.route) { /* TODO */ }
         composable(BottomNavItem.Reward.route) { /* TODO */ }
         composable(BottomNavItem.Profile.route) { /* TODO */ }

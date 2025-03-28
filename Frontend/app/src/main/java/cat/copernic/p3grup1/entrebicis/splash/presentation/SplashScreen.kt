@@ -2,6 +2,7 @@ package cat.copernic.p3grup1.entrebicis.splash.presentation
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -55,9 +56,12 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         delay(2000)
         val token = viewModel.getToken()
+        Log.d("TOKEN_CHECK", "Token actual: $token")
         if (token.isNullOrEmpty()) {
+            Log.d("TOKEN_CHECK", "Token vacío. Navegando a Login.")
             onNavigateToLogin()
         } else {
+            Log.d("TOKEN_CHECK", "Token válido. Navegando a Home.")
             onNavigateToHome()
         }
     }
