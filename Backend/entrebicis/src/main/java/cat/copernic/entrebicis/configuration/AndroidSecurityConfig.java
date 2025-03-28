@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author reyes
  */
 @Configuration
-@Order(2)
+@Order(1)
 @RequiredArgsConstructor
 public class AndroidSecurityConfig {
     

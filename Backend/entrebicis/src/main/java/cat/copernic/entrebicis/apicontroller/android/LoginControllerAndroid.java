@@ -37,7 +37,7 @@ public class LoginControllerAndroid {
     @Autowired
     private UserDetailsService userDetailsService;
     
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginReq){
         try{
             authenticationManager.authenticate(

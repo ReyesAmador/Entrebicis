@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@Order(1)
+@Order(2)
 public class WebSecurityConfig {
    
     
