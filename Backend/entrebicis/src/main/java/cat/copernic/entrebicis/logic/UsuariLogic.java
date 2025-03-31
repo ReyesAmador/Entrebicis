@@ -129,6 +129,7 @@ public class UsuariLogic {
         return usuariRepo.save(usuariActual);
     }
     
+    @Transactional
     public void iniciarRecuperacio(String email){
         
         usuariRepo.findByEmail(email).orElseThrow(() -> 
@@ -143,7 +144,17 @@ public class UsuariLogic {
         missatge.setTo(email);
         missatge.setSubject("Codi de recuperació");
         missatge.setText("El teu codi és: " + codi);
-        mailSender.send(missatge);
+        
+        try{
+            mailSender.send(missatge);
+            System.out.println("MISSATGE ENVIAR AMB CODI: " + codi);
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("ERROR ENVIANT CORREU: " + e.getMessage());
+        }
+        
+        System.out.println("CODI DE RECUPERACIÓ ENVIAT: " + codi);
+        
     }
     
     public boolean validarCodi(String email, String codi){
@@ -152,6 +163,7 @@ public class UsuariLogic {
                 .isPresent();
     }
     
+    @Transactional
     public void canviarContrasenya(String email, String codi, String novaContrasenya){
         if(!validarCodi(email,codi)) throw new IllegalArgumentException("Codi invàlid o expirat");
         
