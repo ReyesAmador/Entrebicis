@@ -167,6 +167,10 @@ public class UsuariLogic {
     public void canviarContrasenya(String email, String codi, String novaContrasenya){
         if(!validarCodi(email,codi)) throw new IllegalArgumentException("Codi invàlid o expirat");
         
+        if (!novaContrasenya.matches(regex)) {
+        throw new IllegalArgumentException("La contrasenya ha de tenir almenys 4 caràcters (sense espais), una minúscula, una majúscula i un símbol.");
+    }
+        
         Usuari usuari = usuariRepo.findByEmail(email).orElseThrow(() -> 
         new NotFoundUsuariException("Usuari no trobat: " + email));
         usuari.setParaula(passwordEncoder.encode(novaContrasenya));

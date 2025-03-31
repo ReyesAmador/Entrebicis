@@ -7,11 +7,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import cat.copernic.p3grup1.entrebicis.core.components.BottomNavItem
 import cat.copernic.p3grup1.entrebicis.home.presentation.screen.HomeScreen
 import cat.copernic.p3grup1.entrebicis.splash.presentation.SplashScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.LoginScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ForgotPasswordScreen
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ResetPasswordScreen
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ValidateCodeScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -51,6 +54,25 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
         composable("forgot-password"){
             ForgotPasswordScreen( onCodeSent = {
                 navController.navigate("validate-code")
+            })
+        }
+
+        composable("validate-code") {
+            ValidateCodeScreen(onCodeValidated = {
+                navController.navigate("reset-password")
+            })
+        }
+
+        composable("reset-password") {
+            ResetPasswordScreen(onPasswordChanged = {
+
+                navController.previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set("successMessage", "contrasenya")
+
+                navController.navigate("login") {
+                    popUpTo("login") { inclusive = true }
+                }
             })
         }
 

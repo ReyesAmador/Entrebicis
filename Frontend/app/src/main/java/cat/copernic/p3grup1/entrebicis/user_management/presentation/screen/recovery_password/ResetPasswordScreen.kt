@@ -1,4 +1,4 @@
-package cat.copernic.p3grup1.entrebicis.user_management.presentation.screen
+package cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password
 
 import android.app.Application
 import android.os.Build
@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,16 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -40,60 +32,41 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import cat.copernic.p3grup1.entrebicis.R
-import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
-import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.LoginViewModel
-import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideLoginViewModelFactory
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.PasswordRecoveryViewModel
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.passwordRecoveryViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onForgotPassword: () -> Unit
-){
+fun ResetPasswordScreen(
+    onPasswordChanged: () -> Unit
+) {
     val context = LocalContext.current
-    val viewModel: LoginViewModel = viewModel(
-        factory = provideLoginViewModelFactory(context.applicationContext as Application)
+    val viewModel: PasswordRecoveryViewModel = viewModel(
+        factory = passwordRecoveryViewModelFactory(context.applicationContext as Application)
     )
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    val newPassword by viewModel.newPassword.collectAsState()
+    var confirmPassword by remember { mutableStateOf("") }
+    val error by viewModel.errorMessage.collectAsState()
+    val success by viewModel.success.collectAsState()
 
-    val loginSuccess by viewModel.loginSuccess.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
+    var passwordMismatch by remember { mutableStateOf(false) }
 
-    val navController = rememberNavController()
-    val savedStateHandle = remember {
-        navController.currentBackStackEntry?.savedStateHandle
-    }
-
-    val successMessage = savedStateHandle?.get<String>("successMessage")
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    // Si login es correcto, navega
-    LaunchedEffect(loginSuccess) {
-        if (loginSuccess) {
-            onLoginSuccess()
-        }
-    }
-
-    LaunchedEffect(successMessage) {
-        successMessage?.let {
-            snackbarHostState.showSnackbar("Contrasenya canviada correctament")
-            savedStateHandle.remove<String>("successMessage")
+    LaunchedEffect(success) {
+        if (success) {
+            onPasswordChanged()
+            viewModel.clearState()
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -108,18 +81,20 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "LOGIN",
+            text = "NOVA\nCONTRASENYA",
             style = MaterialTheme.typography.headlineLarge,
-            color = Color.White
+            color = Color.White,
+            lineHeight = 36.sp
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = { Text("EMAIL") },
+            value = newPassword,
+            onValueChange = { viewModel.updateNewPassword(it) },
+            placeholder = { Text("NOVA CONTRASENYA") },
             singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
@@ -137,23 +112,18 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            textStyle = MaterialTheme.typography.labelMedium,
-            placeholder = { Text("**************") },
-            singleLine = true,
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                    Icon(
-                        imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = "Alternar visualització contrasenya"
-                    )
-                }
+            value = confirmPassword,
+            onValueChange = {
+                confirmPassword = it
+                passwordMismatch = false
             },
+            placeholder = { Text("REPITEIX LA CONTRASENYA") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
+            textStyle = MaterialTheme.typography.labelMedium,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
@@ -164,22 +134,15 @@ fun LoginScreen(
             )
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Contrasenya oblidada?",
-            color = Color.White,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable{ onForgotPassword() }
-        )
-
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedButton(
             onClick = {
-                viewModel.login(email, password)
+                if (newPassword == confirmPassword) {
+                    viewModel.resetPassword()
+                } else {
+                    passwordMismatch = true
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -188,24 +151,30 @@ fun LoginScreen(
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(
-                text = "INICIAR SESSIÓ",
+                text = "CANVIA CONTRASENYA",
                 color = Color.White,
                 style = MaterialTheme.typography.labelLarge
             )
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        when {
+            passwordMismatch -> {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Les contrasenyes no coincideixen",
+                    color = Color.Red,
+                    fontSize = 14.sp
+                )
+            }
 
-        errorMessage?.let {
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = it,
-                color = Color.Red,
-                fontSize = 14.sp
-            )
+            error != null -> {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = error ?: "",
+                    color = Color.Red,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
