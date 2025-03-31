@@ -17,6 +17,21 @@ data class LoginResponse(
     val token: String
 )
 
+data class ForgotPasswordRequest(
+    val email: String
+)
+
+data class ValidateCodeRequest(
+    val email: String,
+    val codi: String
+)
+
+data class ResetPasswordRequest(
+    val email: String,
+    val codi: String,
+    val novaContrasenya: String
+)
+
 interface UserApi {
 
     @POST("login")
@@ -24,4 +39,14 @@ interface UserApi {
 
     @GET("usuari")
     suspend fun getUsuari(@Header("Authorization") token: String): Response<Usuari>
+
+    @POST("forgot-pass")
+    suspend fun forgotPassword(@Body body: ForgotPasswordRequest): Response<Void>
+
+    @POST("validate-code")
+    suspend fun validarCodi(@Body body: ValidateCodeRequest): Response<Void>
+
+    @POST("reset-pass")
+    suspend fun resetPass(@Body body: ResetPasswordRequest): Response<Void>
+
 }
