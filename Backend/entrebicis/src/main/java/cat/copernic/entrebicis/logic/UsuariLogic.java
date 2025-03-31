@@ -4,17 +4,23 @@
  */
 package cat.copernic.entrebicis.logic;
 
+import cat.copernic.entrebicis.entities.ContrasenyaResetToken;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
 import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
+import cat.copernic.entrebicis.repository.ContrasenyaResetTokenRepo;
 import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +34,12 @@ public class UsuariLogic {
     
     @Autowired
     UsuariRepo usuariRepo;
+    
+    @Autowired
+    ContrasenyaResetTokenRepo tokenRepo;
+    
+    @Autowired
+    JavaMailSender mailSender;
     
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
@@ -115,5 +127,38 @@ public class UsuariLogic {
         usuariActual.setMobil(usuariModificat.getMobil());
 
         return usuariRepo.save(usuariActual);
+    }
+    
+    public void iniciarRecuperacio(String email){
+        
+        usuariRepo.findByEmail(email).orElseThrow(() -> 
+        new NotFoundUsuariException("Usuari no trobat: " + email));
+        
+        String codi = String.format("%06d", new Random().nextInt(999999));
+        tokenRepo.deleteByEmail(email); //neteja tokens anteriors
+        tokenRepo.save(new ContrasenyaResetToken(null, email, codi, LocalDateTime.now().plusMinutes(10)));
+        
+        //Enviar correu
+        SimpleMailMessage missatge = new SimpleMailMessage();
+        missatge.setTo(email);
+        missatge.setSubject("Codi de recuperació");
+        missatge.setText("El teu codi és: " + codi);
+        mailSender.send(missatge);
+    }
+    
+    public boolean validarCodi(String email, String codi){
+        return tokenRepo.findByEmailAndCodi(email, codi)
+                .filter(token -> token.getExpiracio().isAfter(LocalDateTime.now()))
+                .isPresent();
+    }
+    
+    public void canviarContrasenya(String email, String codi, String novaContrasenya){
+        if(!validarCodi(email,codi)) throw new IllegalArgumentException("Codi invàlid o expirat");
+        
+        Usuari usuari = usuariRepo.findByEmail(email).orElseThrow(() -> 
+        new NotFoundUsuariException("Usuari no trobat: " + email));
+        usuari.setParaula(passwordEncoder.encode(novaContrasenya));
+        usuariRepo.save(usuari);
+        tokenRepo.deleteByEmail(email); //elimina el token
     }
 }

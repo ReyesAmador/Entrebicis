@@ -5,13 +5,19 @@
 package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.configuration.JwtUtil;
-import cat.copernic.entrebicis.entities.LoginRequest;
-import cat.copernic.entrebicis.entities.LoginResponse;
+import cat.copernic.entrebicis.dto.ForgotPasswordRequest;
+import cat.copernic.entrebicis.dto.LoginRequest;
+import cat.copernic.entrebicis.dto.LoginResponse;
+import cat.copernic.entrebicis.dto.ResetPasswordRequest;
+import cat.copernic.entrebicis.dto.ValidateCodeRequest;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -79,5 +85,26 @@ public class LoginControllerAndroid {
         System.out.println(">>> Usuari retornat: " + usuari.getNom() + " - " + usuari.getSaldo());
 
         return ResponseEntity.ok(usuari);
+    }
+    
+    @PostMapping("/forgot-pass")
+    public ResponseEntity<?> passwordOblidada(@Valid @RequestBody ForgotPasswordRequest request){
+        usuariLogic.iniciarRecuperacio(request.getEmail());
+        
+        return ResponseEntity.ok("Codi enviat");
+    }
+    
+    @PostMapping("/validate-code")
+    public ResponseEntity<?> validarCodi(@Valid @RequestBody ValidateCodeRequest request){
+        boolean valid = usuariLogic.validarCodi(request.getEmail(),request.getCodi());
+        
+        return valid ? ResponseEntity.ok("Codi vàlid") 
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Codi invàlid o expirat");
+    }
+    
+    @PostMapping("/reset-pass")
+    public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPasswordRequest request){
+        usuariLogic.canviarContrasenya(request.getEmail(), request.getCodi(), request.getNovaContrasenya());
+        return ResponseEntity.ok("Contrasenya canviada correctament");
     }
 }

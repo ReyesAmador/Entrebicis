@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package cat.copernic.entrebicis.entities;
+package cat.copernic.entrebicis.dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -12,9 +13,10 @@ import lombok.Data;
  * @author reyes
  */
 @Data
-public class LoginRequest {
+public class ForgotPasswordRequest {
     
+    @Email(message = "El correu ha de ser vàlid")
+    @NotBlank(message = "El correu no pot estar buit")
     private String email;
-    private String paraula;
     
 }
