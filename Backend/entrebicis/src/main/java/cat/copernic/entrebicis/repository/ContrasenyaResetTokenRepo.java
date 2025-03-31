@@ -4,7 +4,7 @@
  */
 package cat.copernic.entrebicis.repository;
 
-import cat.copernic.entrebicis.entities.ParametresSistema;
+import cat.copernic.entrebicis.entities.ContrasenyaResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  * @author reyes
  */
 @Repository
-public interface ParametresSistemaRepo extends JpaRepository<ParametresSistema,Long>{
+public interface ContrasenyaResetTokenRepo extends JpaRepository<ContrasenyaResetToken,Long>{
     
 }
