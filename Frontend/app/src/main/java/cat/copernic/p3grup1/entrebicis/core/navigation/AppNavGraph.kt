@@ -11,6 +11,7 @@ import cat.copernic.p3grup1.entrebicis.core.components.BottomNavItem
 import cat.copernic.p3grup1.entrebicis.home.presentation.screen.HomeScreen
 import cat.copernic.p3grup1.entrebicis.splash.presentation.SplashScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.LoginScreen
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ForgotPasswordScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -42,8 +43,15 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                     navController.navigate(BottomNavItem.Home.route) {
                         popUpTo("login") { inclusive = true }
                     }
-                }
+                },
+                onForgotPassword = { navController.navigate("forgot-password")}
             )
+        }
+
+        composable("forgot-password"){
+            ForgotPasswordScreen( onCodeSent = {
+                navController.navigate("validate-code")
+            })
         }
 
         composable(BottomNavItem.Home.route) {

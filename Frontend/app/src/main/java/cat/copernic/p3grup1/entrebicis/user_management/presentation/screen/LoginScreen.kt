@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,7 +50,8 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.pr
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onForgotPassword: () -> Unit
 ){
     val context = LocalContext.current
     val viewModel: LoginViewModel = viewModel(
@@ -150,7 +152,9 @@ fun LoginScreen(
             text = "Contrasenya oblidada?",
             color = Color.White,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier
+                .align(Alignment.End)
+                .clickable{ onForgotPassword() }
         )
 
         Spacer(modifier = Modifier.height(32.dp))
