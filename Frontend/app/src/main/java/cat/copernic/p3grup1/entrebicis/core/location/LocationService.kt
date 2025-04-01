@@ -12,6 +12,7 @@ import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -36,6 +37,14 @@ class LocationService : Service() {
     private lateinit var locationCallback: LocationCallback
     private lateinit var routeRepo: RouteRepo
 
+    private var tempsMaximAturadaMillis: Long = 0L
+    private var lastMovementTimestamp: Long = System.currentTimeMillis()
+    private var rutaActiva: Boolean = true
+    private var lastKnownLocation: Location = Location("init").apply {
+        latitude = 0.0
+        longitude = 0.0
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
@@ -48,6 +57,17 @@ class LocationService : Service() {
         createNotificationChannel()
         startForeground(1, buildNotification())
 
+        // 🔁 Obtener parámetro "temps_maxim_aturada" antes de iniciar ubicación
+        CoroutineScope(Dispatchers.IO).launch {
+            routeRepo.getTempsMaximAturada().onSuccess { minuts ->
+                tempsMaximAturadaMillis = minuts * 60_000L
+                startLocationUpdates() // solo iniciar si tenemos el valor
+            }.onFailure {
+                stopSelf() // cancelamos si no se puede obtener
+            }
+        }
+
+        // Inicializamos el callback de ubicación
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 for (location in result.locations) {
@@ -86,6 +106,23 @@ class LocationService : Service() {
             temps = System.currentTimeMillis()
         )
 
+        val currentTime = System.currentTimeMillis()
+        val distanceMoved = location.distanceTo(lastKnownLocation)
+
+        // Si se ha movido más de 5m, se considera movimiento
+        if (distanceMoved > 5f) {
+            lastMovementTimestamp = currentTime
+        }
+
+        // Si el tiempo desde el último movimiento supera el máximo -> finalizar ruta
+        if (rutaActiva && (currentTime - lastMovementTimestamp) > tempsMaximAturadaMillis) {
+            rutaActiva = false
+            sendFinalizationBroadcast()
+            stopSelf()
+        }
+
+        lastKnownLocation = location
+
         CoroutineScope(Dispatchers.IO).launch {
             routeRepo.enviarPunt(punt)
         }
@@ -112,5 +149,11 @@ class LocationService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        Log.d("LocationService", "Servicio detenido (parada o tiempo excedido)")
+    }
+
+    private fun sendFinalizationBroadcast() {
+        val intent = Intent("com.entrebicis.RUTA_FINALITZADA_AUTO")
+        sendBroadcast(intent)
     }
 }

@@ -17,4 +17,14 @@ class RouteRepo(private val api: RouteApi) {
             Result.failure(e)
         }
     }
+
+    suspend fun getTempsMaximAturada(): Result<Int> {
+        return try {
+            val res = api.getTempsMaximAturada()
+            if (res.isSuccessful && res.body() != null) Result.success(res.body()!!)
+            else Result.failure(Exception("Error ${res.code()}: ${res.message()}"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
