@@ -15,6 +15,7 @@ import cat.copernic.entrebicis.repository.UsuariRepo;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -58,7 +59,8 @@ public class UsuariLogic {
             100.0,
             "Usuari de proves",
             "663587620",
-            "Barcelona");
+            "Barcelona",
+            new ArrayList<>());
             
             usuariRepo.save(admin);
         }
