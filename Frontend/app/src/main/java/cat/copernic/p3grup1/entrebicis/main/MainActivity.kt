@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry.value?.destination?.route
 
                 val showBottomBar = currentRoute !in listOf("login", "splash", "forgot-password",
-                    "validate-code", "reset-password")
+                    "validate-code/{email}", "reset-password/{email}")
                 Scaffold(
                     bottomBar = {
                         if(showBottomBar)

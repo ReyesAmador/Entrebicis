@@ -42,6 +42,8 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.pa
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ResetPasswordScreen(
+    email: String,
+    codi: String,
     onPasswordChanged: () -> Unit
 ) {
     val context = LocalContext.current
@@ -55,6 +57,11 @@ fun ResetPasswordScreen(
     val success by viewModel.success.collectAsState()
 
     var passwordMismatch by remember { mutableStateOf(false) }
+
+    LaunchedEffect(email, codi) {
+        viewModel.updateEmail(email)
+        viewModel.updateCode(codi)
+    }
 
     LaunchedEffect(success) {
         if (success) {
@@ -138,10 +145,10 @@ fun ResetPasswordScreen(
 
         OutlinedButton(
             onClick = {
-                if (newPassword == confirmPassword) {
-                    viewModel.resetPassword()
-                } else {
+                if (newPassword != confirmPassword) {
                     passwordMismatch = true
+                } else {
+                    viewModel.resetPassword()
                 }
             },
             modifier = Modifier
@@ -160,20 +167,11 @@ fun ResetPasswordScreen(
         when {
             passwordMismatch -> {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "Les contrasenyes no coincideixen",
-                    color = Color.Red,
-                    fontSize = 14.sp
-                )
+                Text("Les contrasenyes no coincideixen", color = Color.Red, fontSize = 14.sp)
             }
-
             error != null -> {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = error ?: "",
-                    color = Color.Red,
-                    fontSize = 14.sp
-                )
+                Text(error ?: "", color = Color.Red, fontSize = 14.sp)
             }
         }
     }

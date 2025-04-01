@@ -55,7 +55,15 @@ class LoginRepo(private val api: UserApi) {
             if(response.isSuccessful){
                 Result.success(Unit)
             }else{
-                Result.failure(Exception("Error: ${response.code()} - ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                // Intenta extraer el mensaje de error del backend si es JSON
+                val msg = try {
+                    JSONObject(errorBody ?: "").getString("message")
+                } catch (e: Exception) {
+                    // Si no es JSON, usa el string plano
+                    errorBody ?: "Error ${response.code()}"
+                }
+                Result.failure(Exception(msg))
             }
         }catch (e: Exception) {
             Result.failure(e)
@@ -66,7 +74,17 @@ class LoginRepo(private val api: UserApi) {
         return try {
             val response = api.validarCodi(ValidateCodeRequest(email, codi))
             if (response.isSuccessful) Result.success(Unit)
-            else Result.failure(Exception("Codi incorrecte o expirat"))
+            else{
+                val errorBody = response.errorBody()?.string()
+                // Intenta extraer el mensaje de error del backend si es JSON
+                val msg = try {
+                    JSONObject(errorBody ?: "").getString("message")
+                } catch (e: Exception) {
+                    // Si no es JSON, usa el string plano
+                    errorBody ?: "Error ${response.code()}"
+                }
+                Result.failure(Exception(msg))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -76,7 +94,17 @@ class LoginRepo(private val api: UserApi) {
         return try {
             val response = api.resetPass(ResetPasswordRequest(email, codi, novaContrasenya))
             if (response.isSuccessful) Result.success(Unit)
-            else Result.failure(Exception("Error en canviar la contrasenya"))
+            else {
+                val errorBody = response.errorBody()?.string()
+                // Intenta extraer el mensaje de error del backend si es JSON
+                val msg = try {
+                    JSONObject(errorBody ?: "").getString("message")
+                } catch (e: Exception) {
+                    // Si no es JSON, usa el string plano
+                    errorBody ?: "Error ${response.code()}"
+                }
+                Result.failure(Exception(msg))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

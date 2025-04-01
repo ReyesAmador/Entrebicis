@@ -23,6 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +41,7 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.pa
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForgotPasswordScreen(
-    onCodeSent: () -> Unit
+    onCodeSent: (String) -> Unit
 ){
     val context = LocalContext.current
     val viewModel: PasswordRecoveryViewModel = viewModel(
@@ -51,7 +54,7 @@ fun ForgotPasswordScreen(
 
     LaunchedEffect(success) {
         if (success) {
-            onCodeSent()
+            onCodeSent(email)
             viewModel.clearState()
         }
     }
@@ -117,14 +120,9 @@ fun ForgotPasswordScreen(
                 style = MaterialTheme.typography.labelLarge
             )
         }
-
-        error?.let {
+        if (error != null) {
             Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = it,
-                color = Color.Red,
-                fontSize = 14.sp
-            )
+            Text(error ?: "", color = Color.Red, fontSize = 14.sp)
         }
     }
 }

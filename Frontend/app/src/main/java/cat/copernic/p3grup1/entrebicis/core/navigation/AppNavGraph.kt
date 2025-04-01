@@ -52,20 +52,34 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
         }
 
         composable("forgot-password"){
-            ForgotPasswordScreen( onCodeSent = {
-                navController.navigate("validate-code")
+            ForgotPasswordScreen( onCodeSent = { email ->
+                navController.navigate("validate-code/$email")
             })
         }
 
-        composable("validate-code") {
-            ValidateCodeScreen(onCodeValidated = {
-                navController.navigate("reset-password")
+        composable("validate-code/{email}",
+            arguments = listOf(navArgument("email") { defaultValue = ""; nullable = false })
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            ValidateCodeScreen(
+                email = email,
+                onCodeValidated = { codi ->
+                navController.navigate("reset-password/$email/$codi")
             })
         }
 
-        composable("reset-password") {
-            ResetPasswordScreen(onPasswordChanged = {
-
+        composable("reset-password/{email}/{codi}",
+            arguments = listOf(
+                navArgument("email") { defaultValue = ""; nullable = false },
+                navArgument("codi") { defaultValue = ""; nullable = false }
+                )
+            ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            val codi = backStackEntry.arguments?.getString("codi") ?: ""
+            ResetPasswordScreen(
+                email = email,
+                codi = codi,
+                onPasswordChanged = {
                 navController.previousBackStackEntry
                     ?.savedStateHandle
                     ?.set("successMessage", "contrasenya")
