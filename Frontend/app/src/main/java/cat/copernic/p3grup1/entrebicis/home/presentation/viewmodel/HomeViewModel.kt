@@ -2,6 +2,7 @@ package cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -9,6 +10,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import cat.copernic.p3grup1.entrebicis.core.location.LocationService
 import cat.copernic.p3grup1.entrebicis.core.models.PuntGps
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
@@ -23,6 +25,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     @RequiresApi(Build.VERSION_CODES.O)
     private val repo = LoginRepo(RetrofitClient.retrofit.create(UserApi::class.java))
     private val prefs = application.getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
+    private val appContext = application.applicationContext
 
     private val _usuari = MutableStateFlow<Usuari?>(null)
     val usuari: StateFlow<Usuari?> = _usuari
@@ -61,14 +64,20 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         _rutaActiva.value = true
         iniciRutaTimestamp = System.currentTimeMillis()
         startCronometre()
-        // TODO: iniciar servei GPS i començar a guardar punts
+        val intent = Intent(appContext, LocationService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            appContext.startForegroundService(intent)
+        } else {
+            appContext.startService(intent)
+        }
     }
 
     fun finalitzarRuta() {
         if (!_rutaActiva.value) return
         _rutaActiva.value = false
         stopCronometre()
-        // TODO: aturar servei GPS i desar punts
+        val intent = Intent(appContext, LocationService::class.java)
+        appContext.stopService(intent)
         Log.d("RUTA", "Ruta finalitzada amb durada de ${_tempsRuta.value} ms")
     }
 
