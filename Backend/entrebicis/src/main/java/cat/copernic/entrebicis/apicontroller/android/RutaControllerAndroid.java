@@ -5,11 +5,12 @@
 package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
+import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.logic.RutaLogic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +29,8 @@ public class RutaControllerAndroid {
     RutaLogic rutaLogic;
     
     @PostMapping("/{id}/punt")
-    public ResponseEntity<Void> afegirPunt(@PathVariable String email, @RequestBody PuntGpsDTO dto) {
-        rutaLogic.afegirPuntGps(email, dto);
+    public ResponseEntity<Void> afegirPunt(@AuthenticationPrincipal Usuari usuari, @RequestBody PuntGpsDTO dto) {
+        rutaLogic.afegirPuntGps(usuari.getEmail(), dto);
         return ResponseEntity.ok().build();
     }
     
