@@ -3,6 +3,8 @@ package cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
@@ -25,9 +27,15 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     private val _usuari = MutableStateFlow<Usuari?>(null)
     val usuari: StateFlow<Usuari?> = _usuari
 
-    val rutaActiva = MutableStateFlow(false)
-    val tempsRuta = MutableStateFlow(0L)
-    val puntsGPS = mutableListOf<PuntGps>()
+    private val _rutaActiva = MutableStateFlow(false)
+    val rutaActiva: StateFlow<Boolean> = _rutaActiva
+
+    private val _tempsRuta = MutableStateFlow(0L) // en milisegons
+    val tempsRuta: StateFlow<Long> = _tempsRuta
+
+    private var cronometreHandler: Handler? = null
+    private var cronometreRunnable: Runnable? = null
+    private var iniciRutaTimestamp: Long = 0L
 
     fun logout() {
         prefs.edit().clear().apply()
@@ -48,6 +56,38 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
             )
         }
     }
+    fun iniciarRuta() {
+        if (_rutaActiva.value) return
+        _rutaActiva.value = true
+        iniciRutaTimestamp = System.currentTimeMillis()
+        startCronometre()
+        // TODO: iniciar servei GPS i començar a guardar punts
+    }
 
+    fun finalitzarRuta() {
+        if (!_rutaActiva.value) return
+        _rutaActiva.value = false
+        stopCronometre()
+        // TODO: aturar servei GPS i desar punts
+        Log.d("RUTA", "Ruta finalitzada amb durada de ${_tempsRuta.value} ms")
+    }
+
+    private fun startCronometre() {
+        cronometreHandler = Handler(Looper.getMainLooper())
+        cronometreRunnable = object : Runnable {
+            override fun run() {
+                val elapsed = System.currentTimeMillis() - iniciRutaTimestamp
+                _tempsRuta.value = elapsed
+                cronometreHandler?.postDelayed(this, 1000)
+            }
+        }
+        cronometreHandler?.post(cronometreRunnable!!)
+    }
+
+    private fun stopCronometre() {
+        cronometreHandler?.removeCallbacks(cronometreRunnable!!)
+        cronometreHandler = null
+        cronometreRunnable = null
+    }
 
 }
