@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import cat.copernic.p3grup1.entrebicis.core.models.PuntGps
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
@@ -23,6 +24,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
 
     private val _usuari = MutableStateFlow<Usuari?>(null)
     val usuari: StateFlow<Usuari?> = _usuari
+
+    val rutaActiva = MutableStateFlow(false)
+    val tempsRuta = MutableStateFlow(0L)
+    val puntsGPS = mutableListOf<PuntGps>()
 
     fun logout() {
         prefs.edit().clear().apply()
@@ -43,4 +48,6 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
             )
         }
     }
+
+
 }

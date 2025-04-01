@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import cat.copernic.p3grup1.entrebicis.R
+import cat.copernic.p3grup1.entrebicis.core.utils.formatTime
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -37,6 +38,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel()) {
 
     val usuari by homeViewModel.usuari.collectAsState()
+    val rutaActiva by homeViewModel.rutaActiva.collectAsState()
+    val tempsRuta by homeViewModel.tempsRuta.collectAsState()
 
     LaunchedEffect(Unit) {
         homeViewModel.carregarUsuari()
@@ -73,21 +76,35 @@ fun HomeScreen(
                 .padding(horizontal = 24.dp, vertical = 8.dp)
         )
 
-        Spacer(Modifier.height(210.dp))
+        Spacer(Modifier.height(100.dp))
+
+        if (rutaActiva) {
+            Text(
+                text = "Temps: ${formatTime(tempsRuta)}",
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
 
         Button(
-            onClick = { },
+            onClick = {
+                if (rutaActiva) homeViewModel.finalitzarRuta()
+                else homeViewModel.iniciarRuta()
+            },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp),
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 6.dp
-            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp),
             modifier = Modifier
                 .height(38.dp)
                 .width(240.dp)
         ) {
-            Text("INICIAR RUTA", style = MaterialTheme.typography.labelLarge, color = Color.White)
+            Text(
+                text = if (rutaActiva) "FINALITZAR RUTA" else "INICIAR RUTA",
+                style = MaterialTheme.typography.labelLarge,
+                color = Color.White
+            )
         }
+
         Spacer(Modifier.height(90.dp))
 
         Button(
