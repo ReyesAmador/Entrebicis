@@ -15,10 +15,8 @@ import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -90,36 +88,20 @@ public class LoginControllerAndroid {
     
     @PostMapping("/forgot-pass")
     public ResponseEntity<?> passwordOblidada(@Valid @RequestBody ForgotPasswordRequest request){
-        try {
         usuariLogic.iniciarRecuperacio(request.getEmail());
         return ResponseEntity.ok("Codi enviat");
-    } catch (NotFoundUsuariException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuari no trobat");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en enviar el codi");
-    }
     }
     
     @PostMapping("/validate-code")
     public ResponseEntity<?> validarCodi(@Valid @RequestBody ValidateCodeRequest request){
-        try {
         boolean valid = usuariLogic.validarCodi(request.getEmail(), request.getCodi());
         return valid ? ResponseEntity.ok("Codi vàlid") :
                        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Codi invàlid o expirat");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en validar el codi");
-    }
     }
     
     @PostMapping("/reset-pass")
     public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPasswordRequest request){
-        try {
         usuariLogic.canviarContrasenya(request.getEmail(), request.getCodi(), request.getNovaContrasenya());
         return ResponseEntity.ok("Contrasenya canviada correctament");
-    } catch (IllegalArgumentException | NotFoundUsuariException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error en canviar la contrasenya");
-    }
     }
 }
