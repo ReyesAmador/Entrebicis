@@ -54,7 +54,11 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
         composable("forgot-password"){
             ForgotPasswordScreen( onCodeSent = { email ->
                 navController.navigate("validate-code/$email")
-            })
+            },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable("validate-code/{email}",
