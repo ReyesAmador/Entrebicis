@@ -7,9 +7,12 @@ package cat.copernic.entrebicis.logic;
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
 import cat.copernic.entrebicis.entities.PuntGps;
 import cat.copernic.entrebicis.entities.Ruta;
+import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.repository.PuntGpsRepo;
 import cat.copernic.entrebicis.repository.RutaRepo;
+import cat.copernic.entrebicis.repository.UsuariRepo;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +30,22 @@ public class RutaLogic {
     @Autowired
     PuntGpsRepo puntRepo;
     
-    public void afegirPuntGps(Long idRuta, PuntGpsDTO dto){
+    @Autowired
+    UsuariRepo usuariRepo;
+    
+    public void afegirPuntGps(String email, PuntGpsDTO dto){
         
-        Ruta ruta = rutaRepo.findById(idRuta)
-                .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
+        Usuari usuari = usuariRepo.findById(email)
+                .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
+        
+        Ruta ruta = rutaRepo.findByUsuariAndEstatTrue(usuari)
+                .orElseGet(() -> {
+                    Ruta nova = new Ruta();
+                    nova.setUsuari(usuari);
+                    nova.setEstat(true);
+                    nova.setInici(LocalDateTime.now());
+                    return rutaRepo.save(nova);
+                });
         
         PuntGps punt = new PuntGps();
         punt.setTemps(Instant.ofEpochMilli(dto.getTemps()).atZone(ZoneId.systemDefault()).toLocalDateTime());
