@@ -41,4 +41,10 @@ public class ParametresSistemaLogic {
         repo.save(par);
     }
     
+    public int obtenirTempsMaximAturat() {
+        ParametresSistema parametres = repo.findById(1L)
+            .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
+        return parametres.getTempsMaximAturat();
+    }
+    
 }
