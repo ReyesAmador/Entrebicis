@@ -11,7 +11,7 @@ import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRe
 @RequiresApi(Build.VERSION_CODES.O)
 fun passwordRecoveryViewModelFactory(application: Application) = viewModelFactory {
     initializer {
-        val api = RetrofitClient.retrofit.create(
+        val api = RetrofitClient.getInstance(application.applicationContext).create(
             cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.UserApi::class.java
         )
         val repo = LoginRepo(api)

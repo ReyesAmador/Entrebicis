@@ -1,5 +1,6 @@
 package cat.copernic.p3grup1.entrebicis.core.network
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
@@ -7,6 +8,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializer
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
@@ -39,10 +42,34 @@ object RetrofitClient {
         .registerTypeAdapter(LocalDate::class.java, localDateDeserializer)
         .create()
 
-    // 🔹 Construcción de Retrofit con Gson personalizado
+    @Volatile
+    private var retrofitInstance: Retrofit? = null
+
+    // Nueva función para obtener Retrofit con token JWT
     @RequiresApi(Build.VERSION_CODES.O)
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create(gson)) // 🔹 Usa Gson con LocalDate
-        .build()
+    fun getInstance(context: Context): Retrofit {
+        if (retrofitInstance == null) {
+            synchronized(this) {
+                val prefs = context.getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
+                val token = prefs.getString("token", null)
+
+                val client = OkHttpClient.Builder()
+                    .addInterceptor(Interceptor { chain ->
+                        val request = chain.request().newBuilder()
+                        token?.let {
+                            request.addHeader("Authorization", "Bearer $it")
+                        }
+                        chain.proceed(request.build())
+                    })
+                    .build()
+
+                retrofitInstance = Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build()
+            }
+        }
+        return retrofitInstance!!
+    }
 }

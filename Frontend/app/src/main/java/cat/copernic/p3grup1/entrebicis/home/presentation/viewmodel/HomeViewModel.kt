@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(application: Application): AndroidViewModel(application) {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private val repo = LoginRepo(RetrofitClient.retrofit.create(UserApi::class.java))
+    private val repo = LoginRepo(RetrofitClient.getInstance(application.applicationContext).create(UserApi::class.java))
     private val prefs = application.getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
     private val appContext = application.applicationContext
 

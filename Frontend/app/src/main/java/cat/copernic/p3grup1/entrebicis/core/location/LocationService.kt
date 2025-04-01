@@ -35,7 +35,6 @@ class LocationService : Service() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var routeRepo: RouteRepo
-    private var userEmail: String? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -43,12 +42,8 @@ class LocationService : Service() {
         super.onCreate()
 
         // Inicializar repo y cliente
-        routeRepo = RouteRepo(RetrofitClient.retrofit.create(RouteApi::class.java))
+        routeRepo = RouteRepo(RetrofitClient.getInstance(applicationContext).create(RouteApi::class.java))
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        // Obtener email desde SharedPreferences
-        val prefs = getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
-        userEmail = prefs.getString("email", null)
 
         createNotificationChannel()
         startForeground(1, buildNotification())
@@ -84,7 +79,6 @@ class LocationService : Service() {
     }
 
     private fun handleNewLocation(location: Location) {
-        val email = userEmail ?: return
 
         val punt = PuntGpsDto(
             latitud = location.latitude,
@@ -93,7 +87,7 @@ class LocationService : Service() {
         )
 
         CoroutineScope(Dispatchers.IO).launch {
-            routeRepo.enviarPunt(email, punt)
+            routeRepo.enviarPunt(punt)
         }
     }
 

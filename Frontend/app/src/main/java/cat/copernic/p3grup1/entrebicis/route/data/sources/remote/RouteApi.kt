@@ -13,6 +13,6 @@ data class PuntGpsDto(
 
 interface RouteApi {
 
-    @POST("ruta/punt/{email}")
-    suspend fun enviarPuntGps(@Path("email") email:String, @Body punt: PuntGpsDto): Response<Void>
+    @POST("ruta/punt")
+    suspend fun enviarPuntGps(@Body punt: PuntGpsDto): Response<Void>
 }
