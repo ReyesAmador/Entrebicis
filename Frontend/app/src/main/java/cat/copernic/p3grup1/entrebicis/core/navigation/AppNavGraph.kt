@@ -56,7 +56,9 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                 navController.navigate("validate-code/$email")
             },
                 onBack = {
-                    navController.popBackStack()
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
                 }
             )
         }
@@ -67,6 +69,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             val email = backStackEntry.arguments?.getString("email") ?: ""
             ValidateCodeScreen(
                 email = email,
+                onBack = { navController.popBackStack()},
                 onCodeValidated = { codi ->
                 navController.navigate("reset-password/$email/$codi")
             })
@@ -83,6 +86,11 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             ResetPasswordScreen(
                 email = email,
                 codi = codi,
+                onBack = {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
                 onPasswordChanged = {
                 navController.previousBackStackEntry
                     ?.savedStateHandle

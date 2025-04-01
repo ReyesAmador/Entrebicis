@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -94,11 +95,14 @@ fun ForgotPasswordScreen(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Tornar",
+                contentDescription = "Botó per anar a home",
                 tint = Color.White
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Tornar", color = Color.White)
+            Text(
+                text = "Home",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.White)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -115,6 +119,7 @@ fun ForgotPasswordScreen(
             text = "RECUPERAR\nCONTRASENYA",
             style = MaterialTheme.typography.headlineLarge,
             color = Color.White,
+            textAlign = TextAlign.Center,
             lineHeight = 36.sp
         )
 

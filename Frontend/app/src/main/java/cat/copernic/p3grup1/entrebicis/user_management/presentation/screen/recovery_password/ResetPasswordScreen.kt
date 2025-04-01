@@ -6,14 +6,20 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -32,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,6 +51,7 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.pa
 fun ResetPasswordScreen(
     email: String,
     codi: String,
+    onBack: () -> Unit,
     onPasswordChanged: () -> Unit
 ) {
     val context = LocalContext.current
@@ -77,7 +85,28 @@ fun ResetPasswordScreen(
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onBack() }
+                .padding(start = 4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Botó per anar a home",
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Home",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.White)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Image(
             painter = painterResource(id = R.drawable.logo_white),
@@ -91,6 +120,7 @@ fun ResetPasswordScreen(
             text = "NOVA\nCONTRASENYA",
             style = MaterialTheme.typography.headlineLarge,
             color = Color.White,
+            textAlign = TextAlign.Center,
             lineHeight = 36.sp
         )
 
