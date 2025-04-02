@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,12 @@ public class RutaControllerAndroid {
     @PostMapping("/{id}/punt")
     public ResponseEntity<Void> afegirPunt(@AuthenticationPrincipal Usuari usuari, @RequestBody PuntGpsDTO dto) {
         rutaLogic.afegirPuntGps(usuari.getEmail(), dto);
+        return ResponseEntity.ok().build();
+    }
+    
+    @PatchMapping("/finalitzar")
+    public ResponseEntity<Void> finalitzarRuta(@AuthenticationPrincipal Usuari usuari){
+        rutaLogic.finalitzarRuta(usuari.getEmail());
         return ResponseEntity.ok().build();
     }
     
