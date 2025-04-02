@@ -15,8 +15,12 @@ import cat.copernic.p3grup1.entrebicis.core.models.PuntGps
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
 import cat.copernic.p3grup1.entrebicis.core.utils.LogRutaUtils
+import cat.copernic.p3grup1.entrebicis.route.data.repositories.RouteRepo
+import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.UserApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,6 +29,8 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val repo = LoginRepo(RetrofitClient.getInstance(application.applicationContext).create(UserApi::class.java))
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val repoRuta = RouteRepo(RetrofitClient.getInstance(application.applicationContext).create(RouteApi::class.java))
     private val prefs = application.getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
     private val appContext = application.applicationContext
 
@@ -76,6 +82,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         LogRutaUtils.appendLog(appContext, "Ruta iniciada manualment a $timestamp")
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun finalitzarRuta() {
         if (!_rutaActiva.value) return
         _rutaActiva.value = false
@@ -86,6 +93,15 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         val timestamp = System.currentTimeMillis()
         Log.d("RUTA", "Ruta finalitzada amb durada de ${_tempsRuta.value} ms")
         LogRutaUtils.appendLog(appContext, "Ruta finalitzada manualment amb durada de ${_tempsRuta.value} ms a $timestamp")
+
+        // Notificamos al backend que la ruta ha terminado
+        viewModelScope.launch {
+            repoRuta.finalitzarRuta().onSuccess {
+                Log.d("RUTA", "Ruta finalitzada correctament al backend")
+            }.onFailure {
+                Log.e("RUTA", "Error finalitzant ruta: ${it.message}")
+            }
+        }
     }
 
     private fun startCronometre() {

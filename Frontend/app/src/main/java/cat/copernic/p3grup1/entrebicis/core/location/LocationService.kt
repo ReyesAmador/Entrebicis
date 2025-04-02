@@ -65,6 +65,7 @@ class LocationService : Service() {
             routeRepo.getTempsMaximAturada().onSuccess { minuts ->
                 tempsMaximAturadaMillis = minuts * 60_000L
                 startLocationUpdates() // solo iniciar si tenemos el valor
+                Log.d("RUTA", "Temps màxim aturat rebut: $minuts minuts")
             }.onFailure {
                 stopSelf() // cancelamos si no se puede obtener
             }

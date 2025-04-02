@@ -4,6 +4,7 @@
  */
 package cat.copernic.entrebicis.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,5 +50,6 @@ public class Ruta {
     private double velocitat_mitjana;
     
     @OneToMany(mappedBy = "ruta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<PuntGps> punts = new ArrayList<>();
 }
