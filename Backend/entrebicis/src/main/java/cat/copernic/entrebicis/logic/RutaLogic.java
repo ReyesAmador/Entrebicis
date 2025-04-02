@@ -55,4 +55,17 @@ public class RutaLogic {
         
         puntRepo.save(punt);
     }
+    
+    public void finalitzarRuta(String email){
+        Usuari usuari = usuariRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
+        
+        Ruta ruta = rutaRepo.findByUsuariAndEstatTrue(usuari)
+                .orElseThrow(() -> new RuntimeException("No hi ha cap ruta activa"));
+        
+        ruta.setEstat(false);
+        ruta.setFi(LocalDateTime.now());
+        
+        rutaRepo.save(ruta);
+    }
 }
