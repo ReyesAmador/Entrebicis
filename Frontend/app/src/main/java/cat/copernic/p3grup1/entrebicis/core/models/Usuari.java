@@ -4,6 +4,8 @@ import androidx.annotation.Size;
 
 import org.intellij.lang.annotations.Pattern;
 
+import java.util.List;
+
 import cat.copernic.p3grup1.entrebicis.core.enums.Rol;
 
 public class Usuari {
@@ -18,6 +20,7 @@ public class Usuari {
     private String observacions;
     private String mobil;
     private String poblacio;
+    private List<Ruta> rutes;
 
     public Usuari() {
     }
@@ -104,5 +107,13 @@ public class Usuari {
 
     public void setPoblacio(String poblacio) {
         this.poblacio = poblacio;
+    }
+
+    public List<Ruta> getRutes() {
+        return rutes;
+    }
+
+    public void setRutes(List<Ruta> rutes) {
+        this.rutes = rutes;
     }
 }
