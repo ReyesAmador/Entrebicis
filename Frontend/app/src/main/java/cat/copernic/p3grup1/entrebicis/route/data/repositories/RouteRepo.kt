@@ -27,4 +27,17 @@ class RouteRepo(private val api: RouteApi) {
             Result.failure(e)
         }
     }
+
+    suspend fun finalitzarRuta(): Result<Unit>{
+        return try {
+            val response = api.finalitzarRuta()
+            if(response.isSuccessful){
+                Result.success(Unit)
+            }else{
+                Result.failure(Exception("Error ${response.code()}: ${response.message()}"))
+            }
+        }catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

@@ -14,6 +14,7 @@ import cat.copernic.p3grup1.entrebicis.core.location.LocationService
 import cat.copernic.p3grup1.entrebicis.core.models.PuntGps
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
+import cat.copernic.p3grup1.entrebicis.core.utils.LogRutaUtils
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.UserApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,6 +71,9 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         } else {
             appContext.startService(intent)
         }
+        val timestamp = System.currentTimeMillis()
+        Log.d("RUTA", "Ruta iniciada manualment a $timestamp")
+        LogRutaUtils.appendLog(appContext, "Ruta iniciada manualment a $timestamp")
     }
 
     fun finalitzarRuta() {
@@ -78,7 +82,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         stopCronometre()
         val intent = Intent(appContext, LocationService::class.java)
         appContext.stopService(intent)
+
+        val timestamp = System.currentTimeMillis()
         Log.d("RUTA", "Ruta finalitzada amb durada de ${_tempsRuta.value} ms")
+        LogRutaUtils.appendLog(appContext, "Ruta finalitzada manualment amb durada de ${_tempsRuta.value} ms a $timestamp")
     }
 
     private fun startCronometre() {

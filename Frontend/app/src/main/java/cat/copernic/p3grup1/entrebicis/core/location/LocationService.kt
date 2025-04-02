@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
+import cat.copernic.p3grup1.entrebicis.core.utils.LogRutaUtils
 import cat.copernic.p3grup1.entrebicis.route.data.repositories.RouteRepo
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
@@ -56,6 +57,8 @@ class LocationService : Service() {
 
         createNotificationChannel()
         startForeground(1, buildNotification())
+
+        LogRutaUtils.appendLog(applicationContext, "Ruta iniciada automàticament pel sistema")
 
         // 🔁 Obtener parámetro "temps_maxim_aturada" antes de iniciar ubicación
         CoroutineScope(Dispatchers.IO).launch {
@@ -117,7 +120,20 @@ class LocationService : Service() {
         // Si el tiempo desde el último movimiento supera el máximo -> finalizar ruta
         if (rutaActiva && (currentTime - lastMovementTimestamp) > tempsMaximAturadaMillis) {
             rutaActiva = false
+
+            Log.d("RUTA", "Ruta finalitzada automàticament per aturada. Temps quiet: ${currentTime - lastMovementTimestamp} ms")
+            LogRutaUtils.appendLog(applicationContext, "Ruta finalitzada automàticament per aturada. Temps quiet: ${currentTime - lastMovementTimestamp} ms")
+
+            // Avisar al backend para cerrar ruta
+            CoroutineScope(Dispatchers.IO).launch {
+                routeRepo.finalitzarRuta()
+                Log.d("RUTA", "Ruta finalitzada al backend amb èxit")
+            }
+
+            // Enviar broadcast al HomeScreen
             sendFinalizationBroadcast()
+
+            // Detener el servicio
             stopSelf()
         }
 
