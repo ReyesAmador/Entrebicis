@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.home.presentation.screen
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,7 +19,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -43,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.core.utils.formatTime
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
@@ -51,11 +51,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     onLogout: () -> Unit,
-    homeViewModel: HomeViewModel = viewModel()) {
+    homeViewModel: HomeViewModel = viewModel()
+) {
 
     val usuari by homeViewModel.usuari.collectAsState()
     val rutaActiva by homeViewModel.rutaActiva.collectAsState()
@@ -77,7 +79,8 @@ fun HomeScreen(
         if (granted) {
             homeViewModel.iniciarRuta()
         } else {
-            Toast.makeText(context, "Cal acceptar els permisos de localització", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Cal acceptar els permisos de localització", Toast.LENGTH_LONG)
+                .show()
         }
     }
 
@@ -89,22 +92,26 @@ fun HomeScreen(
         val filter = IntentFilter("com.entrebicis.RUTA_FINALITZADA_AUTO")
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
+                Log.d("HOME_SCREEN", "📡 Broadcast rebut correctament!!")
                 homeViewModel.finalitzarRuta()
-                // Mostrar Snackbar en coroutine
                 CoroutineScope(Dispatchers.Main).launch {
                     snackbarHostState.showSnackbar("Ruta finalitzada automàticament per aturada")
                 }
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            context.registerReceiver(receiver, filter)
+        activity?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                it.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                it.registerReceiver(receiver, filter)
+            }
+            Log.d("HOME_SCREEN", "✅ Receiver registrat correctament")
         }
 
         onDispose {
-            context.unregisterReceiver(receiver)
+            activity?.unregisterReceiver(receiver)
+            Log.d("HOME_SCREEN", "🧹 Receiver eliminat")
         }
     }
     Scaffold(
@@ -127,7 +134,10 @@ fun HomeScreen(
             )
 
 
-            Text("Benvingut, ${usuari?.nom ?: "..."}", style = MaterialTheme.typography.headlineLarge)
+            Text(
+                "Benvingut, ${usuari?.nom ?: "..."}",
+                style = MaterialTheme.typography.headlineLarge
+            )
 
             Spacer(Modifier.height(16.dp))
 
@@ -158,11 +168,14 @@ fun HomeScreen(
                     if (rutaActiva) homeViewModel.finalitzarRuta()
                     else {
                         if (ContextCompat.checkSelfPermission(
-                                context, Manifest.permission.ACCESS_FINE_LOCATION)
+                                context, Manifest.permission.ACCESS_FINE_LOCATION
+                            )
                             == PackageManager.PERMISSION_GRANTED &&
                             ContextCompat.checkSelfPermission(
-                                context, Manifest.permission.FOREGROUND_SERVICE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
+                                context, Manifest.permission.FOREGROUND_SERVICE_LOCATION
+                            )
+                            == PackageManager.PERMISSION_GRANTED
+                        ) {
 
                             homeViewModel.iniciarRuta()
 
@@ -214,7 +227,11 @@ fun HomeScreen(
                     .height(38.dp)
                     .width(240.dp)
             ) {
-                Text("TANCAR SESSIÓ", style = MaterialTheme.typography.labelLarge, color = Color.White)
+                Text(
+                    "TANCAR SESSIÓ",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White
+                )
             }
         }
     }

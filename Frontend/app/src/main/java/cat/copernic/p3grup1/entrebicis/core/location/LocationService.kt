@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -46,6 +47,20 @@ class LocationService : Service() {
         longitude = 0.0
     }
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val checkInactivityRunnable = object : Runnable {
+        override fun run() {
+            if (rutaActiva) {
+                val currentTime = System.currentTimeMillis()
+                if ((currentTime - lastMovementTimestamp) > tempsMaximAturadaMillis) {
+                    finalizarRutaPerInactivitat()
+                } else {
+                    handler.postDelayed(this, 10_000L)
+                }
+            }
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
@@ -65,6 +80,7 @@ class LocationService : Service() {
             routeRepo.getTempsMaximAturada().onSuccess { minuts ->
                 tempsMaximAturadaMillis = minuts * 60_000L
                 startLocationUpdates() // solo iniciar si tenemos el valor
+                handler.postDelayed(checkInactivityRunnable, 10_000L)
                 Log.d("RUTA", "Temps màxim aturat rebut: $minuts minuts")
             }.onFailure {
                 stopSelf() // cancelamos si no se puede obtener
@@ -104,45 +120,36 @@ class LocationService : Service() {
 
     private fun handleNewLocation(location: Location) {
 
-        val punt = PuntGpsDto(
-            latitud = location.latitude,
-            longitud = location.longitude,
-            temps = System.currentTimeMillis()
-        )
-
         val currentTime = System.currentTimeMillis()
         val distanceMoved = location.distanceTo(lastKnownLocation)
 
         // Si se ha movido más de 5m, se considera movimiento
         if (distanceMoved > 5f) {
             lastMovementTimestamp = currentTime
-        }
-
-        // Si el tiempo desde el último movimiento supera el máximo -> finalizar ruta
-        if (rutaActiva && (currentTime - lastMovementTimestamp) > tempsMaximAturadaMillis) {
-            rutaActiva = false
-
-            Log.d("RUTA", "Ruta finalitzada automàticament per aturada. Temps quiet: ${currentTime - lastMovementTimestamp} ms")
-            LogRutaUtils.appendLog(applicationContext, "Ruta finalitzada automàticament per aturada. Temps quiet: ${currentTime - lastMovementTimestamp} ms")
-
-            // Avisar al backend para cerrar ruta
+            val punt = PuntGpsDto(
+                latitud = location.latitude,
+                longitud = location.longitude,
+                temps = currentTime
+            )
             CoroutineScope(Dispatchers.IO).launch {
-                routeRepo.finalitzarRuta()
-                Log.d("RUTA", "Ruta finalitzada al backend amb èxit")
+                routeRepo.enviarPunt(punt)
             }
-
-            // Enviar broadcast al HomeScreen
-            sendFinalizationBroadcast()
-
-            // Detener el servicio
-            stopSelf()
         }
-
         lastKnownLocation = location
+    }
+
+    private fun finalizarRutaPerInactivitat() {
+        rutaActiva = false
+        Log.d("RUTA", "Ruta finalitzada automàticament per aturada. Temps quiet superat.")
+        LogRutaUtils.appendLog(applicationContext, "Ruta finalitzada automàticament per aturada. Temps quiet superat.")
 
         CoroutineScope(Dispatchers.IO).launch {
-            routeRepo.enviarPunt(punt)
+            routeRepo.finalitzarRuta()
+            Log.d("RUTA", "Ruta finalitzada al backend amb èxit")
         }
+
+        sendFinalizationBroadcast()
+        stopSelf()
     }
 
     private fun buildNotification(): Notification {
@@ -171,6 +178,9 @@ class LocationService : Service() {
 
     private fun sendFinalizationBroadcast() {
         val intent = Intent("com.entrebicis.RUTA_FINALITZADA_AUTO")
+        intent.setPackage(packageName)
+        intent.flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
+        Log.d("LOCATION_SERVICE", "📡 Broadcast enviat amb package: $packageName")
         sendBroadcast(intent)
     }
 }

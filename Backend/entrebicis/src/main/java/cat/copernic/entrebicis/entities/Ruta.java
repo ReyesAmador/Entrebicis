@@ -4,6 +4,7 @@
  */
 package cat.copernic.entrebicis.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -39,6 +40,7 @@ public class Ruta {
     
     @ManyToOne
     @JoinColumn(name = "email_usuari", nullable = false)
+    @JsonBackReference
     private Usuari usuari;
     
     private LocalDateTime inici;

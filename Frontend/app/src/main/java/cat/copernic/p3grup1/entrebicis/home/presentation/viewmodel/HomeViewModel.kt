@@ -120,6 +120,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         cronometreHandler?.removeCallbacks(cronometreRunnable!!)
         cronometreHandler = null
         cronometreRunnable = null
+        Log.d("CRONO", "Cronòmetre aturat")
     }
 
 }
