@@ -7,6 +7,7 @@ package cat.copernic.entrebicis.apicontroller.android;
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.logic.RutaLogic;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,10 @@ public class RutaControllerAndroid {
     @Autowired
     RutaLogic rutaLogic;
     
-    @PostMapping("/{id}/punt")
-    public ResponseEntity<Void> afegirPunt(@AuthenticationPrincipal Usuari usuari, @RequestBody PuntGpsDTO dto) {
-        rutaLogic.afegirPuntGps(usuari.getEmail(), dto);
+    @PostMapping("/punt")
+    public ResponseEntity<Void> afegirPunt(Principal principal, @RequestBody PuntGpsDTO dto) {
+        String email = principal.getName();
+        rutaLogic.afegirPuntGps(email, dto);
         return ResponseEntity.ok().build();
     }
     
