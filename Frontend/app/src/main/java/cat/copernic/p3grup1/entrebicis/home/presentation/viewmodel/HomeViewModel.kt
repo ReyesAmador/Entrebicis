@@ -37,6 +37,9 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     private val _usuari = MutableStateFlow<Usuari?>(null)
     val usuari: StateFlow<Usuari?> = _usuari
 
+    private val _navegarLogin = MutableStateFlow(false)
+    val navegarLogin: StateFlow<Boolean> = _navegarLogin
+
     private val _rutaActiva = MutableStateFlow(false)
     val rutaActiva: StateFlow<Boolean> = _rutaActiva
 
@@ -62,7 +65,15 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
                 onSuccess = {
                     Log.d("HOME_VM", "Usuari rebut: ${it.nom} - ${it.saldo}")
                     _usuari.value = it },
-                onFailure = { Log.e("HOME", "Error: ${it.message}") }
+                onFailure = { error ->
+                    Log.e("HOME", "Error: ${error.message}")
+                    val msg = error.message ?: ""
+                    if(msg.contains("401")  || msg.contains("Usuari no trobat")){
+                        logout() //eliminem token
+                        _usuari.value = null
+                        _navegarLogin.value = true
+                    }
+                }
             )
         }
     }

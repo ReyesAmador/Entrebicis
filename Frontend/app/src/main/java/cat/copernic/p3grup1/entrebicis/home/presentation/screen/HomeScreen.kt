@@ -60,6 +60,7 @@ fun HomeScreen(
 ) {
 
     val usuari by homeViewModel.usuari.collectAsState()
+    val navegarLogin by homeViewModel.navegarLogin.collectAsState()
     val rutaActiva by homeViewModel.rutaActiva.collectAsState()
     val tempsRuta by homeViewModel.tempsRuta.collectAsState()
     val context = LocalContext.current
@@ -81,6 +82,12 @@ fun HomeScreen(
         } else {
             Toast.makeText(context, "Cal acceptar els permisos de localització", Toast.LENGTH_LONG)
                 .show()
+        }
+    }
+
+    LaunchedEffect(navegarLogin) {
+        if (navegarLogin) {
+            onLogout() // redirige al login
         }
     }
 
