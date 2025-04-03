@@ -45,6 +45,7 @@ public class Ruta {
     
     private LocalDateTime inici;
     private LocalDateTime fi;
+    private String temps_total;
     
     private boolean estat;
     private boolean validada;
