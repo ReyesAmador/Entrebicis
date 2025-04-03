@@ -15,7 +15,7 @@ public class Usuari {
     private String paraula;
     private String nom;
     private Rol rol;
-    private byte[] imatge;
+    private String  imatge;
     private double saldo;
     private String observacions;
     private String mobil;
@@ -24,7 +24,7 @@ public class Usuari {
     public Usuari() {
     }
 
-    public Usuari(String email, String paraula, String nom, Rol rol, byte[] imatge, double saldo, String observacions, String mobil, String poblacio) {
+    public Usuari(String email, String paraula, String nom, Rol rol, String  imatge, double saldo, String observacions, String mobil, String poblacio) {
         this.email = email;
         this.paraula = paraula;
         this.nom = nom;
@@ -68,11 +68,11 @@ public class Usuari {
         this.rol = rol;
     }
 
-    public byte[] getImatge() {
+    public String  getImatge() {
         return imatge;
     }
 
-    public void setImatge(byte[] imatge) {
+    public void setImatge(String  imatge) {
         this.imatge = imatge;
     }
 
