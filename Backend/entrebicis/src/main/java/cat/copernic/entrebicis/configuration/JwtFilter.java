@@ -50,18 +50,27 @@ public class JwtFilter extends OncePerRequestFilter{
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
                 System.out.println("Token invàlid o caducat: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
         
         // Si hay usuario y no está autenticado aún
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.validarToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            try{
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtUtil.validarToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }catch (Exception e) {
+                System.out.println("❌ Error autenticant usuari des del token: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 🔥 aquí bloqueamos el acceso
+                return;
             }
+            
         }
         
         filterChain.doFilter(request, response);
