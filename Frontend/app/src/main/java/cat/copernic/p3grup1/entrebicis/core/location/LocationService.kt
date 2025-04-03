@@ -55,7 +55,7 @@ class LocationService : Service() {
                 if ((currentTime - lastMovementTimestamp) > tempsMaximAturadaMillis) {
                     finalizarRutaPerInactivitat()
                 } else {
-                    handler.postDelayed(this, 10_000L)
+                    handler.postDelayed(this, 5_000L)
                 }
             }
         }
@@ -80,7 +80,7 @@ class LocationService : Service() {
             routeRepo.getTempsMaximAturada().onSuccess { minuts ->
                 tempsMaximAturadaMillis = minuts * 60_000L
                 startLocationUpdates() // solo iniciar si tenemos el valor
-                handler.postDelayed(checkInactivityRunnable, 10_000L)
+                handler.postDelayed(checkInactivityRunnable, 5_000L)
                 Log.d("RUTA", "Temps màxim aturat rebut: $minuts minuts")
             }.onFailure {
                 stopSelf() // cancelamos si no se puede obtener
@@ -102,7 +102,7 @@ class LocationService : Service() {
     private fun startLocationUpdates() {
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            10_000L // cada 10s
+            2_000L // cada 10s
         ).setMinUpdateDistanceMeters(5f).build()
 
         if (ContextCompat.checkSelfPermission(
