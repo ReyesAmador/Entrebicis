@@ -9,6 +9,7 @@ import cat.copernic.entrebicis.dto.ForgotPasswordRequest;
 import cat.copernic.entrebicis.dto.LoginRequest;
 import cat.copernic.entrebicis.dto.LoginResponse;
 import cat.copernic.entrebicis.dto.ResetPasswordRequest;
+import cat.copernic.entrebicis.dto.UsuariAndroidDto;
 import cat.copernic.entrebicis.dto.ValidateCodeRequest;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
@@ -74,6 +75,7 @@ public class LoginControllerAndroid {
 
         String token = authHeader.substring(7);
         String email = jwtUtil.extractUsername(token);
+        System.out.println("🔍 Email extret del token: " + email);
         
         Usuari usuari = usuariLogic.findByEmail(email);
         
@@ -81,9 +83,10 @@ public class LoginControllerAndroid {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuari no trobat");
         }
         
-        System.out.println(">>> Usuari retornat: " + usuari.getNom() + " - " + usuari.getSaldo());
+        UsuariAndroidDto dto = usuariLogic.convertirAAndroidDTO(usuari);
+        System.out.println(">>> Usuari retornat: " + dto.getNom() + " - " + dto.getSaldo());
 
-        return ResponseEntity.ok(usuari);
+        return ResponseEntity.ok(dto);
     }
     
     @PostMapping("/forgot-pass")

@@ -4,6 +4,7 @@
  */
 package cat.copernic.entrebicis.logic;
 
+import cat.copernic.entrebicis.dto.UsuariAndroidDto;
 import cat.copernic.entrebicis.entities.ContrasenyaResetToken;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
@@ -16,6 +17,7 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -179,4 +181,24 @@ public class UsuariLogic {
         usuariRepo.save(usuari);
         tokenRepo.deleteByEmail(email); //elimina el token
     }
+    
+    public UsuariAndroidDto convertirAAndroidDTO(Usuari usuari) {
+    if (usuari == null) return null;
+
+    UsuariAndroidDto dto = new UsuariAndroidDto();
+    dto.setEmail(usuari.getEmail());
+    dto.setNom(usuari.getNom());
+    dto.setRol(usuari.getRol().name());
+    dto.setSaldo(usuari.getSaldo());
+    dto.setObservacions(usuari.getObservacions());
+    dto.setMobil(usuari.getMobil());
+    dto.setPoblacio(usuari.getPoblacio());
+
+    if (usuari.getImatge() != null) {
+        String base64 = Base64.getEncoder().encodeToString(usuari.getImatge());
+        dto.setImatgeBase64(base64);
+    }
+
+    return dto;
+}
 }
