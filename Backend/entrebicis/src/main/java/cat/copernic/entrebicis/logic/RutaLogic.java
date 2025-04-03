@@ -11,6 +11,8 @@ import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.repository.PuntGpsRepo;
 import cat.copernic.entrebicis.repository.RutaRepo;
 import cat.copernic.entrebicis.repository.UsuariRepo;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,6 +36,10 @@ public class RutaLogic {
     
     @Autowired
     UsuariRepo usuariRepo;
+    
+    public List<Ruta> getAllRutes(){
+        return rutaRepo.findAllByOrderByIdDesc();
+    }
     
     public void afegirPuntGps(String email, PuntGpsDTO dto){
         
@@ -73,9 +79,9 @@ public class RutaLogic {
         long segons = calcularTempsEnSegons(ruta);
         double velocitat = calcularVelocitatMitjana(distancia,segons);
         
-        ruta.setKm_total(distancia);
+        ruta.setKm_total(redondejar2Decimals(distancia));
         ruta.setTemps_total(temps);
-        ruta.setVelocitat_mitjana(velocitat);
+        ruta.setVelocitat_mitjana(redondejar2Decimals(velocitat));
         
         rutaRepo.save(ruta);
     }
@@ -151,4 +157,10 @@ public class RutaLogic {
         
         return (distanciaKm / tempsSegons) * 3600; //km/h
     }
+    
+    private double redondejar2Decimals(double valor) {
+    return BigDecimal.valueOf(valor)
+            .setScale(2, RoundingMode.HALF_UP)
+            .doubleValue();
+}
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Llista de rutes</title>
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div th:replace="fragments/menu :: menu ('rutes')" th:with="activePage='rutes'"></div>
+    <div th:replace="fragments/header :: header ('Llistat de rutes')"></div>
+
+    <div class="content" style="margin-left: 260px; padding: 20px;">
+        
+    <div class="d-flex justify-content-center mb-3">
+        <div th:if="${missatgeSuccess}" class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <span th:text="${missatgeSuccess}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tancar"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    </div>    
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DISTÀNCIA</th>
+                <th>TEMPS TOTAL</th>
+                <th>VEL. MITJANA</th>
+                <th>VEL. MÀXIMA</th>
+                <th>SALDO</th>
+                <th>ESTAT</th>
+                <th>ACCIONS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ruta : ${llistaRutes}">
+                <td th:text="${ruta.id}"></td>
+                <td th:text="${ruta.km_total + ' Km'}"></td>
+                <td th:text="${ruta.temps_total}"></td>
+                <td th:text="${ruta.velocitat_mitjana + ' Km/h'}"></td>
+                <td th:text="${ruta.velocitat_max + ' Km/h'}"></td>
+                <td th:text="${ruta.saldo + 'p'}"></td>
+                <td th:text="${ruta.validada ? 'Validada' : 'No validada'}"></td>
+                <td>
+                    <a th:if="${ruta.estat == 'NO_VALIDADA'}" 
+                       href="#" class="btn btn-sm btn-success" title="Validar ruta">
+                        <i class="bi bi-check2"></i>
+                    </a>
+                    <a th:unless="${ruta.estat == 'NO_VALIDADA'}" 
+                       href="#" class="btn btn-sm btn-danger" title="Invalidar ruta">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

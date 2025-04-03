@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.repository;
 
 import cat.copernic.entrebicis.entities.Ruta;
 import cat.copernic.entrebicis.entities.Usuari;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,5 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RutaRepo extends JpaRepository<Ruta, Long>{
     
     Optional<Ruta> findByUsuariAndEstatTrue(Usuari usuari);
+    
+    List<Ruta> findAllByOrderByIdDesc();
     
 }

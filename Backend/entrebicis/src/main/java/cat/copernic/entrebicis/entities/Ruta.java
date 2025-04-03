@@ -51,6 +51,8 @@ public class Ruta {
     private boolean validada;
     private double km_total;
     private double velocitat_mitjana;
+    private double velocitat_max;
+    private double saldo;
     
     @OneToMany(mappedBy = "ruta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
