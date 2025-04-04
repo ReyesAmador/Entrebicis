@@ -46,6 +46,9 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     private val _tempsRuta = MutableStateFlow(0L) // en milisegons
     val tempsRuta: StateFlow<Long> = _tempsRuta
 
+    private val _mostrarDetallRuta = MutableStateFlow(false)
+    val mostrarDetallRuta: StateFlow<Boolean> = _mostrarDetallRuta
+
     private var cronometreHandler: Handler? = null
     private var cronometreRunnable: Runnable? = null
     private var iniciRutaTimestamp: Long = 0L
@@ -108,6 +111,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         // Notificamos al backend que la ruta ha terminado
         viewModelScope.launch {
             repoRuta.finalitzarRuta().onSuccess {
+                _mostrarDetallRuta.value = true
                 Log.d("RUTA", "Ruta finalitzada correctament al backend")
             }.onFailure {
                 Log.e("RUTA", "Error finalitzant ruta: ${it.message}")
@@ -132,6 +136,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         cronometreHandler = null
         cronometreRunnable = null
         Log.d("CRONO", "Cronòmetre aturat")
+    }
+
+    fun resetNavegacio() {
+        _mostrarDetallRuta.value = false
     }
 
 }
