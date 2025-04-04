@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
+import cat.copernic.entrebicis.dto.RutaAmbPuntsGps;
 import cat.copernic.entrebicis.entities.PuntGps;
 import cat.copernic.entrebicis.entities.Ruta;
 import cat.copernic.entrebicis.entities.Usuari;
@@ -164,25 +165,28 @@ public class RutaLogic {
                 .doubleValue();
     }
     
-    public List<PuntGpsDTO> obtenirPuntsRutaFinalitzada(String email){
+    public RutaAmbPuntsGps  getDetallUltimaRutaFinalitzada(String email){
         Usuari usuari = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
         
         Ruta ruta = rutaRepo.findTopByUsuariAndValidadaOrderByIdDesc(usuari, true); //última ruta finalizada
         
-       if(ruta == null) return List.of();
+       if(ruta == null) return null;
        
-       List<PuntGps> punts = puntRepo.findByRutaOrderByTempsAsc(ruta);
-       
-       return punts.stream()
-        .map(p -> new PuntGpsDTO(
-            p.getLatitud(),
-            p.getLongitud(),
-            p.getTemps()
-                .atZone(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli()
-        ))
-        .toList();
+       List<PuntGpsDTO> punts = puntRepo.findByRutaOrderByTempsAsc(ruta)
+               .stream()
+               .map(p -> new PuntGpsDTO(
+               p.getLatitud(),
+               p.getLongitud(),
+               p.getTemps().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+               ))
+               .toList();
+       return new RutaAmbPuntsGps(
+            ruta.getKm_total(),
+            ruta.getTemps_total(),
+            ruta.getVelocitat_mitjana(),
+            ruta.getVelocitat_max(),
+            punts
+        );
     }
 }

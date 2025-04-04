@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
+import cat.copernic.entrebicis.dto.RutaAmbPuntsGps;
 import cat.copernic.entrebicis.logic.RutaLogic;
 import java.security.Principal;
 import java.util.List;
@@ -44,11 +45,11 @@ public class RutaControllerAndroid {
         return ResponseEntity.ok().build();
     }
     
-    @GetMapping("/punts")
-    public ResponseEntity<List<PuntGpsDTO>> obtenirPuntsRuta(Principal principal){
-        String email = principal.getName();
-        List<PuntGpsDTO> punts = rutaLogic.obtenirPuntsRutaFinalitzada(email);
-        return ResponseEntity.ok(punts);
+    @GetMapping("/detall")
+    public ResponseEntity<RutaAmbPuntsGps> obtenirPuntsRuta(Principal principal){
+        RutaAmbPuntsGps dto = rutaLogic.getDetallUltimaRutaFinalitzada(principal.getName());
+        
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
     
 }
