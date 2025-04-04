@@ -7,9 +7,11 @@ package cat.copernic.entrebicis.apicontroller.android;
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
 import cat.copernic.entrebicis.logic.RutaLogic;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +42,13 @@ public class RutaControllerAndroid {
         String email = principal.getName();
         rutaLogic.finalitzarRuta(email);
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/punts")
+    public ResponseEntity<List<PuntGpsDTO>> obtenirPuntsRuta(Principal principal){
+        String email = principal.getName();
+        List<PuntGpsDTO> punts = rutaLogic.obtenirPuntsRutaFinalitzada(email);
+        return ResponseEntity.ok(punts);
     }
     
 }

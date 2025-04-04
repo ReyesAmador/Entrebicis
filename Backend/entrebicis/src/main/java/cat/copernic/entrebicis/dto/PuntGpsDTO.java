@@ -4,7 +4,9 @@
  */
 package cat.copernic.entrebicis.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
@@ -12,6 +14,8 @@ import lombok.Data;
  */
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PuntGpsDTO {
     
     private double latitud;

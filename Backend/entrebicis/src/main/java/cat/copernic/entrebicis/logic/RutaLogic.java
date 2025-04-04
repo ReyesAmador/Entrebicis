@@ -159,8 +159,30 @@ public class RutaLogic {
     }
     
     private double redondejar2Decimals(double valor) {
-    return BigDecimal.valueOf(valor)
-            .setScale(2, RoundingMode.HALF_UP)
-            .doubleValue();
-}
+        return BigDecimal.valueOf(valor)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+    
+    public List<PuntGpsDTO> obtenirPuntsRutaFinalitzada(String email){
+        Usuari usuari = usuariRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
+        
+        Ruta ruta = rutaRepo.findTopByUsuariAndValidadaOrderByIdDesc(usuari, true); //última ruta finalizada
+        
+       if(ruta == null) return List.of();
+       
+       List<PuntGps> punts = puntRepo.findByRutaOrderByTempsAsc(ruta);
+       
+       return punts.stream()
+        .map(p -> new PuntGpsDTO(
+            p.getLatitud(),
+            p.getLongitud(),
+            p.getTemps()
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        ))
+        .toList();
+    }
 }
