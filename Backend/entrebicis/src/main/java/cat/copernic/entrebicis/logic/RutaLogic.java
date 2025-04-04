@@ -169,7 +169,7 @@ public class RutaLogic {
         Usuari usuari = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
         
-        Ruta ruta = rutaRepo.findTopByUsuariAndValidadaOrderByIdDesc(usuari, true); //última ruta finalizada
+        Ruta ruta = rutaRepo.findTopByUsuariAndEstatOrderByIdDesc(usuari, false); //última ruta finalizada
         
        if(ruta == null) return null;
        

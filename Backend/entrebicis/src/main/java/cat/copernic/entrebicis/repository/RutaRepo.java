@@ -20,6 +20,6 @@ public interface RutaRepo extends JpaRepository<Ruta, Long>{
     
     List<Ruta> findAllByOrderByIdDesc();
     
-    Ruta findTopByUsuariAndValidadaOrderByIdDesc(Usuari usuari, boolean validada);
+    Ruta findTopByUsuariAndEstatOrderByIdDesc(Usuari usuari, boolean validada);
     
 }
