@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import cat.copernic.p3grup1.entrebicis.core.components.BottomNavItem
 import cat.copernic.p3grup1.entrebicis.home.presentation.screen.HomeScreen
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
+import cat.copernic.p3grup1.entrebicis.route.presentation.screen.DetallRutaScreen
 import cat.copernic.p3grup1.entrebicis.splash.presentation.SplashScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.LoginScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ForgotPasswordScreen
@@ -54,6 +55,10 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                 },
                 onForgotPassword = { navController.navigate("forgot-password")}
             )
+        }
+
+        composable("route/detallRuta") {
+            DetallRutaScreen(onBack = { navController.popBackStack() })
         }
 
         composable("forgot-password"){
@@ -114,7 +119,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             // Navegación automática a detallRuta
             LaunchedEffect(mostrarDetallRuta) {
                 if (mostrarDetallRuta) {
-                    navController.navigate("detallRuta")
+                    navController.navigate("route/detallRuta")
                     viewModel.resetNavegacio() // ← esto lo añades para que no se repita
                 }
             }

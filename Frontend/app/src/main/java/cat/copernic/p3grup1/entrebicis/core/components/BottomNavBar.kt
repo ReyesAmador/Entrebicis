@@ -33,7 +33,7 @@ fun BottomNavBar(navController: NavController) {
 
     NavigationBar(contentColor = Color.White) {
         items.forEach { item ->
-            val isSelected = currentDestination?.route == item.route
+            val isSelected = currentDestination?.route?.startsWith(item.route) == true
 
             NavigationBarItem(
                 selected = isSelected,

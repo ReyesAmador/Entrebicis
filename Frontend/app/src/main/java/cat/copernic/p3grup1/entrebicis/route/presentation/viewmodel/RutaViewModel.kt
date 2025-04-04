@@ -16,11 +16,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
-class RutaViewModel(application: Application) : AndroidViewModel(application) {
+class RutaViewModel(
+    application: Application,
+    private val repo: RouteRepo) : AndroidViewModel(application) {
 
-    private val repo = RouteRepo(
-        RetrofitClient.getInstance(application.applicationContext).create(RouteApi::class.java)
-    )
 
     private val _detallRuta = MutableStateFlow<RutaAmbPuntsDto?>(null)
     val detallRuta: StateFlow<RutaAmbPuntsDto?> = _detallRuta
