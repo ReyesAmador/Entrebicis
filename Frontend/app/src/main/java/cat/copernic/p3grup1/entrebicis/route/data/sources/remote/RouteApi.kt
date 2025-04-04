@@ -13,6 +13,14 @@ data class PuntGpsDto(
     val temps: Long
 )
 
+data class RutaAmbPuntsDto(
+    val distanciaTotal: Double,
+    val tempsTotal: String,
+    val velocitatMitjana: Double,
+    val velocitatMaxima: Double,
+    val punts: List<PuntGpsDto>
+)
+
 interface RouteApi {
 
     @POST("ruta/punt")
@@ -23,4 +31,7 @@ interface RouteApi {
 
     @PATCH("ruta/finalitzar")
     suspend fun finalitzarRuta(): Response<Void>
+
+    @GET("ruta/detall")
+    suspend fun getRutaAmbPunts(): Response<RutaAmbPuntsDto>
 }

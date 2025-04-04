@@ -2,6 +2,7 @@ package cat.copernic.p3grup1.entrebicis.route.data.repositories
 
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
+import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RutaAmbPuntsDto
 
 class RouteRepo(private val api: RouteApi) {
 
@@ -37,6 +38,19 @@ class RouteRepo(private val api: RouteApi) {
                 Result.failure(Exception("Error ${response.code()}: ${response.message()}"))
             }
         }catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getRutaAmbPunts() : Result<RutaAmbPuntsDto>{
+        return try {
+            val response = api.getRutaAmbPunts()
+            if(response.isSuccessful && response.body() != null){
+                Result.success(response.body()!!)
+            }else{
+                Result.failure(Exception("Error ${response.code()}: ${response.message()}"))
+            }
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
