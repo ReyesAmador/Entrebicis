@@ -8,13 +8,18 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -40,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.presentation.components.InfoCard
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewModel
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.detallRutaViewModelFactory
@@ -47,6 +53,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
@@ -60,15 +68,33 @@ fun DetallRutaScreen(
 
     val detallRuta by viewModel.detallRuta.collectAsState()
     val cameraPositionState = rememberCameraPositionState()
+    val mapLoaded = remember { mutableStateOf(false) }
     val showPoints by remember {
         derivedStateOf { cameraPositionState.position.zoom >= 17f }
     }
+    val loading by viewModel.loading.collectAsState()
+    val hasStartedLoading = remember { mutableStateOf(false) }
 
     val mostrarMissatgeZoom = remember { mutableStateOf(false) }
-    val haMostratMissatge = remember { mutableStateOf(false) }
+    val selectedPunt = remember { mutableStateOf<PuntGpsDto?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.carregarRuta()
+        hasStartedLoading.value = true
+    }
+
+    if (!hasStartedLoading.value || loading) {
+
+        // 🔄 Mostrar CARGANDO antes de lanzar carga
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        }
+        return
     }
 
     LaunchedEffect(cameraPositionState.position.zoom) {
@@ -94,18 +120,7 @@ fun DetallRutaScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Detall Ruta", style = MaterialTheme.typography.headlineSmall) },
-                navigationIcon = {
-                    IconButton(onClick = { onBack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Enrere")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Scaffold { padding ->
         detallRuta?.let { ruta ->
             val punts = ruta.punts.map { LatLng(it.latitud, it.longitud) }
 
@@ -114,10 +129,36 @@ fun DetallRutaScreen(
                     .padding(padding)
                     .fillMaxSize()
             ) {
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(184.dp)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = { onBack() },
+                        modifier = Modifier.align(Alignment.TopStart).padding(start = 8.dp, top = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Enrere",
+                            tint = Color.White
+                        )
+                    }
+                    Text(
+                        text = "Aquesta és la teva ruta",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(0.dp)
+                        .weight(1f)
                 ) {
 
                     // 🗺️ MAPA
@@ -125,6 +166,7 @@ fun DetallRutaScreen(
                         modifier = Modifier.matchParentSize(),
                         cameraPositionState = cameraPositionState,
                         onMapLoaded = {
+                            mapLoaded.value = true
                             if (punts.isNotEmpty()) {
                                 val primer = punts.first()
                                 cameraPositionState.move(
@@ -145,12 +187,24 @@ fun DetallRutaScreen(
 
                             if (showPoints) {
                                 ruta.punts.forEach { punt ->
+                                    val isSelected = selectedPunt.value == punt
+                                    val latLng = LatLng(punt.latitud, punt.longitud)
                                     Circle(
-                                        center = LatLng(punt.latitud, punt.longitud),
+                                        center = latLng,
                                         radius = 3.0,
-                                        strokeColor = Color.White,
-                                        strokeWidth = 1f,
-                                        fillColor = Color.White
+                                        strokeColor = if (isSelected) Color.Blue else Color.White,
+                                        strokeWidth = 2f,
+                                        fillColor = if (isSelected) Color(0xFF64B5F6) else Color.White
+                                    )
+
+                                    //Marker invisible
+                                    Marker(
+                                        state = MarkerState(position = latLng),
+                                        onClick = {
+                                            selectedPunt.value = punt
+                                            true //indica que gestionamos el evento
+                                        },
+                                        alpha = 0f //totalmente invisible
                                     )
                                 }
                             }
@@ -167,8 +221,8 @@ fun DetallRutaScreen(
                             .padding(top = 32.dp)
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color.Black.copy(alpha = 0.7f)
+                            shape = RoundedCornerShape(20.dp),
+                            color = Color(0xFF000000).copy(alpha = 0.6f)
                         ) {
                             Text(
                                 text = "📍 Acosta't per veure els punts",
@@ -178,32 +232,81 @@ fun DetallRutaScreen(
                             )
                         }
                     }
+
+                    // 🧾 Detall del punt seleccionat
+                    selectedPunt.value?.let { punt ->
+                        Surface(
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .wrapContentHeight()
+                                .align(Alignment.BottomCenter),
+                            shape = RoundedCornerShape(20.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            shadowElevation = 8.dp
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    "📍 Punt seleccionat",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Latitud: %.5f".format(punt.latitud),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    "Longitud: %.5f".format(punt.longitud),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                androidx.compose.material3.TextButton(onClick = {
+                                    selectedPunt.value = null
+                                }) {
+                                    Text("Tancar", color = Color.White, style = MaterialTheme.typography.labelMedium)
+                                }
+                            }
+                        }
+                    }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(36.dp))
 
-                InfoCard(
-                    label = "Distància total",
-                    value = String.format("%.2f km", ruta.distanciaTotal)
-                )
-                InfoCard(label = "Temps total", value = ruta.tempsTotal)
-                InfoCard(
-                    label = "Velocitat mitjana",
-                    value = String.format("%.2f km/h", ruta.velocitatMitjana)
-                )
-                InfoCard(
-                    label = "Velocitat màxima",
-                    value = String.format("%.2f km/h", ruta.velocitatMaxima)
-                )
-            }
-        } ?: run {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        InfoCard(
+                            label = "Distància total", value = String.format("%.2f km", ruta.distanciaTotal)
+                        )
+                        InfoCard(
+                            label = "Temps total", value = ruta.tempsTotal)
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        InfoCard(
+                            label = "Velocitat mitjana",value = String.format("%.2f km/h", ruta.velocitatMitjana))
+                        InfoCard(
+                            label = "Velocitat màxima",value = String.format("%.2f km/h", ruta.velocitatMaxima))
+                    }
+                }
             }
         }
     }

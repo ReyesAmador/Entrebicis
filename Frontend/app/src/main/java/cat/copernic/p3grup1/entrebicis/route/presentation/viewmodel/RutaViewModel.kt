@@ -11,6 +11,7 @@ import cat.copernic.p3grup1.entrebicis.route.data.repositories.RouteRepo
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RutaAmbPuntsDto
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,17 +24,21 @@ class RutaViewModel(
 
     private val _detallRuta = MutableStateFlow<RutaAmbPuntsDto?>(null)
     val detallRuta: StateFlow<RutaAmbPuntsDto?> = _detallRuta
+    private val _loading = MutableStateFlow(true)
+    val loading: StateFlow<Boolean> = _loading
 
 
     fun carregarRuta(){
         viewModelScope.launch {
+            _loading.value = true
             repo.getRutaAmbPunts().onSuccess {
                 _detallRuta.value = it
+                delay(1500)
+                _loading.value = false
             }.onFailure {
                 Log.e("DETALL", "Error carregant ruta: ${it.message}")
+                _loading.value = false
             }
         }
     }
-
-
 }
