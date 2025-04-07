@@ -49,4 +49,8 @@ class LoginViewModel(
     fun clearError() {
         _errorMessage.value = null
     }
+
+    fun setError(message: String) {
+        _errorMessage.value = message
+    }
 }
