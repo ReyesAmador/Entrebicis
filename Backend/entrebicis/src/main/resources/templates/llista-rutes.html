@@ -53,7 +53,8 @@
                        href="#" class="btn btn-sm btn-danger" title="Invalidar ruta">
                         <i class="bi bi-x-lg"></i>
                     </a>
-                    <a th:href="@{'/admin/rutes/' + ${ruta.id}}" class="btn btn-sm btn-primary" title="Visualitzar ruta">
+                    <a th:if="${ruta.estat == false}"
+                        th:href="@{'/admin/rutes/' + ${ruta.id}}" class="btn btn-sm btn-primary" title="Visualitzar ruta">
                         <i class="bi bi-eye"></i>
                     </a>
                 </td>

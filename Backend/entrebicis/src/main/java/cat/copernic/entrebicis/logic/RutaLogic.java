@@ -194,6 +194,10 @@ public class RutaLogic {
         Ruta ruta = rutaRepo.findById(idRuta)
                 .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
         
+        if (ruta.isEstat()) {
+            throw new IllegalStateException("La ruta encara està activa i no es pot visualitzar.");
+        }
+
         List<PuntGpsDTO> punts = puntRepo.findByRutaOrderByTempsAsc(ruta)
                .stream()
                .map(p -> new PuntGpsDTO(
