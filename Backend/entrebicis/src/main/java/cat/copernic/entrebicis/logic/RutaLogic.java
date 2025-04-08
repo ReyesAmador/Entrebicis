@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
 import cat.copernic.entrebicis.dto.RutaAmbPuntsGps;
+import cat.copernic.entrebicis.dto.RutaSenseGps;
 import cat.copernic.entrebicis.entities.PuntGps;
 import cat.copernic.entrebicis.entities.Ruta;
 import cat.copernic.entrebicis.entities.Usuari;
@@ -40,6 +41,25 @@ public class RutaLogic {
     
     public List<Ruta> getAllRutes(){
         return rutaRepo.findAllByOrderByIdDesc();
+    }
+    
+    public List<RutaSenseGps> obtenirRutesUsuari(String email){
+        return rutaRepo.findByUsuariEmailAndEstatFalse(email)
+                .stream()
+                .map(ruta -> {
+                    RutaSenseGps dto = new RutaSenseGps();
+                    dto.setUsuari(ruta.getUsuari());
+                    dto.setInici(ruta.getInici());
+                    dto.setEstat(ruta.isEstat());
+                    dto.setValidada(ruta.isValidada());
+                    dto.setKm_total(ruta.getKm_total());
+                    dto.setTemps_total(ruta.getTemps_total());
+                    dto.setVelocitat_mitjana(ruta.getVelocitat_mitjana());
+                    dto.setVelocitat_max(ruta.getVelocitat_max());
+                    dto.setSaldo(ruta.getSaldo());
+                    return dto;
+                })
+                .toList();
     }
     
     public void afegirPuntGps(String email, PuntGpsDTO dto){

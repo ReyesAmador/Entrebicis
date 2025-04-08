@@ -18,6 +18,8 @@ public interface RutaRepo extends JpaRepository<Ruta, Long>{
     
     Optional<Ruta> findByUsuariAndEstatTrue(Usuari usuari);
     
+    List<Ruta> findByUsuariEmailAndEstatFalse(String email);
+    
     List<Ruta> findAllByOrderByIdDesc();
     
     Ruta findTopByUsuariAndEstatOrderByIdDesc(Usuari usuari, boolean validada);
