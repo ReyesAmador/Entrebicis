@@ -127,3 +127,13 @@ input[type="number"].text-center {
     background-color: #3E8E20;
     color: white !important;
 }
+
+/*
+Cartas de detalles
+*/
+
+.card-estadistica {
+    background-color: #1A5304 !important;
+    color: white;
+    text-align: center;
+}

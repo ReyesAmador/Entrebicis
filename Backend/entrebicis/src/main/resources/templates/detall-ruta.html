@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detall de la ruta</title>
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5si58BEiNdS7-0DuTQYkpcFMwaTv_tKU"></script>
+</head>
+<body>
+<div th:replace="fragments/menu :: menu ('rutes')"></div>
+<div th:replace="fragments/header :: header ('Detall de la ruta')"></div>
+
+<div class="content" style="margin-left: 260px; padding: 20px;">
+    
+    <!-- Botón Enrere -->
+    <div class="d-flex justify-content-end mb-3">
+        <a th:href="@{/admin/rutes}" class="btn btn-success">
+            <i class="bi bi-arrow-left"></i> Tornar enrere
+        </a>
+    </div>
+
+    <!-- Estadístiques -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card card-estadistica mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Temps total</h5>
+                    <p class="card-text" th:text="${detall.tempsTotal + ' min'}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-estadistica mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Distància</h5>
+                    <p class="card-text" th:text="${detall.distanciaTotal + ' Km'}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-estadistica mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Vel. mitjana</h5>
+                    <p class="card-text" th:text="${detall.velocitatMitjana + ' Km/h'}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-estadistica mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Vel. màxima</h5>
+                    <p class="card-text" th:text="${detall.velocitatMaxima + ' Km/h'}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mapa -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">Mapa de la ruta</div>
+        <div class="card-body p-0">
+            <div id="map" style="height: 360px;"></div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const punts = [[${detall.punts}]];
+    function initMap() {
+        if (punts.length === 0) return;
+
+        const mapa = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { lat: punts[0].latitud, lng: punts[0].longitud },
+            mapTypeId: 'terrain'
+        });
+
+        const path = punts.map(p => ({ lat: p.latitud, lng: p.longitud }));
+
+        new google.maps.Polyline({
+            path: path,
+            geodesic: true,
+            strokeColor: "#007BFF",
+            strokeOpacity: 1.0,
+            strokeWeight: 6,
+            map: mapa
+        });
+
+        punts.forEach(punt => {
+            const circle = new google.maps.Circle({
+                strokeColor: '#ffffff',
+                strokeOpacity: 1.0,
+                strokeWeight: 1,
+                fillColor: '#ffffff',
+                fillOpacity: 1.0,
+                map: mapa,
+                center: { lat: punt.latitud, lng: punt.longitud },
+                radius: 2 // pequeño círculo blanco
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `Lat: ${punt.latitud.toFixed(5)}<br>Lng: ${punt.longitud.toFixed(5)}`,
+                position: { lat: punt.latitud, lng: punt.longitud }
+            });
+
+            circle.addListener('click', () => {
+                infoWindow.open(mapa);
+            });
+        });
+    }
+
+    window.onload = initMap;
+    /*]]>*/
+</script>
+</body>
+</html>
+

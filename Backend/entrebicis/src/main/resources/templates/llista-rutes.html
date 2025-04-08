@@ -25,7 +25,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>NOM COMPLET</th>
                 <th>DISTÀNCIA</th>
                 <th>TEMPS TOTAL</th>
                 <th>VEL. MITJANA</th>
@@ -37,7 +37,7 @@
         </thead>
         <tbody>
             <tr th:each="ruta : ${llistaRutes}">
-                <td th:text="${ruta.id}"></td>
+                <td th:text="${ruta.usuari.nom}"></td>
                 <td th:text="${ruta.km_total + ' Km'}"></td>
                 <td th:text="${ruta.temps_total}"></td>
                 <td th:text="${ruta.velocitat_mitjana + ' Km/h'}"></td>
@@ -52,6 +52,9 @@
                     <a th:unless="${ruta.validada == true}" 
                        href="#" class="btn btn-sm btn-danger" title="Invalidar ruta">
                         <i class="bi bi-x-lg"></i>
+                    </a>
+                    <a th:href="@{'/admin/rutes/' + ${ruta.id}}" class="btn btn-sm btn-primary" title="Visualitzar ruta">
+                        <i class="bi bi-eye"></i>
                     </a>
                 </td>
             </tr>

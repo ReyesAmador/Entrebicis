@@ -189,4 +189,26 @@ public class RutaLogic {
             punts
         );
     }
+    
+    public RutaAmbPuntsGps getDetallRutaAmbPunts (Long idRuta){
+        Ruta ruta = rutaRepo.findById(idRuta)
+                .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
+        
+        List<PuntGpsDTO> punts = puntRepo.findByRutaOrderByTempsAsc(ruta)
+               .stream()
+               .map(p -> new PuntGpsDTO(
+               p.getLatitud(),
+               p.getLongitud(),
+               p.getTemps().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+               ))
+               .toList();
+        
+        return new RutaAmbPuntsGps(
+            ruta.getKm_total(),
+            ruta.getTemps_total(),
+            ruta.getVelocitat_mitjana(),
+            ruta.getVelocitat_max(),
+            punts
+        );
+    }
 }
