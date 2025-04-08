@@ -1,5 +1,6 @@
 package cat.copernic.p3grup1.entrebicis.core.navigation
 
+import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -7,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -16,6 +18,9 @@ import cat.copernic.p3grup1.entrebicis.core.components.BottomNavItem
 import cat.copernic.p3grup1.entrebicis.home.presentation.screen.HomeScreen
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
 import cat.copernic.p3grup1.entrebicis.route.presentation.screen.DetallRutaScreen
+import cat.copernic.p3grup1.entrebicis.route.presentation.screen.RutaScreen
+import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewModel
+import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.detallRutaViewModelFactory
 import cat.copernic.p3grup1.entrebicis.splash.presentation.SplashScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.LoginScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ForgotPasswordScreen
@@ -130,7 +135,18 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                     }
                 }
             ) }
-        composable(BottomNavItem.Route.route) { /* TODO */ }
+        composable(BottomNavItem.Route.route) {
+            val routeViewModel: RutaViewModel = viewModel(
+                factory = detallRutaViewModelFactory(LocalContext.current.applicationContext as Application)
+            )
+
+            RutaScreen(
+                viewModel = routeViewModel,
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable(BottomNavItem.Reward.route) { /* TODO */ }
         composable(BottomNavItem.Profile.route) { /* TODO */ }
     }

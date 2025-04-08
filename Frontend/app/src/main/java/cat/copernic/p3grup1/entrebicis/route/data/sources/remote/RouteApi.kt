@@ -1,11 +1,14 @@
 package cat.copernic.p3grup1.entrebicis.route.data.sources.remote
 
+import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import java.time.LocalDateTime
 
 data class PuntGpsDto(
     val latitud: Double,
@@ -21,6 +24,18 @@ data class RutaAmbPuntsDto(
     val punts: List<PuntGpsDto>
 )
 
+data class RutaSensePuntsDto(
+    val usuari: Usuari,
+    val inici: String,
+    val temps_total: String,
+    val estat: Boolean,
+    val validada: Boolean,
+    val km_total: Double,
+    val velocitat_mitjana: Double,
+    val velocitat_max: Double,
+    val saldo: Double
+)
+
 interface RouteApi {
 
     @POST("ruta/punt")
@@ -34,4 +49,7 @@ interface RouteApi {
 
     @GET("ruta/detall")
     suspend fun getRutaAmbPunts(): Response<RutaAmbPuntsDto>
+
+    @GET("ruta/finalitzades")
+    suspend fun getRutesFinalitzdes(@Header("Authorization") token: String): Response<List<RutaSensePuntsDto>>
 }
