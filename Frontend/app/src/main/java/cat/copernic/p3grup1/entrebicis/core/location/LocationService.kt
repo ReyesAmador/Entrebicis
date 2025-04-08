@@ -75,18 +75,6 @@ class LocationService : Service() {
 
         LogRutaUtils.appendLog(applicationContext, "Ruta iniciada automàticament pel sistema")
 
-        // 🔁 Obtener parámetro "temps_maxim_aturada" antes de iniciar ubicación
-        CoroutineScope(Dispatchers.IO).launch {
-            routeRepo.getTempsMaximAturada().onSuccess { minuts ->
-                tempsMaximAturadaMillis = minuts * 60_000L
-                startLocationUpdates() // solo iniciar si tenemos el valor
-                handler.postDelayed(checkInactivityRunnable, 5_000L)
-                Log.d("RUTA", "Temps màxim aturat rebut: $minuts minuts")
-            }.onFailure {
-                stopSelf() // cancelamos si no se puede obtener
-            }
-        }
-
         // Inicializamos el callback de ubicación
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
@@ -96,7 +84,18 @@ class LocationService : Service() {
             }
         }
 
-        startLocationUpdates()
+        // 🔁 Obtener parámetro "temps_maxim_aturada" antes de iniciar ubicación
+        CoroutineScope(Dispatchers.IO).launch {
+            routeRepo.getTempsMaximAturada().onSuccess { minuts ->
+                tempsMaximAturadaMillis = minuts * 60_000L
+                startLocationUpdates() // solo iniciar si tenemos el valor
+                handler.postDelayed(checkInactivityRunnable, 5_000L)
+                Log.d("RUTA", "Temps màxim aturat rebut: $minuts minuts")
+            }.onFailure {
+                Log.e("RUTA", "❌ No s'ha pogut obtenir el paràmetre de temps màxim. Servei detingut.")
+                stopSelf() // cancelamos si no se puede obtener
+            }
+        }
     }
 
     private fun startLocationUpdates() {
