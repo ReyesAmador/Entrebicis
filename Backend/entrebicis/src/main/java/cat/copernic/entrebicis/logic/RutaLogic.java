@@ -79,10 +79,12 @@ public class RutaLogic {
         String temps = calcularTempsTotal(ruta);
         long segons = calcularTempsEnSegons(ruta);
         double velocitat = calcularVelocitatMitjana(distancia,segons);
+        double velocitatMax = calcularVelocitatMaxima(ruta);
         
         ruta.setKm_total(redondejar2Decimals(distancia));
         ruta.setTemps_total(temps);
         ruta.setVelocitat_mitjana(redondejar2Decimals(velocitat));
+        ruta.setVelocitat_max(velocitatMax);
         
         rutaRepo.save(ruta);
     }
@@ -157,6 +159,30 @@ public class RutaLogic {
         if(tempsSegons == 0) return 0.0;
         
         return (distanciaKm / tempsSegons) * 3600; //km/h
+    }
+    
+    private double calcularVelocitatMaxima(Ruta ruta){
+        List<PuntGps> punts = ruta.getPunts();
+        double maxVelocitat = 0.0;
+        
+        if (punts.size() < 2) return 0.0;
+        
+        for(int i = 1; i < punts.size(); i++){
+            PuntGps anterior = punts.get(i - 1);
+            PuntGps actual = punts.get(i);
+            
+            double distanciaKm = calcularDistanciaEntrePunts(anterior,actual);
+            long segons = Duration.between(anterior.getTemps(), actual.getTemps()).getSeconds();
+            
+            if(segons > 0){
+                double velocitat = (distanciaKm/segons) * 3600; //Km/h
+                if(velocitat > maxVelocitat){
+                    maxVelocitat = velocitat;
+                }
+            }
+        }
+        
+        return redondejar2Decimals(maxVelocitat);
     }
     
     private double redondejar2Decimals(double valor) {
