@@ -183,22 +183,38 @@ public class UsuariLogic {
     }
     
     public UsuariAndroidDto convertirAAndroidDTO(Usuari usuari) {
-    if (usuari == null) return null;
+        if (usuari == null) return null;
 
-    UsuariAndroidDto dto = new UsuariAndroidDto();
-    dto.setEmail(usuari.getEmail());
-    dto.setNom(usuari.getNom());
-    dto.setRol(usuari.getRol().name());
-    dto.setSaldo(usuari.getSaldo());
-    dto.setObservacions(usuari.getObservacions());
-    dto.setMobil(usuari.getMobil());
-    dto.setPoblacio(usuari.getPoblacio());
+        UsuariAndroidDto dto = new UsuariAndroidDto();
+        dto.setEmail(usuari.getEmail());
+        dto.setNom(usuari.getNom());
+        dto.setRol(usuari.getRol().name());
+        dto.setSaldo(usuari.getSaldo());
+        dto.setObservacions(usuari.getObservacions());
+        dto.setMobil(usuari.getMobil());
+        dto.setPoblacio(usuari.getPoblacio());
 
-    if (usuari.getImatge() != null) {
-        String base64 = Base64.getEncoder().encodeToString(usuari.getImatge());
-        dto.setImatgeBase64(base64);
+        if (usuari.getImatge() != null) {
+            String base64 = Base64.getEncoder().encodeToString(usuari.getImatge());
+            dto.setImatgeBase64(base64);
+        }
+
+        return dto;
     }
-
-    return dto;
-}
+    
+    public void actualitzarUsuariAndroid(String email, UsuariAndroidDto dto){
+        Usuari existent = usuariRepo.findByEmail(email)
+                .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat"));
+        
+        existent.setNom(dto.getNom());
+        existent.setMobil(dto.getMobil());
+        existent.setPoblacio(dto.getPoblacio());
+        
+        if(dto.getImatgeBase64() != null && !dto.getImatgeBase64().isEmpty()){
+            byte[] imatge = Base64.getDecoder().decode(dto.getImatgeBase64());
+            existent.setImatge(imatge);
+        }
+        
+        usuariRepo.save(existent);
+    }
 }
