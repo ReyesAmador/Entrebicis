@@ -23,6 +23,7 @@ import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewMode
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.detallRutaViewModelFactory
 import cat.copernic.p3grup1.entrebicis.splash.presentation.SplashScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.LoginScreen
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.UserProfileScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ForgotPasswordScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ResetPasswordScreen
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.screen.recovery_password.ValidateCodeScreen
@@ -148,6 +149,10 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             )
         }
         composable(BottomNavItem.Reward.route) { /* TODO */ }
-        composable(BottomNavItem.Profile.route) { /* TODO */ }
+        composable(BottomNavItem.Profile.route) {
+            UserProfileScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }

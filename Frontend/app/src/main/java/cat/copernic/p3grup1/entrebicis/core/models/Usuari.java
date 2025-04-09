@@ -2,6 +2,8 @@ package cat.copernic.p3grup1.entrebicis.core.models;
 
 import androidx.annotation.Size;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.intellij.lang.annotations.Pattern;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class Usuari {
     private String paraula;
     private String nom;
     private Rol rol;
+    @SerializedName("imatgeBase64")
     private String  imatge;
     private double saldo;
     private String observacions;

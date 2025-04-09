@@ -17,12 +17,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,17 +41,18 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
-import cat.copernic.p3grup1.entrebicis.core.theme.Secondary
+import cat.copernic.p3grup1.entrebicis.user_management.presentation.components.ProfileTextField
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.UserProfileViewModel
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideUserProfileViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UserProfileScreen(){
+fun UserProfileScreen(
+    onBack: () -> Unit
+){
     val context = LocalContext.current
     val viewModel: UserProfileViewModel = viewModel(
         factory = provideUserProfileViewModelFactory(context.applicationContext as Application)
@@ -57,8 +61,22 @@ fun UserProfileScreen(){
     val usuari by viewModel.usuari.collectAsState()
     var editMode by remember { mutableStateOf(false) }
 
+    var nom by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var mobil by remember { mutableStateOf("") }
+    var poblacio by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
         viewModel.carregarUsuari()
+    }
+
+    LaunchedEffect(usuari) {
+        usuari?.let {
+            nom = it.nom
+            email = it.email
+            mobil = it.mobil
+            poblacio = it.poblacio
+        }
     }
 
 
@@ -68,10 +86,30 @@ fun UserProfileScreen(){
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Primary)
-                .padding(vertical = 24.dp),
+                .height(184.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("El teu perfil", color = Color.White, style = MaterialTheme.typography.headlineLarge)
+
+            // Botón de atrás
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Tornar enrere",
+                    tint = Color.White
+                )
+            }
+
+            Text("El teu perfil",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -123,35 +161,10 @@ fun UserProfileScreen(){
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // CAMPOS
-            fun profileField(value: String, onChange: (String) -> Unit, enabled: Boolean = false) {
-                OutlinedTextField(
-                    value = value,
-                    onValueChange = onChange,
-                    enabled = enabled,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedIndicatorColor = Primary,
-                        unfocusedIndicatorColor = Primary,
-                        focusedTextColor = Secondary,
-                        unfocusedTextColor = Secondary
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            var nom by remember { mutableStateOf(usuari?.nom ?: "") }
-            var email by remember { mutableStateOf(usuari?.email ?: "") }
-            var mobil by remember { mutableStateOf(usuari?.mobil ?: "") }
-            var poblacio by remember { mutableStateOf(usuari?.poblacio ?: "") }
-
-            profileField(nom, { nom = it }, enabled = editMode)
-            profileField(email, {}, enabled = false)
-            profileField(mobil, { mobil = it }, enabled = editMode)
-            profileField(poblacio, { poblacio = it }, enabled = editMode)
+            ProfileTextField(nom, { nom = it }, enabled = editMode)
+            ProfileTextField(email, {email = it}, enabled = editMode)
+            ProfileTextField(mobil, { mobil = it }, enabled = editMode)
+            ProfileTextField(poblacio, { poblacio = it }, enabled = editMode)
 
             Spacer(modifier = Modifier.height(12.dp))
 

@@ -33,7 +33,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         viewModelScope.launch {
             repo.getUsuari(token).fold(
                 onSuccess = {
-                    Log.d("HOME_VM", "Usuari rebut: ${it.nom} - ${it.saldo}")
+                    Log.d("PROFILE_DEBUG", "Imatge Base64: ${it.imatge?.take(20)}")
                     _usuari.value = it },
                 onFailure = { error ->
                     Log.e("HOME", "Error: ${error.message}")
