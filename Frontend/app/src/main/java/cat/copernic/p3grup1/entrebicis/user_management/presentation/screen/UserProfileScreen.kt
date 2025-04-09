@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -37,6 +39,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,12 +58,13 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.components.P
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.components.ProfileTextField
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.UserProfileViewModel
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideUserProfileViewModelFactory
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserProfileScreen(
     onBack: () -> Unit
-){
+) {
     val context = LocalContext.current
     val contentResolver = context.contentResolver
     val viewModel: UserProfileViewModel = viewModel(
@@ -86,12 +90,16 @@ fun UserProfileScreen(
     var email by remember { mutableStateOf("") }
     var mobil by remember { mutableStateOf("") }
     var poblacio by remember { mutableStateOf("") }
+    var nomError by remember { mutableStateOf<String?>(null) }
+    var mobilError by remember { mutableStateOf<String?>(null) }
+    var poblacioError by remember { mutableStateOf<String?>(null) }
     val imatgeBase64 by viewModel.imatgeBase64.collectAsState()
-    val usuariOriginal = remember { mutableStateOf<Usuari?>(null) }
 
     val actualitzacioExitosa by viewModel.actualitzacioExitosa.collectAsState()
     val errorActualitzacio by viewModel.errorActualitzacio.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
         viewModel.carregarUsuari()
@@ -103,142 +111,194 @@ fun UserProfileScreen(
             email = it.email
             mobil = it.mobil
             poblacio = it.poblacio
-            usuariOriginal.value = it.copy()
         }
     }
 
     LaunchedEffect(actualitzacioExitosa) {
         actualitzacioExitosa?.let { exit ->
             if (exit) {
+                editMode = false
                 snackbarHostState.showSnackbar("✅ Canvis desats correctament")
             } else {
                 snackbarHostState.showSnackbar("❌ Error al desar: ${errorActualitzacio ?: "Desconegut"}")
-                // 🔁 Restaurar campos
-                usuariOriginal.value?.let {
-                    nom = it.nom
-                    email = it.email
-                    mobil = it.mobil
-                    poblacio = it.poblacio
-                    viewModel.setImatgeBase64(it.imatge) // opcional: restaurar imagen
-                }
             }
             viewModel.resetActualitzacioFlags()
         }
     }
 
-Scaffold(
-    snackbarHost = { SnackbarHost(snackbarHostState) }
-)
-{ paddingValues ->
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
-        // CABECERA
-        Box(
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    )
+    { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Primary)
-                .height(184.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-
-            // Botón de atrás
-            IconButton(
-                onClick = onBack,
+            // CABECERA
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .background(Primary)
+                    .height(184.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Tornar enrere",
-                    tint = Color.White
+
+                // Botón de atrás
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Tornar enrere",
+                        tint = Color.White
+                    )
+                }
+
+                Text(
+                    "El teu perfil",
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
                 )
             }
-
-            Text(
-                "El teu perfil",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "El teu saldo és de: ${usuari?.saldo ?: "..."} punts",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-        ) {
-            // Imagen perfil desde Base64
-            PerfilImage(base64 = imatgeBase64 ?: usuari?.imatge)
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (editMode) {
-                Button(
-                    onClick = { launcher.launch("image/*") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.height(38.dp)
-                ) {
-                    Text("SELECCIONAR FOTO", color = Color.White)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            ProfileTextField(nom, { nom = it }, enabled = editMode)
-            ProfileTextField(email, {}, enabled = false)
-            ProfileTextField(mobil, { mobil = it }, enabled = editMode)
-            ProfileTextField(poblacio, { poblacio = it }, enabled = editMode)
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = {
-                    if (editMode) {
-                        val imatgeFinal = viewModel.imatgeBase64.value ?: usuari?.imatge ?: ""
-                        val usuariActualitzat = Usuari(
-                            email,
-                            "",
-                            nom,
-                            usuari?.rol ?: Rol.CICLISTA,
-                            imatgeFinal,
-                            usuari?.saldo ?: 0.0,
-                            usuari?.observacions ?: "",
-                            mobil,
-                            poblacio
-                        )
-                        Log.d("IMATGE_ANDROID", "Enviant usuari amb imatge: ${imatgeFinal.take(100)}")
-                        viewModel.actualitzarUsuari(usuariActualitzat)
-                    }
-                    editMode = !editMode
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                shape = RoundedCornerShape(12.dp),
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .height(42.dp)
                     .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+                    .verticalScroll(scrollState)
             ) {
                 Text(
-                    if (editMode) "GUARDAR" else "EDITAR",
-                    color = Color.White
+                    text = "El teu saldo és de: ${usuari?.saldo ?: "..."} punts",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Imagen perfil desde Base64
+                PerfilImage(base64 = imatgeBase64 ?: usuari?.imatge)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (editMode) {
+                    Button(
+                        onClick = { launcher.launch("image/*") },
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.height(38.dp)
+                    ) {
+                        Text("SELECCIONAR FOTO", color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                ProfileTextField(nom, { nom = it; nomError = null },
+                    enabled = editMode, isError = nomError != null, errorMessage = nomError)
+                ProfileTextField(email, {}, enabled = false)
+                ProfileTextField(mobil, { mobil = it; mobilError= null },
+                    enabled = editMode, isError = mobilError != null, errorMessage = mobilError)
+                ProfileTextField(poblacio, { poblacio = it; poblacioError = null },
+                    enabled = editMode, isError = poblacioError != null, errorMessage = poblacioError)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                fun validarCamps(): Boolean {
+                    var valid = true
+
+                    //NOM
+                    if(nom.isBlank()){
+                        nomError = "El nom no pot estar en blanc"
+                        valid = false
+                    }else if (nom.length > 60){
+                        valid = false
+                        nomError = "El nom no pot tenir més de 60 caràcters"
+                    }else if(!Regex("^[a-zA-ZÀ-ÿ\\s]*$").matches(nom.trim())){
+                        valid = false
+                        nomError = "El nom només pot contenir lletres i espais"
+                    }else{
+                        nomError = null
+                    }
+                    //MOBIL
+                    if(mobil.isBlank()){
+                        mobilError = "El mòbil no pot estar en blanc"
+                        valid = false
+                    }else if (!Regex("^\\+?[0-9]{9,15}$").matches(mobil.trim())) {
+                        valid = false
+                        mobilError = "El mòbil ha de tenir entre 9 i 15 dígits vàlids"
+                    }else{
+                        mobilError = null
+                    }
+                    //POBLACIÓ
+                    if(poblacio.isBlank()){
+                        poblacioError = "La població no pot estar en blanc"
+                        valid = false
+                    }else if (poblacio.length > 60) {
+                        valid = false
+                        poblacioError = "La població no pot tenir més de 60 caràcters"
+                    }else if(!Regex("^[a-zA-ZÀ-ÿ\\s]*$").matches(poblacio.trim())){
+                        valid = false
+                        poblacioError = "La població només pot contenir lletres i espais"
+                    }else{
+                        poblacioError = null
+                    }
+
+                    return valid
+                }
+
+                Button(
+                    onClick = {
+                        if (editMode) {
+                            val valid = validarCamps()
+                            if (!valid) {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("❌ Revisa els camps amb error")
+                                }
+                                return@Button // <- evita continuar si hay error
+                            }
+
+                            val imatgeFinal = viewModel.imatgeBase64.value ?: usuari?.imatge ?: ""
+                            val usuariActualitzat = Usuari(
+                                email,
+                                "",
+                                nom,
+                                usuari?.rol ?: Rol.CICLISTA,
+                                imatgeFinal,
+                                usuari?.saldo ?: 0.0,
+                                usuari?.observacions ?: "",
+                                mobil,
+                                poblacio
+                            )
+                            Log.d(
+                                "IMATGE_ANDROID",
+                                "Enviant usuari amb imatge: ${imatgeFinal.take(100)}"
+                            )
+                            viewModel.actualitzarUsuari(usuariActualitzat)
+                        }else{
+                            editMode = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .height(42.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        if (editMode) "GUARDAR" else "EDITAR",
+                        color = Color.White
+                    )
+                }
             }
         }
     }
-}
 }

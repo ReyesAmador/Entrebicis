@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.configuration.JwtUtil;
 import cat.copernic.entrebicis.dto.UsuariAndroidDto;
+import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +45,8 @@ public class UsuariControllerAndroid {
         return ResponseEntity.ok("Usuari actualitzat correctament");
         }catch (NotFoundUsuariException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuari no trobat");
+        }catch(DuplicateException e){
+             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

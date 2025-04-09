@@ -114,8 +114,13 @@ class LoginRepo(private val api: UserApi) {
         return withContext(Dispatchers.IO){
             try {
                 val res = api.actualitzarUsuari("Bearer $token", usuari)
-                if (res.isSuccessful) Result.success(Unit)
-                else Result.failure(Exception("Error ${res.code()}: ${res.message()}"))
+                if (res.isSuccessful){
+                    Result.success(Unit)
+                }
+                else {
+                    val errorMsg = res.errorBody()?.string() ?: "Error desconegut"
+                    Result.failure(Exception(errorMsg))
+                }
             } catch (e: Exception) {
                 Result.failure(e)
             }

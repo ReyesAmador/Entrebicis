@@ -206,6 +206,10 @@ public class UsuariLogic {
         Usuari existent = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat"));
         
+        if(!existent.getMobil().equals(dto.getMobil()) && usuariRepo.existsByMobil(dto.getMobil())){
+            throw new DuplicateException("El número de mòbil ja està registrat");
+        }
+        
         existent.setNom(dto.getNom());
         existent.setMobil(dto.getMobil());
         existent.setPoblacio(dto.getPoblacio());
