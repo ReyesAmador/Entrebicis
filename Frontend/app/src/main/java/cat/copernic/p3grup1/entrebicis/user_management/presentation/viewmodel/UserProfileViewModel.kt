@@ -27,6 +27,15 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     private val _usuari = MutableStateFlow<Usuari?>(null)
     val usuari: StateFlow<Usuari?> = _usuari
 
+    private val _actualitzacioExitosa = MutableStateFlow<Boolean?>(null)
+    val actualitzacioExitosa: StateFlow<Boolean?> = _actualitzacioExitosa
+
+    private val _errorActualitzacio = MutableStateFlow<String?>(null)
+    val errorActualitzacio: StateFlow<String?> = _errorActualitzacio
+
+    private val _imatgeBase64 = MutableStateFlow<String?>(null)
+    val imatgeBase64: StateFlow<String?> = _imatgeBase64
+
     fun carregarUsuari() {
         val token = prefs.getString("token", null) ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
@@ -45,4 +54,30 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
             )
         }
     }
+
+    fun actualitzarUsuari(usuari: Usuari){
+        val token = prefs.getString("token", null) ?: return
+        viewModelScope.launch {
+            repo.actualitzarUsuari(token, usuari).fold(
+                onSuccess = {
+                    _actualitzacioExitosa.value = true
+                    carregarUsuari()
+                },
+                onFailure = {
+                    _errorActualitzacio.value = it.message
+                    _actualitzacioExitosa.value = false
+
+                }
+            )
+        }
+    }
+    fun resetActualitzacioFlags() {
+        _actualitzacioExitosa.value = null
+        _errorActualitzacio.value = null
+    }
+
+    fun setImatgeBase64(base64: String) {
+        _imatgeBase64.value = base64
+    }
+
 }
