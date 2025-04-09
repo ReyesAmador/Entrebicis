@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 data class LoginRequest(
@@ -48,5 +49,8 @@ interface UserApi {
 
     @POST("reset-pass")
     suspend fun resetPass(@Body body: ResetPasswordRequest): Response<Void>
+
+    @PATCH("usuari/actualitzar")
+    suspend fun actualitzarUsuari(@Header("Authorization") token: String, @Body usuari: Usuari): Response<Unit>
 
 }

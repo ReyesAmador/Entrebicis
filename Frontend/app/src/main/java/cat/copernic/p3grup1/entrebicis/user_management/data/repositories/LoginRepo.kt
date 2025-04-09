@@ -109,4 +109,16 @@ class LoginRepo(private val api: UserApi) {
             Result.failure(e)
         }
     }
+
+    suspend fun actualitzarUsuari(token: String, usuari: Usuari): Result<Unit>{
+        return withContext(Dispatchers.IO){
+            try {
+                val res = api.actualitzarUsuari("Bearer $token", usuari)
+                if (res.isSuccessful) Result.success(Unit)
+                else Result.failure(Exception("Error ${res.code()}: ${res.message()}"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 }
