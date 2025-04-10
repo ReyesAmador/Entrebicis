@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.apicontroller.web;
 
 import cat.copernic.entrebicis.entities.Recompensa;
+import cat.copernic.entrebicis.exceptions.NotFoundException;
 import cat.copernic.entrebicis.logic.RecompensaLogic;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -54,6 +56,20 @@ public class RecompensaController {
         
         //Missatge flash
         redirectAtt.addFlashAttribute("missatgeSuccess", "Recompensa creada correctament");
+        
+        return "redirect:/admin/recompenses";
+    }
+    
+    @PostMapping("/delete/{id}")
+    public String eliminarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
+        try{
+            recompensaLogic.eliminarRecompensa(id);
+            redirectAtt.addFlashAttribute("missatgeSuccess", "Recompensa eliminada correctament");
+        }catch(IllegalStateException e){
+            redirectAtt.addFlashAttribute("error", e.getMessage());
+        }catch(NotFoundException e){
+            redirectAtt.addFlashAttribute("error", e.getMessage());
+        }
         
         return "redirect:/admin/recompenses";
     }

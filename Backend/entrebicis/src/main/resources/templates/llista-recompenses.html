@@ -46,11 +46,12 @@
                     <td th:text="${rec.estat}"></td>
                     <td th:text="${rec.usuari != null ? rec.usuari.nom : ''}"></td>
                     <td class="d-flex justify-content-center gap-1">
-                        <a th:if="${rec.estat.name() == 'DISPONIBLE'}"
-                           th:href="@{'/admin/recompenses/eliminar/' + ${rec.id}}"
-                           class="btn btn-sm btn-danger btn-square" title="Eliminar recompensa">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
+                        <form th:action="@{'/admin/recompenses/delete/' + ${rec.id}}" method="post" th:if="${rec.estat.name() == 'DISPONIBLE'}">
+                            <button type="submit" class="btn btn-sm btn-danger btn-square" title="Eliminar recompensa" 
+                                    onclick="return confirm('Segur que vols eliminar aquesta recompensa?')">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </form>
                         <a th:if="${rec.estat.name() == 'RESERVADA'}"
                            th:href="@{'/admin/recompenses/assignar/' + ${rec.id}}"
                            class="btn btn-sm btn-success btn-square" title="Assignar recompensa">

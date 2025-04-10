@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.entities.Recompensa;
 import cat.copernic.entrebicis.enums.EstatRecompensa;
+import cat.copernic.entrebicis.exceptions.NotFoundException;
 import cat.copernic.entrebicis.repository.RecompensaRepo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,16 @@ public class RecompensaLogic {
         
         r.setEstat(EstatRecompensa.DISPONIBLE);
         repo.save(r);
+    }
+    
+    public void eliminarRecompensa(Long id){
+        Recompensa recompensa = repo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
+        
+        if(recompensa.getEstat() != EstatRecompensa.DISPONIBLE){
+            throw new IllegalStateException("Només es poden eliminar recompenses amb estat " + EstatRecompensa.DISPONIBLE.toString());
+        }
+        
+        repo.delete(recompensa);
     }
 }
