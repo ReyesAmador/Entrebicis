@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.entities;
 
 import cat.copernic.entrebicis.enums.Rol;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -56,4 +57,7 @@ public class Usuari {
     
     @OneToMany(mappedBy = "usuari")
     private List<Ruta> rutes = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "usuari", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recompensa> recompenses = new ArrayList<>();
 }
