@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear recompensa</title>
+    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+<body>
+    <div th:replace="fragments/menu :: menu ('recompenses')" th:with="activePage='recompenses'"></div>
+    <div th:replace="fragments/header :: header ('Crear recompensa')"></div>
+
+    <div class="content" style="margin-left: 260px; padding: 20px;">
+        <form th:action="@{/admin/recompenses/crear}" th:object="${recompensa}" method="post">
+            <div class="row">
+                <!-- Columna izquierda -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Descripció<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control border-success" th:field="*{descripcio}" required>
+                        <div class="text-danger mt-1" th:if="${#fields.hasErrors('descripcio')}" th:errors="*{descripcio}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Valor</label>
+                        <input type="number" class="form-control border-success" th:field="*{valor}" min="0" required>
+                        <div class="text-danger mt-1" th:if="${#fields.hasErrors('valor')}" th:errors="*{valor}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Punt de bescanvi<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control border-success" th:field="*{puntRecollida}" required>
+                        <div class="text-danger mt-1" th:if="${#fields.hasErrors('puntRecollida')}" th:errors="*{puntRecollida}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Adreça<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control border-success" th:field="*{direccio}" required>
+                        <div class="text-danger mt-1" th:if="${#fields.hasErrors('direccio')}" th:errors="*{direccio}"></div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Observacions</label>
+                        <textarea class="form-control border-success" th:field="*{observacions}" rows="8" maxlength="2000"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón centrado -->
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-success px-5">Crear recompensa</button>
+            </div>
+            <!-- Nota de campos obligatorios -->
+            <div class="text-center mt-3">
+                <p class="text-muted"><span class="text-danger">*</span> Camps obligatoris</p>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

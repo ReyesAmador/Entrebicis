@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.entities.Recompensa;
+import cat.copernic.entrebicis.enums.EstatRecompensa;
 import cat.copernic.entrebicis.repository.RecompensaRepo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,16 @@ public class RecompensaLogic {
     }
     
     public void crearRecompensa(Recompensa r){
+        
+        r.setDescripcio(r.getDescripcio() != null ? r.getDescripcio().trim() : null);
+        r.setPuntRecollida(r.getPuntRecollida() != null ? r.getPuntRecollida().trim() : null);
+        r.setDireccio(r.getDireccio() != null ? r.getDireccio().trim() : null);
+        
+        if(r.getObservacions() != null){
+            r.setObservacions(r.getObservacions().trim());
+        }
+        
+        r.setEstat(EstatRecompensa.DISPONIBLE);
         repo.save(r);
     }
 }
