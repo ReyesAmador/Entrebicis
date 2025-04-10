@@ -39,6 +39,9 @@ public class RutaLogic {
     @Autowired
     UsuariRepo usuariRepo;
     
+    @Autowired
+    ParametresSistemaLogic parLogic;
+    
     public List<Ruta> getAllRutes(){
         return rutaRepo.findAllByOrderByIdDesc();
     }
@@ -96,15 +99,18 @@ public class RutaLogic {
         ruta.setFi(LocalDateTime.now());
         
         double distancia = calcularDistanciaTotal(ruta);
+        double conversio = parLogic.obtenirConversioKmPunts();
         String temps = calcularTempsTotal(ruta);
         long segons = calcularTempsEnSegons(ruta);
         double velocitat = calcularVelocitatMitjana(distancia,segons);
         double velocitatMax = calcularVelocitatMaxima(ruta);
+        double saldo = distancia * conversio;
         
         ruta.setKm_total(redondejar2Decimals(distancia));
         ruta.setTemps_total(temps);
         ruta.setVelocitat_mitjana(redondejar2Decimals(velocitat));
         ruta.setVelocitat_max(velocitatMax);
+        ruta.setSaldo(redondejar1Decimal(saldo));
         
         rutaRepo.save(ruta);
     }
@@ -208,6 +214,12 @@ public class RutaLogic {
     private double redondejar2Decimals(double valor) {
         return BigDecimal.valueOf(valor)
                 .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+    
+    private double redondejar1Decimal(double valor) {
+        return BigDecimal.valueOf(valor)
+                .setScale(1, RoundingMode.HALF_UP)
                 .doubleValue();
     }
     

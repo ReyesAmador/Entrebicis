@@ -47,4 +47,10 @@ public class ParametresSistemaLogic {
         return parametres.getTempsMaximAturat();
     }
     
+    public double obtenirConversioKmPunts(){
+        ParametresSistema parametres = repo.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
+        return parametres.getConversio();
+    }
+    
 }
