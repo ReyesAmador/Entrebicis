@@ -62,6 +62,7 @@ public class UsuariLogic {
             "Usuari de proves",
             "663587620",
             "Barcelona",
+            new ArrayList<>(),
             new ArrayList<>());
             
             usuariRepo.save(admin);
