@@ -128,7 +128,7 @@ fun RutaScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                "${ruta.saldo.toInt()}p",
+                                "${"%.1f".format(ruta.saldo)}p",
                                 color = Color.White,
                                 style = MaterialTheme.typography.headlineSmall
                             )

@@ -63,7 +63,7 @@ fun RutaCard(ruta: RutaSensePuntsDto, modifier: Modifier = Modifier) {
                 color = Color.White
             )
             Text(
-                text = "Distància: ${ruta.km_total.toInt()} Km",
+                text = "Distància: ${"%.1f".format(ruta.km_total)} Km",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White
             )
