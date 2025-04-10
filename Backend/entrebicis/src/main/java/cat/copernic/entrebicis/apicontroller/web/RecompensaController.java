@@ -24,7 +24,7 @@ public class RecompensaController {
     
     @GetMapping
     public String llistarRecompenses(Model model){
-        model.addAttribute("llistaRecompenses", model);
+        model.addAttribute("llistaRecompenses", recompensaLogic.obtenirTotes());
         
         return "llista-recompenses";
     }
