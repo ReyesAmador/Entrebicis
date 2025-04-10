@@ -171,6 +171,8 @@ class LocationService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        rutaActiva = false
+        handler.removeCallbacks(checkInactivityRunnable)
         fusedLocationClient.removeLocationUpdates(locationCallback)
         Log.d("LocationService", "Servicio detenido (parada o tiempo excedido)")
     }
