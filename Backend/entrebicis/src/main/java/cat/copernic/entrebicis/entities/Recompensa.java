@@ -37,7 +37,7 @@ public class Recompensa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(length = 2000)
+    @Column(length = 50)
     @NotBlank(message = "Aquest camp no pot estar buit ni contenir només espais")
     private String descripcio;
     
@@ -50,7 +50,7 @@ public class Recompensa {
     @Enumerated(EnumType.STRING)
     private EstatRecompensa estat;
     
-    @Column(name = "punt_recollida")
+    @Column(name = "punt_recollida", length = 50)
     @NotBlank(message = "Aquest camp no pot estar buit ni contenir només espais")
     private String puntRecollida;
     

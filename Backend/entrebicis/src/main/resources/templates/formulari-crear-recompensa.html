@@ -19,7 +19,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Descripció<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control border-success" th:field="*{descripcio}" required>
+                        <input type="text" class="form-control border-success" th:field="*{descripcio}" maxlength="50" required>
                         <div class="text-danger mt-1" th:if="${#fields.hasErrors('descripcio')}" th:errors="*{descripcio}"></div>
                     </div>
 
@@ -31,7 +31,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Punt de bescanvi<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control border-success" th:field="*{puntRecollida}" required>
+                        <input type="text" class="form-control border-success" th:field="*{puntRecollida}" maxlength="50" required>
                         <div class="text-danger mt-1" th:if="${#fields.hasErrors('puntRecollida')}" th:errors="*{puntRecollida}"></div>
                     </div>
 
