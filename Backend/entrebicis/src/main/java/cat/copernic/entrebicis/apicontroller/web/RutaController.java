@@ -61,4 +61,18 @@ public class RutaController {
         
         return "redirect:/admin/rutes";
     }
+    
+    @PostMapping("/invalidar/{id}")
+    public String invalidarRuta(@PathVariable Long id, RedirectAttributes redirectAttrs){
+        try{
+            rutaLogic.invalidarRuta(id);
+            redirectAttrs.addFlashAttribute("missatgeSuccess", "Ruta invalidada correctament!");
+        }catch(RuntimeException e){
+            redirectAttrs.addFlashAttribute("error", e.getMessage());
+        }catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", "No s'ha pogut validar la ruta: " + e.getMessage());
+        }
+        
+        return "redirect:/admin/rutes";
+    }
 }
