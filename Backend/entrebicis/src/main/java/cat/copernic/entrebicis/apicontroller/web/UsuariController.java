@@ -82,6 +82,8 @@ public class UsuariController {
                 result.rejectValue("saldo", "error.usuari", e.getMessage());
             if(e.getMessage().toLowerCase().contains("contrasenya"))
                 result.rejectValue("paraula", "error.usuari", e.getMessage());
+            if(e.getMessage().toLowerCase().contains("imatge"))
+                result.rejectValue("imatge", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
         }catch(IOException e){
             result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
@@ -132,8 +134,10 @@ public class UsuariController {
             Model model,
             RedirectAttributes redirectAtt){
         
-        if(result.hasErrors())
+        if(result.hasErrors()){
+            model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
+        }
         
         try{
             usuariLogic.actualitzarUsuari(email, usuariModificat, imatgeFile);
@@ -141,13 +145,18 @@ public class UsuariController {
         }catch (DuplicateException e) {
             if (e.getMessage().toLowerCase().contains("mòbil"))
                 result.rejectValue("mobil", "error.usuari", e.getMessage());
+            model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
         } catch (IllegalArgumentException e) {
             if (e.getMessage().toLowerCase().contains("saldo"))
                 result.rejectValue("saldo", "error.usuari", e.getMessage());
+            if (e.getMessage().toLowerCase().contains("imatge"))
+                result.rejectValue("imatge", "error.usuari", e.getMessage());
+            model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
         } catch (IOException e) {
             result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
+            model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
         }
         

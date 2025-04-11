@@ -84,6 +84,10 @@ public class UsuariLogic {
             throw new IllegalArgumentException("El saldo no pot ser negatiu.");
         
         if(imatge != null && !imatge.isEmpty()){
+            String contentType = imatge.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("El fitxer ha de ser una imatge vàlida.");
+        }
             usuari.setImatge(imatge.getBytes()); //Guardar imatge en bytes[]
         }
         
@@ -121,6 +125,10 @@ public class UsuariLogic {
         
 
             if (imatgeFile != null && !imatgeFile.isEmpty()) {
+                String contentType = imatgeFile.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new IllegalArgumentException("El fitxer ha de ser una imatge vàlida.");
+                }
                 usuariActual.setImatge(imatgeFile.getBytes());
             }
          
@@ -216,8 +224,6 @@ public class UsuariLogic {
         existent.setPoblacio(dto.getPoblacio());
         
         if(dto.getImatgeBase64() != null && !dto.getImatgeBase64().isEmpty()){
-            System.out.println("📥 Base64 rebut (longitud): " + dto.getImatgeBase64().length());
-            System.out.println("📥 Base64 inici: " + dto.getImatgeBase64().substring(0, Math.min(dto.getImatgeBase64().length(), 100)));
             byte[] imatge = Base64.getDecoder().decode(dto.getImatgeBase64());
             existent.setImatge(imatge);
         }
