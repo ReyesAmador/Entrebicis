@@ -288,4 +288,23 @@ public class RutaLogic {
         rutaRepo.save(ruta);
         usuariRepo.save(usuari);
     }
+    
+    public void invalidarRuta(Long idRuta){
+        Ruta ruta = rutaRepo.findById(idRuta)
+                .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
+        if(!ruta.isValidada())
+            throw new RuntimeException("La ruta ja està invalidada");
+        
+        Usuari usuari = ruta.getUsuari();
+        
+        if(usuari.getSaldo() < ruta.getSaldo())
+            throw new RuntimeException("No es pot invalidar la ruta perquè l'usuari no té prou saldo");
+        
+        //invertir estado y saldo
+        ruta.setValidada(false);
+        usuari.setSaldo(usuari.getSaldo() - ruta.getSaldo());
+        
+        rutaRepo.save(ruta);
+        usuariRepo.save(usuari);
+    }
 }
