@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.reward.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -53,33 +54,45 @@ fun RewardCard(
             modifier = Modifier
                 .weight(1f)
                 .background(Secondary, RoundedCornerShape(4.dp))
-                .padding(8.dp)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = recompensa.descripcio ?: "",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
-            )
-            Text(
-                text = recompensa.puntRecollida ?: "",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = recompensa.descripcio ?: "",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White
+                )
+                Text(
+                    text = recompensa.puntRecollida ?: "",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White
+                )
+            }
+
             Text(
                 text = recompensa.direccio ?: "",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White
             )
-            Text(
-                text = "Estat: ${recompensa.estat}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-            Text(
-                text = "Punts: ${recompensa.valor}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
+
+            Row( modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Text(
+                    text = "Estat: ${recompensa.estat}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White
+                )
+                Text(
+                    text = "Punts: ${recompensa.valor}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White
+                )
+            }
         }
 
         Box(
