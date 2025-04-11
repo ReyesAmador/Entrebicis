@@ -55,6 +55,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
 
     fun logout() {
         prefs.edit().clear().apply()
+        RetrofitClient.reset()
         val token = prefs.getString("token", null)
         Log.d("LOGOUT_CHECK", "Token después del logout: $token") // null = sesión cerrada
     }

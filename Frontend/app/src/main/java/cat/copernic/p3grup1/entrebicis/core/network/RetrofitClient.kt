@@ -50,11 +50,10 @@ object RetrofitClient {
     fun getInstance(context: Context): Retrofit {
         if (retrofitInstance == null) {
             synchronized(this) {
-                val prefs = context.getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
-                val token = prefs.getString("token", null)
-
                 val client = OkHttpClient.Builder()
                     .addInterceptor(Interceptor { chain ->
+                        val prefs = context.getSharedPreferences("usuari_prefs", Context.MODE_PRIVATE)
+                        val token = prefs.getString("token", null)
                         val request = chain.request().newBuilder()
                         token?.let {
                             request.addHeader("Authorization", "Bearer $it")
@@ -71,5 +70,9 @@ object RetrofitClient {
             }
         }
         return retrofitInstance!!
+    }
+
+    fun reset() {
+        retrofitInstance = null
     }
 }
