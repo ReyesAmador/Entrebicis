@@ -52,6 +52,7 @@ public class RutaLogic {
                 .map(ruta -> {
                     RutaSenseGps dto = new RutaSenseGps();
                     dto.setUsuari(ruta.getUsuari());
+                    dto.setId(ruta.getId());
                     dto.setInici(ruta.getInici());
                     dto.setEstat(ruta.isEstat());
                     dto.setValidada(ruta.isValidada());

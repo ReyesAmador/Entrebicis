@@ -16,6 +16,7 @@ import lombok.Data;
 @Data
 public class RutaSenseGps {
     private Usuari usuari;
+    private Long id;
     
     private LocalDateTime inici;
     private String temps_total;
