@@ -50,4 +50,13 @@ public class RecompensaLogic {
         
         repo.delete(recompensa);
     }
+    
+    public List<Recompensa> obtenirRecompensesPropies(String email){
+        List<Recompensa> totes = repo.findAll();
+        
+        return totes.stream()
+                .filter(r -> r.getEstat() == EstatRecompensa.DISPONIBLE ||
+                        (r.getUsuari() != null && r.getUsuari().getEmail().equals(email)))
+                .toList();
+    }
 }
