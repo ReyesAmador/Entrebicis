@@ -41,7 +41,8 @@ import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewMode
 @Composable
 fun RutaScreen(
     viewModel: RutaViewModel = viewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onRutaClick: (Long) -> Unit
 ){
     val rutes by viewModel.rutesFinalitzades.collectAsState()
 
@@ -115,7 +116,7 @@ fun RutaScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RutaCard(ruta, modifier = Modifier.weight(1f))
+                        RutaCard(ruta, modifier = Modifier.weight(1f), onClick = {onRutaClick(ruta.id)})
                         Spacer(Modifier.width(8.dp))
                         Box(
                             modifier = Modifier

@@ -62,6 +62,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetallRutaScreen(
+    idRuta: Long? = null,
     onBack: () -> Unit,
     viewModel: RutaViewModel = viewModel(factory = detallRutaViewModelFactory(LocalContext.current.applicationContext as Application))
 ) {
@@ -81,6 +82,10 @@ fun DetallRutaScreen(
     LaunchedEffect(Unit) {
         viewModel.carregarRuta()
         hasStartedLoading.value = true
+    }
+
+    LaunchedEffect(idRuta) {
+        viewModel.carregarRuta(idRuta)
     }
 
     if (!hasStartedLoading.value || loading) {

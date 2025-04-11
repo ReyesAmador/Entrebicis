@@ -68,4 +68,14 @@ class RouteRepo(private val api: RouteApi) {
             Result.failure(e)
         }
     }
+
+    suspend fun getDetallRutaEspecifica(id: Long): Result<RutaAmbPuntsDto> {
+        return try {
+            val resposta = api.getDetallRuta(id)
+            if (resposta.isSuccessful) Result.success(resposta.body()!!)
+            else Result.failure(Exception("Error ${resposta.code()}: ${resposta.message()}"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

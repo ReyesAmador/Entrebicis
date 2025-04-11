@@ -3,6 +3,7 @@ package cat.copernic.p3grup1.entrebicis.route.presentation.components
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,7 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RutaCard(ruta: RutaSensePuntsDto, modifier: Modifier = Modifier) {
+fun RutaCard(ruta: RutaSensePuntsDto, modifier: Modifier = Modifier, onClick: () -> Unit) {
 
     val dataFormatejada = try {
         val parsedDateTime = LocalDateTime.parse(ruta.inici)
@@ -35,6 +36,7 @@ fun RutaCard(ruta: RutaSensePuntsDto, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .clickable{ onClick() }
             .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(12.dp))
             .padding(12.dp)
     ) {

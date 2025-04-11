@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -65,6 +66,13 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
 
         composable("route/detallRuta") {
             DetallRutaScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("route/detallRuta/{idRuta}", arguments = listOf(
+            navArgument("idRuta") { type = NavType.LongType }
+        )) { backStackEntry ->
+            val idRuta = backStackEntry.arguments?.getLong("idRuta")
+            DetallRutaScreen(idRuta = idRuta, onBack = { navController.popBackStack() })
         }
 
         composable("forgot-password"){
@@ -145,7 +153,8 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                 viewModel = routeViewModel,
                 onBack = {
                     navController.popBackStack()
-                }
+                },
+                onRutaClick = {id -> navController.navigate("route/detallRuta/$id")}
             )
         }
         composable(BottomNavItem.Reward.route) { /* TODO */ }

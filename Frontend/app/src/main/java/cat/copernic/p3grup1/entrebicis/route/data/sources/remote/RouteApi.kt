@@ -26,6 +26,7 @@ data class RutaAmbPuntsDto(
 
 data class RutaSensePuntsDto(
     val usuari: Usuari,
+    val id: Long,
     val inici: String,
     val temps_total: String,
     val estat: Boolean,
@@ -52,4 +53,7 @@ interface RouteApi {
 
     @GET("ruta/finalitzades")
     suspend fun getRutesFinalitzdes(@Header("Authorization") token: String): Response<List<RutaSensePuntsDto>>
+
+    @GET("ruta/detall/{id}")
+    suspend fun getDetallRuta(@Path("id") id: Long): Response<RutaAmbPuntsDto>
 }

@@ -33,10 +33,15 @@ class RutaViewModel(
     val rutesFinalitzades: StateFlow<List<RutaSensePuntsDto>> = _rutesFinalitzades
 
 
-    fun carregarRuta(){
+    fun carregarRuta(id: Long? = null){
         viewModelScope.launch {
             _loading.value = true
-            repo.getRutaAmbPunts().onSuccess {
+            val resultat = if (id != null){
+                repo.getDetallRutaEspecifica(id)
+            }else{
+                repo.getRutaAmbPunts() //última ruta finalizada
+            }
+            resultat.onSuccess {
                 _detallRuta.value = it
                 delay(1500)
                 _loading.value = false
