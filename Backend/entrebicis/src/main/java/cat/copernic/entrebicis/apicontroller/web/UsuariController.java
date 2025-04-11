@@ -196,5 +196,5 @@ public class UsuariController {
             return URLConnection.guessContentTypeFromStream(bais);
         }
     }
-
+    
 }

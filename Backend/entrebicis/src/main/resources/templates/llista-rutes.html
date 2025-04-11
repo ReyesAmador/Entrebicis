@@ -46,10 +46,13 @@
                 <td th:text="${ruta.saldo + 'p'}"></td>
                 <td th:text="${ruta.validada ? 'Validada' : 'No validada'}"></td>
                 <td class="d-flex justify-content-center gap-1">
-                    <a th:if="${!ruta.validada}" 
-                       href="#" class="btn btn-sm btn-success btn-square" title="Validar ruta">
-                        <i class="bi bi-check2"></i>
-                    </a>
+                    <form th:action="@{'/admin/rutes/validar/' + ${ruta.id}}" method="post" 
+                          onsubmit="return confirm('Estàs segur que vols validar aquesta ruta? Això afegirà el saldo al seu propietari.')"
+                          th:if="${!ruta.validada}">
+                        <button type="submit" class="btn btn-sm btn-success btn-square">
+                            <i class="bi bi-check2"></i>
+                        </button>
+                    </form>
                     <a th:if="${ruta.validada}" 
                        href="#" class="btn btn-sm btn-danger btn-square" title="Invalidar ruta">
                         <i class="bi bi-x-lg"></i>

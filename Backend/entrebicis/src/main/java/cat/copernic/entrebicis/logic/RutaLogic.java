@@ -274,4 +274,18 @@ public class RutaLogic {
             punts
         );
     }
+    
+    public void validarRuta(Long idRuta){
+        Ruta ruta = rutaRepo.findById(idRuta)
+                .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
+        if(ruta.isValidada())
+            throw new RuntimeException("La ruta ja està validada");
+        
+        ruta.setValidada(true);
+        Usuari usuari = ruta.getUsuari();
+        usuari.setSaldo(usuari.getSaldo() + ruta.getSaldo());
+        
+        rutaRepo.save(ruta);
+        usuariRepo.save(usuari);
+    }
 }
