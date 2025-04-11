@@ -18,6 +18,7 @@ import androidx.navigation.navArgument
 import cat.copernic.p3grup1.entrebicis.core.components.BottomNavItem
 import cat.copernic.p3grup1.entrebicis.home.presentation.screen.HomeScreen
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
+import cat.copernic.p3grup1.entrebicis.reward.presentation.screen.RewardScreen
 import cat.copernic.p3grup1.entrebicis.route.presentation.screen.DetallRutaScreen
 import cat.copernic.p3grup1.entrebicis.route.presentation.screen.RutaScreen
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewModel
@@ -157,7 +158,11 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                 onRutaClick = {id -> navController.navigate("route/detallRuta/$id")}
             )
         }
-        composable(BottomNavItem.Reward.route) { /* TODO */ }
+        composable(BottomNavItem.Reward.route) {
+            RewardScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(BottomNavItem.Profile.route) {
             UserProfileScreen(
                 onBack = { navController.popBackStack() }

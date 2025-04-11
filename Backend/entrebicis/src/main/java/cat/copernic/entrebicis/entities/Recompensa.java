@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.entities;
 
 import cat.copernic.entrebicis.enums.EstatRecompensa;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -62,6 +63,7 @@ public class Recompensa {
     
     @ManyToOne
     @JoinColumn(name = "usuari_email")
+    @JsonBackReference
     private Usuari usuari;
     
 }
