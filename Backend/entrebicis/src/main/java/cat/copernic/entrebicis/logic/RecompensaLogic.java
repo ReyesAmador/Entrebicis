@@ -5,9 +5,14 @@
 package cat.copernic.entrebicis.logic;
 
 import cat.copernic.entrebicis.entities.Recompensa;
+import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.EstatRecompensa;
 import cat.copernic.entrebicis.exceptions.NotFoundException;
+import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
+import cat.copernic.entrebicis.exceptions.RecompensaReservadaException;
+import cat.copernic.entrebicis.exceptions.SaldoInsuficientException;
 import cat.copernic.entrebicis.repository.RecompensaRepo;
+import cat.copernic.entrebicis.repository.UsuariRepo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +26,9 @@ public class RecompensaLogic {
     
     @Autowired
     RecompensaRepo repo;
+    
+    @Autowired
+    UsuariRepo usuariRepo;
     
     public List<Recompensa> obtenirTotes(){
         return repo.findAll();
@@ -58,5 +66,33 @@ public class RecompensaLogic {
                 .filter(r -> r.getEstat() == EstatRecompensa.DISPONIBLE ||
                         (r.getUsuari() != null && r.getUsuari().getEmail().equals(email)))
                 .toList();
+    }
+    
+    public void reservarRecompensa(String email, Long idRecompensa){
+        Usuari usuari = usuariRepo.findByEmail(email)
+                .orElseThrow(() -> new NotFoundUsuariException(email));
+        
+        Recompensa recompensa = repo.findById(idRecompensa)
+                .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
+        
+        //validació saldo
+        if(usuari.getSaldo() < recompensa.getValor()){
+            throw new SaldoInsuficientException("No tens saldo suficient");
+        }
+        
+        //validació si ja té recompensa reservada
+        boolean jaReservada = repo.existsByUsuariEmailAndEstat(email, EstatRecompensa.RESERVADA);
+        if(jaReservada){
+            throw new RecompensaReservadaException("Ja tens una recompensa reservada");
+        }
+        
+        //Aplicar canvis
+        usuari.setSaldo(usuari.getSaldo() - recompensa.getValor());
+        recompensa.setUsuari(usuari);
+        recompensa.setEstat(EstatRecompensa.RESERVADA);
+        
+        //guardar canvis
+        usuariRepo.save(usuari);
+        repo.save(recompensa);
     }
 }
