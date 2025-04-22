@@ -20,6 +20,9 @@ class RewardViewModel(
     private val _recompenses = MutableStateFlow<List<Recompensa>>(emptyList())
     val recompenses: StateFlow<List<Recompensa>> = _recompenses
 
+    private val _reservaSuccess = MutableStateFlow<Boolean?>(null)
+    val reservaSuccess: StateFlow<Boolean?> = _reservaSuccess
+
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
@@ -33,7 +36,27 @@ class RewardViewModel(
         }
     }
 
+    fun reservarRecompensa(id: Long) {
+        val token = prefs.getString("token", null) ?: return
+        viewModelScope.launch {
+            rewardRepo.reservarRecompensa(id, token).fold(
+                onSuccess = {
+                    _reservaSuccess.value = true
+                },
+                onFailure = {
+                    _reservaSuccess.value = false
+                    _error.value = it.message
+                }
+            )
+        }
+    }
+
     fun clearError() {
+        _error.value = null
+    }
+
+    fun clearReservaStatus() {
+        _reservaSuccess.value = null
         _error.value = null
     }
 }

@@ -17,4 +17,18 @@ class RewardRepo(private val api: RewardApi) {
             Result.failure(e)
         }
     }
+
+    suspend fun reservarRecompensa(id: Long, token: String): Result<Unit>{
+        return try {
+            val response = api.reservarRecompensa(id, "Bearer $token")
+            if(response.isSuccessful){
+                Result.success(Unit)
+            }else{
+                val error = response.errorBody()?.string() ?: "Error desconegut"
+                Result.failure(Exception(error))
+            }
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
 }

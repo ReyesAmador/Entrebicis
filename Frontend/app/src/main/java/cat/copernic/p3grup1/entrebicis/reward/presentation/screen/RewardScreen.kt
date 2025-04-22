@@ -24,12 +24,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,24 +57,55 @@ fun RewardScreen(
         factory = provideRewardViewModelFactory(context.applicationContext as Application)
     )
     val recompenses by viewModel.recompenses.collectAsState()
+    val reservaSuccess by viewModel.reservaSuccess.collectAsState()
     val error by viewModel.error.collectAsState()
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.carregarRecompenses()
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Primary)
-                .height(184.dp),
-            contentAlignment = Alignment.Center
-        ) {
-                IconButton(onClick = { onBack() },
+    LaunchedEffect(reservaSuccess, error) {
+        reservaSuccess?.let { success ->
+            if (success) {
+                snackbarHostState.showSnackbar("Recompensa reservada correctament!")
+            } else {
+                snackbarHostState.showSnackbar(error ?: "Error inesperat al reservar")
+            }
+            viewModel.clearReservaStatus()
+        }
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState){ data ->
+                val isSuccess = data.visuals.message.contains("correctament", ignoreCase = true)
+                val backgroundColor = if(isSuccess) Color.Green else Color.Red
+
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = backgroundColor,
+                    contentColor = Color.White
+                )
+            }
+        }
+    ) { padding ->
+
+        Column(modifier = Modifier.fillMaxSize()
+            .padding(padding)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Primary)
+                    .height(184.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = { onBack() },
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(start = 8.dp, top = 8.dp)) {
+                        .padding(start = 8.dp, top = 8.dp)
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Botó per anar enrere",
@@ -85,44 +120,37 @@ fun RewardScreen(
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 24.dp)
                 )
-        }
+            }
 
-        // Subtítulos
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Recompenses",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Reservar/\nUsuari",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.End
-            )
-        }
-        if (error != null) {
-            Text(
-                text = error ?: "",
-                color = Color.Red,
+            // Subtítulos
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                textAlign = TextAlign.Center
-            )
-        }
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Recompenses",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Reservar/\nUsuari",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.End
+                )
+            }
 
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(recompenses) { recompensa ->
-                RewardCard(recompensa = recompensa)
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(recompenses) { recompensa ->
+                    RewardCard(
+                        recompensa = recompensa,
+                        onReservar = {viewModel.reservarRecompensa(it)})
+                }
             }
         }
     }
