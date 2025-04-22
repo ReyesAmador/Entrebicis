@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cat.copernic.p3grup1.entrebicis.core.enums.EstatRecompensa
 import cat.copernic.p3grup1.entrebicis.core.models.Recompensa
@@ -63,20 +64,29 @@ fun RewardCard(
             ) {
                 Text(
                     text = recompensa.descripcio ?: "",
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = recompensa.puntRecollida ?: "",
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
             Text(
                 text = recompensa.direccio ?: "",
+                modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Row( modifier = Modifier.fillMaxWidth(),
