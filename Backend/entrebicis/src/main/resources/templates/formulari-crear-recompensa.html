@@ -37,7 +37,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Adreça<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control border-success" th:field="*{direccio}" required>
+                        <input type="text" class="form-control border-success" th:field="*{direccio}" maxlength="50" required>
                         <div class="text-danger mt-1" th:if="${#fields.hasErrors('direccio')}" th:errors="*{direccio}"></div>
                     </div>
                 </div>

@@ -56,6 +56,7 @@ public class Recompensa {
     @NotBlank(message = "Aquest camp no pot estar buit ni contenir només espais")
     private String puntRecollida;
     
+    @Column(length = 50)
     @NotBlank(message = "Aquest camp no pot estar buit ni contenir només espais")
     private String direccio;
     
