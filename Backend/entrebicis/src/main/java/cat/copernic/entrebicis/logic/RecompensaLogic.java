@@ -13,6 +13,7 @@ import cat.copernic.entrebicis.exceptions.RecompensaReservadaException;
 import cat.copernic.entrebicis.exceptions.SaldoInsuficientException;
 import cat.copernic.entrebicis.repository.RecompensaRepo;
 import cat.copernic.entrebicis.repository.UsuariRepo;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,13 +87,37 @@ public class RecompensaLogic {
             throw new RecompensaReservadaException("Ja tens una recompensa reservada");
         }
         
-        //Aplicar canvis
-        usuari.setSaldo(usuari.getSaldo() - recompensa.getValor());
+        //aplicar canvis
         recompensa.setUsuari(usuari);
         recompensa.setEstat(EstatRecompensa.RESERVADA);
         
         //guardar canvis
-        usuariRepo.save(usuari);
         repo.save(recompensa);
+    }
+    
+    public void assignarRecompensa (Long idRecompensa){
+        Recompensa recompensa = repo.findById(idRecompensa)
+                .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
+        
+        Usuari usuari = recompensa.getUsuari();
+        
+        //validació saldo
+        if(usuari.getSaldo() < recompensa.getValor()){
+            throw new SaldoInsuficientException("Saldo insuficient per assignar la recompensa");
+        }
+        
+        //validació si ja té recompensa reservada
+        boolean jaReservada = repo.existsByUsuariEmailAndEstat(usuari.getEmail(), EstatRecompensa.ASSIGNADA);
+        if(jaReservada){
+            throw new RecompensaReservadaException("L'usuari ja té una recompensa assignada.");
+        }
+        
+        //aplicar canvis
+        recompensa.setEstat(EstatRecompensa.ASSIGNADA);
+        recompensa.setDataAssignacio(LocalDate.now());
+        repo.save(recompensa);
+        
+        usuari.setSaldo(usuari.getSaldo() - recompensa.getValor());
+        usuariRepo.save(usuari);
     }
 }
