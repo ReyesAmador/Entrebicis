@@ -52,11 +52,12 @@
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </form>
-                        <a th:if="${rec.estat.name() == 'RESERVADA'}"
-                           th:href="@{'/admin/recompenses/assignar/' + ${rec.id}}"
-                           class="btn btn-sm btn-success btn-square" title="Assignar recompensa">
+                        <form th:action="@{'/admin/recompenses/assignar/' + ${rec.id}}" method="post"
+                            th:if="${rec.estat.name() == 'RESERVADA'}" style="display:inline;">
+                            <button type='submit' class="btn btn-sm btn-success btn-square" title="Assignar recompensa">
                             <i class="bi bi-person-plus-fill"></i>
-                        </a>
+                            </button>
+                        </form>
                     </td>
                 </tr>
             </tbody>

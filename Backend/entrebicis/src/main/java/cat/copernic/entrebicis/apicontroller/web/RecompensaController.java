@@ -6,6 +6,8 @@ package cat.copernic.entrebicis.apicontroller.web;
 
 import cat.copernic.entrebicis.entities.Recompensa;
 import cat.copernic.entrebicis.exceptions.NotFoundException;
+import cat.copernic.entrebicis.exceptions.RecompensaReservadaException;
+import cat.copernic.entrebicis.exceptions.SaldoInsuficientException;
 import cat.copernic.entrebicis.logic.RecompensaLogic;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +70,18 @@ public class RecompensaController {
         }catch(IllegalStateException e){
             redirectAtt.addFlashAttribute("error", e.getMessage());
         }catch(NotFoundException e){
+            redirectAtt.addFlashAttribute("error", e.getMessage());
+        }
+        
+        return "redirect:/admin/recompenses";
+    }
+    
+    @PostMapping("assignar/{id}")
+    public String assignarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
+        try{
+            recompensaLogic.assignarRecompensa(id);
+            redirectAtt.addFlashAttribute("missatgeSuccess", "Recompensa assignada correctament.");
+        }catch(NotFoundException | SaldoInsuficientException | RecompensaReservadaException e){
             redirectAtt.addFlashAttribute("error", e.getMessage());
         }
         
