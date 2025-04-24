@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -56,9 +57,16 @@ public class RecompensaControllerAndroid {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> mostrarRecompensa(@PathVariable Long id){
+    public ResponseEntity<?> mostrarRecompensa(@PathVariable Long id, Principal principal){
         try{
+            String email = principal.getName();
             Recompensa recompensa = recoLogic.getRecompensa(id);
+            
+            // ⚠️ Validar si la recompensa tiene usuario asignado y no es el logueado
+            if (recompensa.getUsuari() != null && !recompensa.getUsuari().getEmail().equals(email)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tens permís per veure aquesta recompensa");
+            }
+            
             return ResponseEntity.ok(RecompensaDetallDTO.from(recompensa));
         }catch(NotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
