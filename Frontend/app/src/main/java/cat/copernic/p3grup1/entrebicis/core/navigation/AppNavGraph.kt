@@ -14,10 +14,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import cat.copernic.p3grup1.entrebicis.core.components.BottomNavItem
 import cat.copernic.p3grup1.entrebicis.home.presentation.screen.HomeScreen
 import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
+import cat.copernic.p3grup1.entrebicis.reward.presentation.screen.RewardDetailNavScreen
+import cat.copernic.p3grup1.entrebicis.reward.presentation.screen.RewardDetailScreen
 import cat.copernic.p3grup1.entrebicis.reward.presentation.screen.RewardScreen
 import cat.copernic.p3grup1.entrebicis.route.presentation.screen.DetallRutaScreen
 import cat.copernic.p3grup1.entrebicis.route.presentation.screen.RutaScreen
@@ -159,14 +162,39 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             )
         }
         composable(BottomNavItem.Reward.route) {
+
+            val mostraSnackbarReserva = navController
+                .currentBackStackEntry
+                ?.savedStateHandle
+                ?.get<Boolean>("successReserva") == true
             RewardScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onRewardClick = {id -> navController.navigate("reward/$id")},
+                mostraSnackbarReserva = mostraSnackbarReserva
             )
         }
         composable(BottomNavItem.Profile.route) {
             UserProfileScreen(
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable(
+            "reward/{id}",
+            arguments = listOf(navArgument("id"){ type = NavType.LongType})
+        ){ backStackEntry ->
+            val recompensaId = backStackEntry.arguments?.getLong("id") ?: return@composable
+            RewardDetailNavScreen(
+                id = recompensaId,
+                onBack = { navController.popBackStack()},
+                onReservaSuccess = {
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("successReserva", true)
+
+                    navController.popBackStack()
+                })
+
         }
     }
 }

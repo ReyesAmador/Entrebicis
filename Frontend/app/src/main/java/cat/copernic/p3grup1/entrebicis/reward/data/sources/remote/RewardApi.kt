@@ -19,7 +19,7 @@ interface RewardApi {
         @Header("Authorization") token: String
     ): Response<Void>
 
-    @GET("{id}")
+    @GET("recompenses/{id}")
     suspend fun getRecompensa(
         @Header("Authorization") token: String,
         @Path("id") id: Long

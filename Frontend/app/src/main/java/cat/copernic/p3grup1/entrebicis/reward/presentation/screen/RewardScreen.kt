@@ -50,7 +50,9 @@ import cat.copernic.p3grup1.entrebicis.reward.presentation.viewmodel.provideRewa
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RewardScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onRewardClick: (Long) -> Unit,
+    mostraSnackbarReserva: Boolean
 ) {
     val context = LocalContext.current
     val viewModel: RewardViewModel = viewModel(
@@ -63,6 +65,12 @@ fun RewardScreen(
 
     LaunchedEffect(Unit) {
         viewModel.carregarRecompenses()
+    }
+
+    LaunchedEffect(mostraSnackbarReserva) {
+        if (mostraSnackbarReserva) {
+            snackbarHostState.showSnackbar("Recompensa reservada correctament!")
+        }
     }
 
     LaunchedEffect(reservaSuccess, error) {
@@ -149,7 +157,9 @@ fun RewardScreen(
                 items(recompenses) { recompensa ->
                     RewardCard(
                         recompensa = recompensa,
-                        onReservar = {viewModel.reservarRecompensa(it)})
+                        onReservar = {viewModel.reservarRecompensa(it)},
+                        onClick = { onRewardClick(it) }
+                    )
                 }
             }
         }

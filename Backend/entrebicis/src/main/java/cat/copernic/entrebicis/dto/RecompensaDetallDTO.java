@@ -18,6 +18,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class RecompensaDetallDTO {
     
+    private Long id;
     private String descripcio;
     private String dataCreacio;
     private String dataReserva;
@@ -30,6 +31,7 @@ public class RecompensaDetallDTO {
     
     public static RecompensaDetallDTO from(Recompensa r){
         return new RecompensaDetallDTO(
+        r.getId(),
         r.getDescripcio(),
         format(r.getDataCreacio()),
         format(r.getDataReserva(), "Reserva no feta"),

@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import cat.copernic.p3grup1.entrebicis.core.theme.Primary
+import cat.copernic.p3grup1.entrebicis.core.theme.Secondary
 
 @Composable
 fun InfoRow(icon: ImageVector, label: String, value: String){
@@ -23,7 +23,7 @@ fun InfoRow(icon: ImageVector, label: String, value: String){
             .padding(vertical = 6.dp)
             .fillMaxWidth()
     ) {
-        Icon(icon, contentDescription = null, tint = Primary)
+        Icon(icon, contentDescription = null, tint = Secondary)
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = "$label $value",

@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.reward.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import cat.copernic.p3grup1.entrebicis.core.theme.Tertiary
 fun RewardCard(
     recompensa: Recompensa,
     onReservar: (Long) -> Unit,
+    onClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colorText: Pair<Color, String> = when (recompensa.estat) {
@@ -51,6 +53,7 @@ fun RewardCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable{ onClick(recompensa.id)}
             .padding(vertical = 4.dp)
             .height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically

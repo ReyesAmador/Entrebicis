@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AssignmentInd
-import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,10 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.reward.presentation.components.InfoRow
@@ -40,7 +38,9 @@ import cat.copernic.p3grup1.entrebicis.reward.presentation.components.InfoRow
 @Composable
 fun RewardDetailScreen(
     recompensa : RecompensaDetall,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onReservar: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ){
     val mostrarBoto = when (recompensa.estat) {
         "DISPONIBLE" -> true
@@ -55,7 +55,7 @@ fun RewardDetailScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Box(
             modifier = Modifier
@@ -91,44 +91,88 @@ fun RewardDetailScreen(
         // Descripció
         Text(
             text = recompensa.descripcio,
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 28.dp))
+        Box(
+            modifier = Modifier
+                .padding(top = 28.dp)
+                .width(140.dp)
+                .height(1.dp)
+                .align(Alignment.CenterHorizontally)
+                .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.small)
+                .background(Color.Black)
+        )
+
+        Spacer(modifier = Modifier.height(28.dp))
 
         // Estat
         Text(
             text = recompensa.estat,
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
 
-        InfoRow(icon = Icons.Default.CalendarToday, label = "Data creació", value = recompensa.dataCreacio)
-        if (recompensa.nomUsuari.isNotBlank()) {
-            InfoRow(icon = Icons.Default.Person, label = "Usuari:", value = recompensa.nomUsuari)
-        }
-        InfoRow(icon = Icons.Default.Store, label = "Punt de recollida", value = recompensa.nomPunt)
-        InfoRow(icon = Icons.Default.LocationOn, label = "Adreça", value = recompensa.direccio)
-        InfoRow(icon = Icons.Default.BookmarkAdded, label = "Data de reserva", value = recompensa.dataReserva)
-        InfoRow(icon = Icons.Default.AssignmentInd, label = "Data assignació", value = recompensa.dataAssignacio)
-        InfoRow(icon = Icons.Default.CheckCircle, label = "Data recollida", value = recompensa.dataRecollida)
+            Spacer(modifier = Modifier.height(48.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if(mostrarBoto) {
-            Button(
-                onClick = { /* No hace nada de momento */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                modifier = Modifier
-                    .height(38.dp)
-                    .fillMaxWidth(0.8f)
-            ) {
-                Text(
-                    text = textBoto,
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelLarge
+            InfoRow(
+                icon = Icons.Default.CalendarToday,
+                label = "Data creació: ",
+                value = recompensa.dataCreacio
+            )
+            if (recompensa.nomUsuari.isNotBlank()) {
+                InfoRow(
+                    icon = Icons.Default.Person,
+                    label = "Usuari: ",
+                    value = recompensa.nomUsuari
                 )
+            }
+            InfoRow(
+                icon = Icons.Default.Store,
+                label = "Punt de recollida: ",
+                value = recompensa.nomPunt
+            )
+            InfoRow(icon = Icons.Default.LocationOn, label = "Adreça: ", value = recompensa.direccio)
+            InfoRow(
+                icon = Icons.Default.BookmarkAdded,
+                label = "Data de reserva: ",
+                value = recompensa.dataReserva
+            )
+            InfoRow(
+                icon = Icons.Default.AssignmentInd,
+                label = "Data assignació: ",
+                value = recompensa.dataAssignacio
+            )
+            InfoRow(
+                icon = Icons.Default.CheckCircle,
+                label = "Data recollida: ",
+                value = recompensa.dataRecollida
+            )
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            if (mostrarBoto) {
+                Button(
+                    onClick = {
+                        if(recompensa.estat == "DISPONIBLE"){
+                            onReservar(recompensa.id)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                    modifier = Modifier
+                        .height(38.dp)
+                        .fillMaxWidth(0.8f)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(
+                        text = textBoto,
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
     }
