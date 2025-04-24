@@ -35,6 +35,10 @@ public class RecompensaLogic {
         return repo.findAll();
     }
     
+    public Recompensa getRecompensa(Long id){
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("No trobada"));
+    }
+    
     public void crearRecompensa(Recompensa r){
         
         r.setDescripcio(r.getDescripcio() != null ? r.getDescripcio().trim() : null);
@@ -46,6 +50,7 @@ public class RecompensaLogic {
         }
         
         r.setEstat(EstatRecompensa.DISPONIBLE);
+        r.setDataCreacio(LocalDate.now());
         repo.save(r);
     }
     

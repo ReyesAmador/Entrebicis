@@ -4,6 +4,7 @@
  */
 package cat.copernic.entrebicis.apicontroller.web;
 
+import cat.copernic.entrebicis.dto.RecompensaDetallDTO;
 import cat.copernic.entrebicis.entities.Recompensa;
 import cat.copernic.entrebicis.exceptions.NotFoundException;
 import cat.copernic.entrebicis.exceptions.RecompensaReservadaException;
@@ -76,7 +77,7 @@ public class RecompensaController {
         return "redirect:/admin/recompenses";
     }
     
-    @PostMapping("assignar/{id}")
+    @PostMapping("/assignar/{id}")
     public String assignarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
         try{
             recompensaLogic.assignarRecompensa(id);
@@ -86,5 +87,13 @@ public class RecompensaController {
         }
         
         return "redirect:/admin/recompenses";
+    }
+    
+    @GetMapping("/{id}")
+    public String mostrarRecompensa(@PathVariable Long id, Model model){
+        RecompensaDetallDTO dto = RecompensaDetallDTO.from(recompensaLogic.getRecompensa(id));
+        model.addAttribute("recompensa", dto);
+        
+        return "detall-recompensa";
     }
 }

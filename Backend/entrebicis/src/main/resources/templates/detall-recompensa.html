@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detall recompensa</title>
+    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+<body>
+<div th:replace="fragments/menu :: menu ('recompenses')" th:with="activePage='recompenses'"></div>
+<div th:replace="fragments/header :: header ('Detall recompensa')"></div>
+
+<div class="content" style="margin-left: 260px; padding: 20px;">
+        <div class="row">
+            <!-- Columna izquierda -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Descripció</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.descripcio}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Data creació</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.dataCreacio}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Data reserva</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.dataReserva}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Data assignació</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.dataAssignacio}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Data recollida</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.dataRecollida}" readonly>
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Nom usuari</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.nomUsuari}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Punt de bescanvi</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.nomPunt}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Adreça</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.direccio}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Estat</label>
+                    <input type="text" class="form-control border-success" th:value="${recompensa.estat}" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para volver -->
+        <div class="d-flex justify-content-center mt-4">
+            <a th:href="@{/admin/recompenses}" class="btn btn-success px-5">
+                <i class="bi bi-arrow-left-circle me-2"></i> Tornar
+            </a>
+        </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

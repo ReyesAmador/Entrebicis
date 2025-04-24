@@ -60,6 +60,15 @@ public class Recompensa {
     @NotBlank(message = "Aquest camp no pot estar buit ni contenir només espais")
     private String direccio;
     
+    @Column(name = "data_creacio")
+    private LocalDate dataCreacio;
+    
+    @Column(name = "data_reserva")
+    private LocalDate dataReserva;
+    
+    @Column(name = "data_recollida")
+    private LocalDate dataRecollida;
+    
     @Column(name = "data_assignacio")
     private LocalDate dataAssignacio;
     
