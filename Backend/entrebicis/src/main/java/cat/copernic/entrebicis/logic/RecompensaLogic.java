@@ -36,7 +36,7 @@ public class RecompensaLogic {
     }
     
     public Recompensa getRecompensa(Long id){
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("No trobada"));
+        return repo.findById(id).orElseThrow(() -> new NotFoundException("Recompensa amb id " + id + " no trobada."));
     }
     
     public void crearRecompensa(Recompensa r){

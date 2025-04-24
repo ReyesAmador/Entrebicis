@@ -90,10 +90,15 @@ public class RecompensaController {
     }
     
     @GetMapping("/{id}")
-    public String mostrarRecompensa(@PathVariable Long id, Model model){
-        RecompensaDetallDTO dto = RecompensaDetallDTO.from(recompensaLogic.getRecompensa(id));
-        model.addAttribute("recompensa", dto);
-        
-        return "detall-recompensa";
+    public String mostrarRecompensa(@PathVariable Long id, Model model, RedirectAttributes redirectAtt){
+        try{
+            RecompensaDetallDTO dto = RecompensaDetallDTO.from(recompensaLogic.getRecompensa(id));
+            model.addAttribute("recompensa", dto);
+
+            return "detall-recompensa";
+        }catch(NotFoundException e){
+            redirectAtt.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/recompenses";
     }
 }
