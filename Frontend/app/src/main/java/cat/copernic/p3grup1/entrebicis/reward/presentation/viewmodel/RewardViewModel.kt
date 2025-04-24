@@ -2,9 +2,11 @@ package cat.copernic.p3grup1.entrebicis.reward.presentation.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cat.copernic.p3grup1.entrebicis.core.models.Recompensa
+import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import cat.copernic.p3grup1.entrebicis.reward.data.repositories.RewardRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +21,9 @@ class RewardViewModel(
 
     private val _recompenses = MutableStateFlow<List<Recompensa>>(emptyList())
     val recompenses: StateFlow<List<Recompensa>> = _recompenses
+
+    private val _recompensa = MutableStateFlow<RecompensaDetall?>(null)
+    val recompensa: StateFlow<RecompensaDetall?> = _recompensa
 
     private val _reservaSuccess = MutableStateFlow<Boolean?>(null)
     val reservaSuccess: StateFlow<Boolean?> = _reservaSuccess
@@ -46,6 +51,20 @@ class RewardViewModel(
                 onFailure = {
                     _reservaSuccess.value = false
                     _error.value = it.message
+                }
+            )
+        }
+    }
+
+    fun carregarRecompensa(id: Long){
+        val token = prefs.getString("token", null) ?: return
+        viewModelScope.launch {
+            rewardRepo.getRecompensa(token,id).fold(
+                onSuccess = {
+                    _recompensa.value = it
+                },
+                onFailure = {
+                    Log.e("REWARD_DETAIL", "Error carregant recompensa: ${it.message}")
                 }
             )
         }

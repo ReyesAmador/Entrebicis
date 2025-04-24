@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.reward.data.repositories
 
 import cat.copernic.p3grup1.entrebicis.core.models.Recompensa
+import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import cat.copernic.p3grup1.entrebicis.reward.data.sources.remote.RewardApi
 
 class RewardRepo(private val api: RewardApi) {
@@ -26,6 +27,19 @@ class RewardRepo(private val api: RewardApi) {
             }else{
                 val error = response.errorBody()?.string() ?: "Error desconegut"
                 Result.failure(Exception(error))
+            }
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getRecompensa(token: String, id: Long): Result<RecompensaDetall>{
+        return try {
+            val response = api.getRecompensa("Bearer $token", id)
+            if (response.isSuccessful && response.body() != null){
+                Result.success(response.body()!!)
+            }else{
+                Result.failure(Exception("Error ${response.code()}: ${response.message()}"))
             }
         }catch (e: Exception){
             Result.failure(e)

@@ -13,6 +13,9 @@ public class Recompensa {
     private EstatRecompensa estat;
     private String puntRecollida;
     private String direccio;
+    private LocalDate dataCreacio;
+    private LocalDate dataReserva;
+    private LocalDate dataRecollida;
     private LocalDate dataAssignacio;
     private Usuari usuari;
 
@@ -86,5 +89,29 @@ public class Recompensa {
 
     public void setUsuari(Usuari usuari) {
         this.usuari = usuari;
+    }
+
+    public LocalDate getDataCreacio() {
+        return dataCreacio;
+    }
+
+    public void setDataCreacio(LocalDate dataCreacio) {
+        this.dataCreacio = dataCreacio;
+    }
+
+    public LocalDate getDataReserva() {
+        return dataReserva;
+    }
+
+    public void setDataReserva(LocalDate dataReserva) {
+        this.dataReserva = dataReserva;
+    }
+
+    public LocalDate getDataRecollida() {
+        return dataRecollida;
+    }
+
+    public void setDataRecollida(LocalDate dataRecollida) {
+        this.dataRecollida = dataRecollida;
     }
 }

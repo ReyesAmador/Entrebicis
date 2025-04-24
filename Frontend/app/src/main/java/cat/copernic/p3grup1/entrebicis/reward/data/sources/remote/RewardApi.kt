@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.reward.data.sources.remote
 
 import cat.copernic.p3grup1.entrebicis.core.models.Recompensa
+import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -17,4 +18,10 @@ interface RewardApi {
         @Path("id") id: Long,
         @Header("Authorization") token: String
     ): Response<Void>
+
+    @GET("{id}")
+    suspend fun getRecompensa(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long
+    ): Response<RecompensaDetall>
 }
