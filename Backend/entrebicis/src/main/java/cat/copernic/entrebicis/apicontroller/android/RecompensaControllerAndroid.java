@@ -4,6 +4,7 @@
  */
 package cat.copernic.entrebicis.apicontroller.android;
 
+import cat.copernic.entrebicis.dto.RecompensaDetallDTO;
 import cat.copernic.entrebicis.entities.Recompensa;
 import cat.copernic.entrebicis.exceptions.NotFoundException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
@@ -51,6 +52,16 @@ public class RecompensaControllerAndroid {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperat");
+        }
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<?> mostrarRecompensa(@PathVariable Long id){
+        try{
+            Recompensa recompensa = recoLogic.getRecompensa(id);
+            return ResponseEntity.ok(RecompensaDetallDTO.from(recompensa));
+        }catch(NotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }
