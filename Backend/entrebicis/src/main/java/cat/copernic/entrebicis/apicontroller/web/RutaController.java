@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.apicontroller.web;
 
 import cat.copernic.entrebicis.dto.RutaAmbPuntsGps;
+import cat.copernic.entrebicis.logic.ParametresSistemaLogic;
 import cat.copernic.entrebicis.logic.RutaLogic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,9 +27,13 @@ public class RutaController {
     @Autowired
     RutaLogic rutaLogic;
     
+    @Autowired
+    ParametresSistemaLogic parametresLogic;
+    
     @GetMapping
     public String llistarRutes(Model model){
         model.addAttribute("llistaRutes", rutaLogic.getAllRutes());
+        model.addAttribute("velocitatMaxima", parametresLogic.obtenirVelocitatMaxima());
         return "llista-rutes";
     }
    

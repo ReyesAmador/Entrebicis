@@ -47,6 +47,12 @@ public class ParametresSistemaLogic {
         return parametres.getTempsMaximAturat();
     }
     
+    public int obtenirVelocitatMaxima() {
+        ParametresSistema parametres = repo.findById(1L)
+            .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
+        return parametres.getVelocitatMaxima();
+    }
+    
     public double obtenirConversioKmPunts(){
         ParametresSistema parametres = repo.findById(1L)
                 .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
