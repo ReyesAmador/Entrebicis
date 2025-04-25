@@ -58,6 +58,10 @@ fun RewardCard(
     }
 
     val(color, text) = colorText
+    val adjustText = when(text){
+        "Reservada" -> 14.sp
+        else -> 16.sp
+    }
 
     val showDialog = remember { mutableStateOf(false) }
 
@@ -221,6 +225,7 @@ fun RewardCard(
             }else {
                 Text(
                     text = text,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = adjustText),
                     color = Color.White,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 4.dp)
