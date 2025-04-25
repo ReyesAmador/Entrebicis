@@ -70,6 +70,7 @@ fun LoginScreen(
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     val loginSuccess by viewModel.loginSuccess.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     val navController = rememberNavController()
     val savedStateHandle = remember {
@@ -84,6 +85,14 @@ fun LoginScreen(
     LaunchedEffect(loginSuccess) {
         if (loginSuccess) {
             onLoginSuccess()
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            scope.launch {
+                snackbarHostState.showSnackbar(it)
+            }
         }
     }
 
