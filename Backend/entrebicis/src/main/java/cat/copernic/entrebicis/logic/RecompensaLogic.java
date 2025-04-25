@@ -125,4 +125,20 @@ public class RecompensaLogic {
         usuari.setSaldo(usuari.getSaldo() - recompensa.getValor());
         usuariRepo.save(usuari);
     }
+    
+    public void recollirRecompensa(String email, Long idRecompensa){
+        Recompensa recompensa = repo.findById(idRecompensa)
+                .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
+        
+        if (!recompensa.getUsuari().getEmail().equals(email)) {
+            throw new RuntimeException("No tens permís per modificar aquesta recompensa");
+        }
+        
+        if (recompensa.getEstat() != EstatRecompensa.ASSIGNADA) {
+            throw new RuntimeException("La recompensa no està en estat ASSIGNADA");
+        }
+        
+        recompensa.setEstat(EstatRecompensa.RECOLLIDA);
+        repo.save(recompensa);
+    }
 }
