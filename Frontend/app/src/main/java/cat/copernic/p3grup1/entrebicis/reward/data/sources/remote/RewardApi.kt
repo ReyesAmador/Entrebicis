@@ -5,6 +5,7 @@ import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -24,4 +25,10 @@ interface RewardApi {
         @Header("Authorization") token: String,
         @Path("id") id: Long
     ): Response<RecompensaDetall>
+
+    @PATCH("recompenses/recollir/{id}")
+    suspend fun recollirRecompensa(
+        @Header("Authorization") token: String,
+        @Path("id") id: Long
+    ): Response<Unit>
 }

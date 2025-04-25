@@ -45,4 +45,14 @@ class RewardRepo(private val api: RewardApi) {
             Result.failure(e)
         }
     }
+
+    suspend fun recollirRecompensa(token: String, id: Long): Result<Unit>{
+        return try {
+            val response = api.recollirRecompensa("Bearer $token", id)
+            if(response.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception("Error ${response.code()}: ${response.message()}"))
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
 }
