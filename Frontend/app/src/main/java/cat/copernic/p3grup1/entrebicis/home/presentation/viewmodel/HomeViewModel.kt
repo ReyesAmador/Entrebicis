@@ -64,6 +64,18 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     fun carregarUsuari() {
         val token = prefs.getString("token", null) ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
+        val rutaActivaPref = prefs.getBoolean("ruta_activa", false)
+        if(rutaActivaPref){
+            Log.d("RUTA_RECUPERADA", "Detectada ruta activa. Finalitzant...")
+            viewModelScope.launch {
+                repoRuta.finalitzarRuta().onSuccess {
+                    prefs.edit().remove("ruta_activa").apply()
+                    Log.d("RUTA_RECUPERADA", "Ruta finalitzada automàticament al reiniciar app")
+                }.onFailure {
+                    Log.e("RUTA_RECUPERADA", "Error finalitzant ruta automàtica: ${it.message}")
+                }
+            }
+        }
         viewModelScope.launch {
             repo.getUsuari(token).fold(
                 onSuccess = {
@@ -84,6 +96,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     fun iniciarRuta() {
         if (_rutaActiva.value) return
         _rutaActiva.value = true
+        prefs.edit().putBoolean("ruta_activa", true).apply()
         iniciRutaTimestamp = System.currentTimeMillis()
         startCronometre()
         val intent = Intent(appContext, LocationService::class.java)
@@ -101,6 +114,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     fun finalitzarRuta() {
         if (!_rutaActiva.value) return
         _rutaActiva.value = false
+        prefs.edit().remove("ruta_activa").apply()
         stopCronometre()
         val intent = Intent(appContext, LocationService::class.java)
         appContext.stopService(intent)

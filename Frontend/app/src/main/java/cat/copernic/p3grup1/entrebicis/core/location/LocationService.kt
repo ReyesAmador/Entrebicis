@@ -171,6 +171,10 @@ class LocationService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (rutaActiva) {
+            Log.d("LocationService", "🔥 App cerrada: finalitzant ruta activa")
+            finalizarRutaPerInactivitat()
+        }
         rutaActiva = false
         handler.removeCallbacks(checkInactivityRunnable)
         fusedLocationClient.removeLocationUpdates(locationCallback)
