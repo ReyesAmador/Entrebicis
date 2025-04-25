@@ -31,7 +31,7 @@ public class RecompensaDetallDTO {
     
     public static RecompensaDetallDTO from(Recompensa r){
         return new RecompensaDetallDTO(
-        r.getId(),
+        r.getId(),    
         r.getDescripcio(),
         format(r.getDataCreacio()),
         format(r.getDataReserva(), "Reserva no feta"),
