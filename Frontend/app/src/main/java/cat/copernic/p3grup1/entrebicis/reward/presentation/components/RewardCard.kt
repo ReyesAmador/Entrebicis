@@ -42,9 +42,9 @@ fun RewardCard(
 ) {
     val colorText: Pair<Color, String> = when (recompensa.estat) {
         EstatRecompensa.DISPONIBLE -> Primary to "Reservar"
-        EstatRecompensa.ASSIGNADA -> Assigned to (recompensa.usuari?.nom ?: "")
-        EstatRecompensa.RESERVADA -> Secondary to (recompensa.usuari?.nom ?: "")
-        EstatRecompensa.RECOLLIDA -> Tertiary to (recompensa.usuari?.nom ?: "")
+        EstatRecompensa.ASSIGNADA -> Assigned to "Recollir"
+        EstatRecompensa.RESERVADA -> Secondary to "Reservada"
+        EstatRecompensa.RECOLLIDA -> Tertiary to "Recollida"
         else -> Color.LightGray to ""
     }
 
