@@ -10,5 +10,6 @@ data class RecompensaDetall(
     val nomUsuari: String,
     val nomPunt: String,
     val direccio: String,
-    val estat: String
+    val estat: String,
+    val observacions: String
 )

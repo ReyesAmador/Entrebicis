@@ -1,6 +1,7 @@
 package cat.copernic.p3grup1.entrebicis.reward.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AssignmentInd
@@ -18,6 +21,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -53,6 +57,8 @@ fun RewardDetailScreen(
         "ASSIGNADA" -> "RECOLLIR"
         else -> ""
     }
+
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -114,42 +120,50 @@ fun RewardDetailScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .verticalScroll(scrollState)) {
 
             Spacer(modifier = Modifier.height(48.dp))
 
             InfoRow(
                 icon = Icons.Default.CalendarToday,
-                label = "Data creació: ",
+                label = "Data creació:",
                 value = recompensa.dataCreacio
             )
             if (recompensa.nomUsuari.isNotBlank()) {
                 InfoRow(
                     icon = Icons.Default.Person,
-                    label = "Usuari: ",
+                    label = "Usuari:",
                     value = recompensa.nomUsuari
                 )
             }
             InfoRow(
                 icon = Icons.Default.Store,
-                label = "Punt de recollida: ",
+                label = "Punt de recollida:",
                 value = recompensa.nomPunt
             )
             InfoRow(icon = Icons.Default.LocationOn, label = "Adreça: ", value = recompensa.direccio)
             InfoRow(
                 icon = Icons.Default.BookmarkAdded,
-                label = "Data de reserva: ",
+                label = "Data de reserva:",
                 value = recompensa.dataReserva
             )
             InfoRow(
                 icon = Icons.Default.AssignmentInd,
-                label = "Data assignació: ",
+                label = "Data assignació:",
                 value = recompensa.dataAssignacio
             )
             InfoRow(
                 icon = Icons.Default.CheckCircle,
-                label = "Data recollida: ",
+                label = "Data recollida:",
                 value = recompensa.dataRecollida
+            )
+            InfoRow(
+                icon = Icons.Default.Visibility,
+                label = "Observacions:",
+                value = recompensa.observacions
             )
 
             Spacer(modifier = Modifier.height(28.dp))
