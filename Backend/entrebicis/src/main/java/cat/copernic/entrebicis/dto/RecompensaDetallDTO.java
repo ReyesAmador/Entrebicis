@@ -28,6 +28,7 @@ public class RecompensaDetallDTO {
     private String nomPunt;
     private String direccio;
     private String estat;
+    private String observacions;
     
     public static RecompensaDetallDTO from(Recompensa r){
         return new RecompensaDetallDTO(
@@ -40,7 +41,8 @@ public class RecompensaDetallDTO {
         r.getUsuari() != null ? r.getUsuari().getNom() : "",
         r.getPuntRecollida(),
         r.getDireccio(),
-        r.getEstat().name()
+        r.getEstat().name(),
+        r.getObservacions()
         );
     }
     
