@@ -25,6 +25,9 @@ class RewardViewModel(
     private val _recompensa = MutableStateFlow<RecompensaDetall?>(null)
     val recompensa: StateFlow<RecompensaDetall?> = _recompensa
 
+    private val _recompensaEntregada = MutableStateFlow(false)
+    val recompensaEntregada: StateFlow<Boolean> = _recompensaEntregada
+
     private val _reservaSuccess = MutableStateFlow<Boolean?>(null)
     val reservaSuccess: StateFlow<Boolean?> = _reservaSuccess
 
@@ -68,6 +71,21 @@ class RewardViewModel(
                 }
             )
         }
+    }
+
+    fun recollirRecompensa(id: Long){
+        val token = prefs.getString("token", null) ?: return
+        viewModelScope.launch {
+            rewardRepo.recollirRecompensa(token, id).onSuccess {
+                _recompensaEntregada.value = true
+            }.onFailure {
+                Log.e("REWARD", "Error recollint recompensa: ${it.message}")
+            }
+        }
+    }
+
+    fun resetEntrega() {
+        _recompensaEntregada.value = false
     }
 
     fun clearError() {

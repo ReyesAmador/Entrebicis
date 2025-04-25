@@ -84,6 +84,12 @@ fun RewardScreen(
         }
     }
 
+    LaunchedEffect(viewModel.recompensaEntregada.collectAsState().value) {
+        if (viewModel.recompensaEntregada.value) {
+            snackbarHostState.showSnackbar("Recompensa recollida correctament")
+        }
+    }
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState){ data ->
@@ -143,7 +149,7 @@ fun RewardScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Reservar/\nUsuari",
+                    text = "Accions",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.End
@@ -157,8 +163,16 @@ fun RewardScreen(
                 items(recompenses) { recompensa ->
                     RewardCard(
                         recompensa = recompensa,
-                        onReservar = {viewModel.reservarRecompensa(it)},
-                        onClick = { onRewardClick(it) }
+                        onReservar = {
+                            viewModel.reservarRecompensa(it)
+                            viewModel.carregarRecompenses()},
+                        onClick = { onRewardClick(it) },
+                        onRecollir = {viewModel.recollirRecompensa(it)},
+                        entregat = viewModel.recompensaEntregada.collectAsState().value,
+                        onTancarDialog = {
+                            viewModel.resetEntrega()
+                            viewModel.carregarRecompenses()
+                        }
                     )
                 }
             }

@@ -32,6 +32,7 @@ fun RewardDetailNavScreen(
     )
     val recompensa by viewModel.recompensa.collectAsState()
     val reservaSuccess by viewModel.reservaSuccess.collectAsState()
+    val entregat by viewModel.recompensaEntregada.collectAsState()
     val error by viewModel.error.collectAsState()
 
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
@@ -69,6 +70,9 @@ fun RewardDetailNavScreen(
                 recompensa = it,
                 onBack = onBack,
                 onReservar = { id -> viewModel.reservarRecompensa(id) },
+                onRecollir = { id -> viewModel.recollirRecompensa(id) },
+                entregat = entregat,
+                onTancarDialog = { viewModel.resetEntrega() },
                 modifier = Modifier.padding(padding)
             )
         }

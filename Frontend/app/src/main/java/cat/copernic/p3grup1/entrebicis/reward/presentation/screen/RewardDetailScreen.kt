@@ -22,14 +22,18 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,11 +43,15 @@ import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.reward.presentation.components.InfoRow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RewardDetailScreen(
     recompensa : RecompensaDetall,
     onBack: () -> Unit,
     onReservar: (Long) -> Unit,
+    onRecollir: (Long) -> Unit,
+    entregat: Boolean,
+    onTancarDialog: () -> Unit,
     modifier: Modifier = Modifier
 ){
     val mostrarBoto = when (recompensa.estat) {
@@ -59,6 +67,7 @@ fun RewardDetailScreen(
     }
 
     val scrollState = rememberScrollState()
+    val showDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -168,11 +177,56 @@ fun RewardDetailScreen(
 
             Spacer(modifier = Modifier.height(28.dp))
 
+            if(showDialog.value){
+                AlertDialog(
+                    onDismissRequest = {
+                        showDialog.value = false
+                        onTancarDialog()
+                    },
+                    title = {
+                        Text(text = recompensa.descripcio, style = MaterialTheme.typography.headlineLarge)
+                    },
+                    text = {
+                        if(!entregat){
+                            Text(text = recompensa.nomPunt, style = MaterialTheme.typography.headlineMedium)
+                        }else{
+                            Text("✅ ENTREGAT", style = MaterialTheme.typography.headlineLarge, color = Primary)
+                        }
+                    },
+                    confirmButton = {
+                        if(!entregat){
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Button(onClick = { onRecollir(recompensa.id) }) {
+                                    Text("ENTREGAT")
+                                }
+                            }
+                        }else{
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Button(onClick = {
+                                    showDialog.value = false
+                                    onTancarDialog()
+                                    onBack()
+                                }) {
+                                    Text("TANCAR")
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+
             if (mostrarBoto) {
                 Button(
                     onClick = {
-                        if(recompensa.estat == "DISPONIBLE"){
-                            onReservar(recompensa.id)
+                        when(recompensa.estat){
+                            "DISPONIBLE" -> onReservar(recompensa.id)
+                            "ASSIGNADA" -> showDialog.value = true
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Primary),
