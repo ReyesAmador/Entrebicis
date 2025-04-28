@@ -1,0 +1,20 @@
+<div th:fragment="historialRutes">
+    <h4 class="mt-4">Llista de rutes</h4>
+    <table class="table table-bordered mt-2">
+        <thead>
+            <tr>
+                <th>Data Inici</th>
+                <th>Saldo</th>
+                <th>Estat</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ruta : ${rutes}">
+                <td th:text="${ruta.inici}"></td>
+                <td th:text="${ruta.saldo}"></td>
+                <td th:text="${ruta.validada ? 'Validada' : 'No validada'}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

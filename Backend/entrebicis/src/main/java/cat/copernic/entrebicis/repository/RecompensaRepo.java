@@ -6,6 +6,7 @@ package cat.copernic.entrebicis.repository;
 
 import cat.copernic.entrebicis.entities.Recompensa;
 import cat.copernic.entrebicis.enums.EstatRecompensa;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +18,7 @@ import org.springframework.stereotype.Repository;
 public interface RecompensaRepo extends JpaRepository<Recompensa, Long> {
     
     boolean existsByUsuariEmailAndEstat(String email, EstatRecompensa estat);
+    
+    List<Recompensa> findByUsuariEmail(String email);
 
 }

@@ -1,0 +1,18 @@
+<div th:fragment="historialRecompenses">
+    <h4 class="mt-4">Llista de recompenses</h4>
+    <table class="table table-bordered mt-2">
+        <thead>
+            <tr>
+                <th>Descripció</th>
+                <th>Estat</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="rec : ${recompenses}">
+                <td th:text="${rec.descripcio}"></td>
+                <td th:text="${rec.estat}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

@@ -4,10 +4,14 @@
  */
 package cat.copernic.entrebicis.apicontroller.web;
 
+import cat.copernic.entrebicis.entities.Recompensa;
+import cat.copernic.entrebicis.entities.Ruta;
 import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
+import cat.copernic.entrebicis.logic.RecompensaLogic;
+import cat.copernic.entrebicis.logic.RutaLogic;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.validation.Valid;
 import java.io.ByteArrayInputStream;
@@ -40,6 +44,12 @@ public class UsuariController {
     
     @Autowired
     UsuariLogic usuariLogic;
+    
+    @Autowired
+    RutaLogic rutaLogic;
+    
+    @Autowired
+    RecompensaLogic recoLogic;
     
     @GetMapping
     public String llistarUsuaris(Model model){
@@ -196,5 +206,20 @@ public class UsuariController {
             return URLConnection.guessContentTypeFromStream(bais);
         }
     }
+    
+    @GetMapping("/historial/rutes/{email}")
+    public String historialRutes(@PathVariable String email, Model model) {
+        List<Ruta> rutes = rutaLogic.obtenirRutaUsuari(email);
+        model.addAttribute("rutes", rutes);
+        return "fragments/historial-rutes :: historialRutes";
+    }
+
+    @GetMapping("/historial/recompenses/{email}")
+    public String historialRecompenses(@PathVariable String email, Model model) {
+        List<Recompensa> recompenses = recoLogic.getRecompensesByUsuari(email);
+        model.addAttribute("recompenses", recompenses);
+        return "fragments/historial-recompenses :: historialRecompenses";
+    }
+
     
 }

@@ -141,4 +141,8 @@ public class RecompensaLogic {
         recompensa.setEstat(EstatRecompensa.RECOLLIDA);
         repo.save(recompensa);
     }
+    
+    public List<Recompensa> getRecompensesByUsuari(String email) {
+        return repo.findByUsuariEmail(email);
+    }
 }

@@ -307,4 +307,8 @@ public class RutaLogic {
         rutaRepo.save(ruta);
         usuariRepo.save(usuari);
     }
+    
+    public List<Ruta> obtenirRutaUsuari(String email){
+        return rutaRepo.findByUsuariEmail(email);
+    }
 }
