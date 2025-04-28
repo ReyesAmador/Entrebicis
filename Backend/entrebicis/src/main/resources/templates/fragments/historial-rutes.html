@@ -10,7 +10,7 @@
         </thead>
         <tbody>
             <tr th:each="ruta : ${rutes}">
-                <td th:text="${ruta.inici}"></td>
+                <td th:text="${@temporals.format(ruta.inici)}"></td>
                 <td th:text="${ruta.saldo}"></td>
                 <td th:text="${ruta.validada ? 'Validada' : 'No validada'}"></td>
             </tr>
