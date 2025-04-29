@@ -19,7 +19,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- *
+ * Filtre de seguretat que intercepta totes les peticions HTTP per validar
+ * el token JWT abans de permetre l'accés als recursos protegits de l'aplicació Entrebicis.
+ * 
+ * <p>Comprova la presència del token a l'encapçalament Authorization,
+ * valida el token i, si és correcte, autentica l'usuari al {@link SecurityContextHolder}.</p>
+ * 
+ * <p>Detectat automàticament per Spring Boot gràcies a {@link Component}.</p>
+ * 
+ * <p>Extén {@link OncePerRequestFilter} per assegurar-se que només s'aplica un cop per petició.</p>
+ * 
  * @author reyes
  */
 @Component
@@ -31,7 +40,18 @@ public class JwtFilter extends OncePerRequestFilter{
     @Autowired
     private UserDetailsService userDetailsService;
     
-
+    /**
+     * Filtra totes les peticions entrants per validar el token JWT.
+     * 
+     * <p>Si el token és vàlid, configura l'autenticació de l'usuari en el context de seguretat;
+     * en cas contrari, retorna un error 401 (Unauthorized).</p>
+     *
+     * @param request l'objecte {@link HttpServletRequest} de la petició HTTP.
+     * @param response l'objecte {@link HttpServletResponse} de la resposta HTTP.
+     * @param filterChain la cadena de filtres de Spring Security.
+     * @throws ServletException si hi ha un error en el procés de filtratge.
+     * @throws IOException si hi ha un error d'entrada/sortida durant el filtratge.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
