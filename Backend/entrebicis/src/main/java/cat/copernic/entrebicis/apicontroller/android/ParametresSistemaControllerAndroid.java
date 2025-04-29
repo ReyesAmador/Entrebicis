@@ -6,6 +6,8 @@ package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.logic.ParametresSistemaLogic;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ParametresSistemaControllerAndroid {
     
+    private static final Logger logger = LoggerFactory.getLogger(ParametresSistemaControllerAndroid.class);
+    
     @Autowired
     ParametresSistemaLogic parLogic;
     
     @GetMapping("/temps-maxim-aturada")
     public ResponseEntity<Integer> obtenirTempsMaximAturada() {
         int temps = parLogic.obtenirTempsMaximAturat();
+        logger.info("⏱️ Temps màxim d'aturada obtingut: {} minuts", temps);
         return ResponseEntity.ok(temps);
     }
 }

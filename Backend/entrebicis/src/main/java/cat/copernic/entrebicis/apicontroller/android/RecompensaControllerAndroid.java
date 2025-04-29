@@ -13,6 +13,8 @@ import cat.copernic.entrebicis.exceptions.SaldoInsuficientException;
 import cat.copernic.entrebicis.logic.RecompensaLogic;
 import java.security.Principal;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/recompenses")
 public class RecompensaControllerAndroid {
     
+    private static final Logger logger = LoggerFactory.getLogger(RecompensaControllerAndroid.class);
+    
     @Autowired
     RecompensaLogic recoLogic;
     
@@ -40,19 +44,26 @@ public class RecompensaControllerAndroid {
         String email = principal.getName();
         List<Recompensa> recompenses = recoLogic.obtenirRecompensesPropies(email);
         
+        logger.info("🎁 Llista de recompenses pròpies carregada per a: {}", email);
+        
         return ResponseEntity.ok(recompenses);
     }
     
     @PostMapping("/reservar/{id}")
     public ResponseEntity<?> reservarRecompensa(Principal principal, @PathVariable Long id){
+        String email = principal.getName();
         try{
             recoLogic.reservarRecompensa(principal.getName(), id);
+            logger.info("✅ Recompensa ID {} reservada per l'usuari {}", id, email);
             return ResponseEntity.ok("Recompensa reservada correctament");
         }catch(NotFoundUsuariException e){
+            logger.warn("⚠️ Usuari no trobat reservant recompensa: {}", email);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuari no trobat");
         }catch(NotFoundException | SaldoInsuficientException | RecompensaReservadaException e){
+            logger.warn("⚠️ Error reservant recompensa ID {} per {}: {}", id, email, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e) {
+            logger.error("❌ Error inesperat reservant recompensa ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperat");
         }
     }
@@ -65,22 +76,28 @@ public class RecompensaControllerAndroid {
             
             // ⚠️ Validar si la recompensa tiene usuario asignado y no es el logueado
             if (recompensa.getUsuari() != null && !recompensa.getUsuari().getEmail().equals(email)) {
+                logger.warn("⚠️ Accés denegat per veure recompensa ID {} per {}", id, email);
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tens permís per veure aquesta recompensa");
             }
             
+            logger.info("🔍 Detall de recompensa ID {} mostrat a {}", id, email);
+            
             return ResponseEntity.ok(RecompensaDetallDTO.from(recompensa));
         }catch(NotFoundException e){
+            logger.error("❌ Recompensa ID {} no trobada.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
     
     @PatchMapping("/recollir/{id}")
     public ResponseEntity<?> recollirRecompensa(@PathVariable Long id, Principal principal){
+        String email = principal.getName();
         try{
-            String email = principal.getName();
             recoLogic.recollirRecompensa(email, id);
+            logger.info("🎯 Recompensa ID {} recollida per l'usuari {}", id, email);
             return ResponseEntity.ok().build();
         }catch(RuntimeException e){
+            logger.warn("⚠️ Error recollint recompensa ID {} per {}: {}", id, email, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

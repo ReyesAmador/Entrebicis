@@ -16,6 +16,8 @@ import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class LoginControllerAndroid {
     
+    private static final Logger logger = LoggerFactory.getLogger(LoginControllerAndroid.class);
+    
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -56,7 +60,9 @@ public class LoginControllerAndroid {
             authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginReq.getEmail(), loginReq.getParaula())
             );
+            logger.info("✅ Login correcte per a: {}", loginReq.getEmail());
         }catch (AuthenticationException e) {
+            logger.warn("⚠️ Error de login per a: {}", loginReq.getEmail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credencials incorrectes");
         }
         
@@ -70,21 +76,23 @@ public class LoginControllerAndroid {
     public ResponseEntity<?> getUsuari(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("⚠️ Accés denegat: token no proporcionat");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no proporcionat");
         }
 
         String token = authHeader.substring(7);
         String email = jwtUtil.extractUsername(token);
-        System.out.println("🔍 Email extret del token: " + email);
+        logger.info("🔍 Email extret del token: {}", email);
         
         Usuari usuari = usuariLogic.findByEmail(email);
         
         if(usuari == null){
+            logger.error("❌ Usuari no trobat: {}", email);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuari no trobat");
         }
         
         UsuariAndroidDto dto = usuariLogic.convertirAAndroidDTO(usuari);
-        System.out.println(">>> Usuari retornat: " + dto.getNom() + " - " + dto.getSaldo());
+        logger.info("✅ Usuari carregat: {} - Saldo: {}", dto.getNom(), dto.getSaldo());
 
         return ResponseEntity.ok(dto);
     }
@@ -92,19 +100,26 @@ public class LoginControllerAndroid {
     @PostMapping("/forgot-pass")
     public ResponseEntity<?> passwordOblidada(@Valid @RequestBody ForgotPasswordRequest request){
         usuariLogic.iniciarRecuperacio(request.getEmail());
+        logger.info("📧 Recuperació de contrasenya iniciada per a: {}", request.getEmail());
         return ResponseEntity.ok("Codi enviat");
     }
     
     @PostMapping("/validate-code")
     public ResponseEntity<?> validarCodi(@Valid @RequestBody ValidateCodeRequest request){
         boolean valid = usuariLogic.validarCodi(request.getEmail(), request.getCodi());
-        return valid ? ResponseEntity.ok("Codi vàlid") :
-                       ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Codi invàlid o expirat");
+        if (valid) {
+            logger.info("✅ Codi de recuperació vàlid per a: {}", request.getEmail());
+            return ResponseEntity.ok("Codi vàlid");
+        } else {
+            logger.warn("⚠️ Codi de recuperació invàlid o expirat per a: {}", request.getEmail());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Codi invàlid o expirat");
+        }
     }
     
     @PostMapping("/reset-pass")
     public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPasswordRequest request){
         usuariLogic.canviarContrasenya(request.getEmail(), request.getCodi(), request.getNovaContrasenya());
+        logger.info("🔄 Contrasenya canviada correctament per a: {}", request.getEmail());
         return ResponseEntity.ok("Contrasenya canviada correctament");
     }
 }

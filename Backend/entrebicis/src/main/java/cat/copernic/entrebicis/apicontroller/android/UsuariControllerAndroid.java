@@ -10,6 +10,8 @@ import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/usuari")
 public class UsuariControllerAndroid {
     
+    private static final Logger logger = LoggerFactory.getLogger(UsuariControllerAndroid.class);
+    
     @Autowired
     private UsuariLogic usuariLogic;
     
@@ -38,17 +42,21 @@ public class UsuariControllerAndroid {
     ){
         try{
             String token = request.getHeader("Authorization").substring(7);
-        String email = jwtUtil.extractUsername(token);
-        
-        usuariLogic.actualitzarUsuariAndroid(email, usuariDto);
-        
-        return ResponseEntity.ok("Usuari actualitzat correctament");
+            String email = jwtUtil.extractUsername(token);
+
+            usuariLogic.actualitzarUsuariAndroid(email, usuariDto);
+            
+            logger.info("✅ Usuari {} actualitzat correctament.", email);
+
+            return ResponseEntity.ok("Usuari actualitzat correctament");
         }catch (NotFoundUsuariException e) {
+            logger.error("❌ Error: usuari no trobat per actualitzar perfil.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuari no trobat");
         }catch(DuplicateException e){
+            logger.warn("⚠️ Error: duplicat detectat en actualitzar usuari: {}", e.getMessage());
              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error("❌ Error inesperat actualitzant usuari: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error inesperat: " + e.getMessage());
         }
