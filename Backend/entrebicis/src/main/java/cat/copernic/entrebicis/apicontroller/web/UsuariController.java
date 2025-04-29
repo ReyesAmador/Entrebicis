@@ -37,7 +37,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- *
+ * Controlador web encarregat de gestionar la creació, visualització,
+ * edició i administració d'usuaris a la part d'administració de l'aplicació Entrebicis.
+ * 
+ * <p>Permet crear nous usuaris, modificar les dades existents, visualitzar la informació 
+ * d'un usuari, veure el seu historial de rutes i recompenses, i mostrar la seva imatge de perfil.</p>
+ * 
+ * <p>Utilitza {@link UsuariLogic}, {@link RutaLogic} i {@link RecompensaLogic}
+ * per a la gestió de dades d'usuaris, rutes i recompenses respectivament.</p>
+ * 
+ * <p>És detectat automàticament per Spring Boot gràcies a {@link Controller}.</p>
+ * 
+ * <p>Registra totes les accions importants amb {@link Logger} per facilitar la traçabilitat.</p>
+ * 
  * @author reyes
  */
 @Controller
@@ -55,6 +67,7 @@ public class UsuariController {
     @Autowired
     RecompensaLogic recoLogic;
     
+    // Carrega i mostra la llista de tots els usuaris del sistema.
     @GetMapping
     public String llistarUsuaris(Model model){
         List<Usuari> usuaris = usuariLogic.obtenirTotsUsuaris();
@@ -65,6 +78,7 @@ public class UsuariController {
         return "usuaris";
     }
     
+    // Mostra el formulari per crear un nou usuari.
     @GetMapping("/formulari-crear")
     public String mostrarFormulari(Model model){
         model.addAttribute("usuari", new Usuari());
@@ -74,6 +88,7 @@ public class UsuariController {
         return "formulari-crear-usuari";
     }
     
+    // Gestiona la creació d'un usuari amb validació de dades i pujada d'imatge.
     @PostMapping("/crear")
     public String crearUsuari(@Valid @ModelAttribute("usuari") Usuari usuari, 
             BindingResult result, @RequestParam("imatgeFile") MultipartFile imatge,
@@ -121,6 +136,7 @@ public class UsuariController {
         return "redirect:/admin/usuaris";
     }
     
+    // Mostra el formulari d'edició per un usuari existent.
     @GetMapping("/editar/{email}")
     public String mostrarFormulari(@PathVariable String email, Model model, RedirectAttributes redirectAtt){
         try{
@@ -138,6 +154,7 @@ public class UsuariController {
         return "formulari-modificar-usuari";
     }
     
+    // Mostra les dades d'un usuari en mode lectura.
     @GetMapping("visualitzar/{email}")
     public String visualitzarUsuari(@PathVariable String email, Model model, RedirectAttributes redirectAtt){
         try{
@@ -156,6 +173,7 @@ public class UsuariController {
         return "formulari-modificar-usuari";
     }
     
+    // Gestiona la modificació de dades d'un usuari.
     @PostMapping("/editar/{email}")
     public String processarModificarUsuari(@PathVariable String email,
             @Valid @ModelAttribute("usuari") Usuari usuariModificat,
@@ -198,6 +216,7 @@ public class UsuariController {
         
     }
     
+    // Retorna la imatge de perfil d'un usuari com a resposta HTTP.
     @GetMapping("/imatge/{email}")
     @ResponseBody
     public ResponseEntity<byte[]> mostrarImatgeUsuari(@PathVariable String email) {
@@ -228,12 +247,14 @@ public class UsuariController {
         }
     }
     
+    // Detecta el tipus MIME d'una imatge donat el seu array de bytes.
     private String detectarMimeType(byte[] imatge) throws IOException {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(imatge)) {
             return URLConnection.guessContentTypeFromStream(bais);
         }
     }
     
+    // Carrega i mostra l'historial de rutes realitzades per un usuari.
     @GetMapping("/historial/rutes/{email}")
     public String historialRutes(@PathVariable String email, Model model) {
         List<Ruta> rutes = rutaLogic.obtenirRutaUsuari(email);
@@ -242,6 +263,7 @@ public class UsuariController {
         return "fragments/historial-rutes :: historialRutes";
     }
 
+    // Carrega i mostra l'historial de recompenses associades a un usuari.
     @GetMapping("/historial/recompenses/{email}")
     public String historialRecompenses(@PathVariable String email, Model model) {
         List<Recompensa> recompenses = recoLogic.getRecompensesByUsuari(email);

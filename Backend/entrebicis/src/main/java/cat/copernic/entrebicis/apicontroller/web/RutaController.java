@@ -19,7 +19,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- *
+ * Controlador web encarregat de gestionar la visualització, validació
+ * i invalidació de rutes a la part d'administració de l'aplicació Entrebicis.
+ * 
+ * <p>Permet llistar totes les rutes, veure els detalls d'una ruta específica
+ * i canviar l'estat de validació de les rutes.</p>
+ * 
+ * <p>Utilitza {@link RutaLogic} per consultar i modificar dades de rutes
+ * i {@link ParametresSistemaLogic} per obtenir paràmetres de sistema com la velocitat màxima permesa.</p>
+ * 
+ * <p>És detectat automàticament per Spring Boot gràcies a {@link Controller}.</p>
+ * 
+ * <p>Registra totes les operacions mitjançant {@link Logger} per a control i traçabilitat.</p>
  * @author reyes
  */
 @Controller
@@ -34,6 +45,7 @@ public class RutaController {
     @Autowired
     ParametresSistemaLogic parametresLogic;
     
+    // Carrega i mostra la llista de totes les rutes juntament amb la velocitat màxima configurada.
     @GetMapping
     public String llistarRutes(Model model){
         model.addAttribute("llistaRutes", rutaLogic.getAllRutes());
@@ -42,6 +54,7 @@ public class RutaController {
         return "llista-rutes";
     }
    
+    // Mostra els detalls (amb punts GPS) d'una ruta específica.
     @GetMapping("/{id}")
     public String veureDetallsRuta(@PathVariable Long id,RedirectAttributes redirectAttrs, Model model){
         try{
@@ -62,6 +75,7 @@ public class RutaController {
         return "redirect:/admin/rutes";
     }
     
+    // Marca una ruta com a validada.
     @PostMapping("/validar/{id}")
     public String validarRuta(@PathVariable Long id, RedirectAttributes redirectAttrs){
         try{
@@ -79,6 +93,7 @@ public class RutaController {
         return "redirect:/admin/rutes";
     }
     
+    // Marca una ruta com a invalidada.
     @PostMapping("/invalidar/{id}")
     public String invalidarRuta(@PathVariable Long id, RedirectAttributes redirectAttrs){
         try{

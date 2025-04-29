@@ -25,7 +25,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- *
+ * Controlador web encarregat de gestionar la creació, visualització, assignació
+ * i eliminació de recompenses a la part d'administració de l'aplicació Entrebicis.
+ * 
+ * <p>Permet llistar totes les recompenses, crear-ne de noves, eliminar-les,
+ * assignar-les als usuaris i visualitzar el seu detall.</p>
+ * 
+ * <p>Utilitza {@link RecompensaLogic} per delegar la lògica de negoci
+ * associada a recompenses.</p>
+ * 
+ * <p>És detectat automàticament per Spring Boot gràcies a {@link Controller}.</p>
+ * 
+ * <p>Registra totes les operacions mitjançant {@link Logger} per a control
+ * i traçabilitat dels processos.</p>
+ * 
  * @author reyes
  */
 @Controller
@@ -37,6 +50,7 @@ public class RecompensaController {
     @Autowired
     RecompensaLogic recompensaLogic;
     
+    // Carrega i mostra la llista de totes les recompenses.
     @GetMapping
     public String llistarRecompenses(Model model){
         model.addAttribute("llistaRecompenses", recompensaLogic.obtenirTotes());
@@ -46,6 +60,7 @@ public class RecompensaController {
         return "llista-recompenses";
     }
     
+    // Mostra el formulari per crear una nova recompensa.
     @GetMapping("/crear")
     public String mostrarFormulariCrear(Model model){
         model.addAttribute("recompensa", new Recompensa());    
@@ -53,6 +68,7 @@ public class RecompensaController {
         return "formulari-crear-recompensa";
     }
     
+    // Gestiona la creació d'una nova recompensa si la validació és correcta.
     @PostMapping("/crear")
     public String crearRecompensa(@Valid @ModelAttribute("recompensa") Recompensa recompensa,
                                     BindingResult result,
@@ -73,6 +89,7 @@ public class RecompensaController {
         return "redirect:/admin/recompenses";
     }
     
+    // Elimina una recompensa existent pel seu ID.
     @PostMapping("/delete/{id}")
     public String eliminarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
         try{
@@ -90,6 +107,7 @@ public class RecompensaController {
         return "redirect:/admin/recompenses";
     }
     
+    // Assigna una recompensa reservada a l'usuari que la va reservar.
     @PostMapping("/assignar/{id}")
     public String assignarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
         try{
@@ -103,7 +121,7 @@ public class RecompensaController {
         
         return "redirect:/admin/recompenses";
     }
-    
+    // Mostra el detall d'una recompensa específica.
     @GetMapping("/{id}")
     public String mostrarRecompensa(@PathVariable Long id, Model model, RedirectAttributes redirectAtt){
         try{
