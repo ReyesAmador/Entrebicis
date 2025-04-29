@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,7 +28,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- *
+ * Servei encarregat de gestionar tota la lògica relacionada amb els usuaris
+ * a l'aplicació Entrebicis.
+ * 
+ * <p>Inclou operacions de creació, actualització, recuperació de contrasenyes,
+ * conversió a DTO per Android i gestió de la informació personal d'usuaris.</p>
+ * 
+ * <p>Detectat automàticament per Spring Boot gràcies a {@link Service}.</p>
+ * 
+ * <p>Utilitza {@link UsuariRepo}, {@link ContrasenyaResetTokenRepo} i {@link JavaMailSender}.</p>
+ * 
  * @author reyes
  */
 @Service
@@ -48,6 +56,9 @@ public class UsuariLogic {
     
     private static final String regex= "^(?=\\S{4,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_]).*$";
     
+    /**
+     * Crea un usuari administrador predeterminat si encara no existeix.
+     */
     @Transactional
     public void crearUsuariAdmin(){
         if(usuariRepo.findById("admin@email.com").isEmpty()){
@@ -69,10 +80,23 @@ public class UsuariLogic {
         }
     }
     
+    /**
+     * Obté tots els usuaris existents.
+     *
+     * @return una llista de {@link Usuari}.
+     */
     public List<Usuari> obtenirTotsUsuaris(){
         return usuariRepo.findAll();
     }
     
+    /**
+     * Crea un nou usuari amb validacions i pujada d'imatge.
+     *
+     * @param usuari l'objecte usuari a crear.
+     * @param imatge el fitxer d'imatge de perfil.
+     * @return l'usuari creat.
+     * @throws IOException si hi ha un error en processar la imatge.
+     */
     public Usuari crearUsuari(Usuari usuari, MultipartFile imatge) throws IOException{
         if(usuariRepo.existsByEmail(usuari.getEmail()))
             throw new DuplicateException("El correu ja està registrat.");
@@ -104,11 +128,27 @@ public class UsuariLogic {
         return usuariRepo.save(usuari);
     }
     
+    /**
+     * Cerca un usuari pel seu correu electrònic.
+     *
+     * @param email el correu de l'usuari.
+     * @return l'usuari trobat.
+     * @throws NotFoundUsuariException si no es troba l'usuari.
+     */
     public Usuari findByEmail(String email) {
         return usuariRepo.findById(email).orElseThrow(
         () -> new NotFoundUsuariException("Usuari no trobat amb email: " +email));
     }
     
+    /**
+     * Actualitza les dades d'un usuari existent.
+     *
+     * @param email el correu de l'usuari a actualitzar.
+     * @param usuariModificat les noves dades de l'usuari.
+     * @param imatgeFile nova imatge de perfil.
+     * @return l'usuari actualitzat.
+     * @throws IOException si hi ha un error en processar la imatge.
+     */
     public Usuari actualitzarUsuari(String email, Usuari usuariModificat, MultipartFile imatgeFile) throws IOException{
         Usuari usuariActual = usuariRepo.findById(email)
         .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat: " + email));
@@ -142,6 +182,11 @@ public class UsuariLogic {
         return usuariRepo.save(usuariActual);
     }
     
+    /**
+     * Inicia el procés de recuperació de contrasenya enviant un codi per correu electrònic.
+     *
+     * @param email el correu de l'usuari.
+     */
     @Transactional
     public void iniciarRecuperacio(String email){
         
@@ -170,12 +215,26 @@ public class UsuariLogic {
         
     }
     
+    /**
+     * Valida si un codi de recuperació de contrasenya és vàlid i no ha expirat.
+     *
+     * @param email el correu de l'usuari.
+     * @param codi el codi de recuperació.
+     * @return {@code true} si el codi és vàlid, {@code false} si no ho és.
+     */
     public boolean validarCodi(String email, String codi){
         return tokenRepo.findByEmailAndCodi(email, codi)
                 .filter(token -> token.getExpiracio().isAfter(LocalDateTime.now()))
                 .isPresent();
     }
     
+    /**
+     * Canvia la contrasenya d'un usuari després de validar el codi.
+     *
+     * @param email el correu de l'usuari.
+     * @param codi el codi de validació.
+     * @param novaContrasenya la nova contrasenya.
+     */
     @Transactional
     public void canviarContrasenya(String email, String codi, String novaContrasenya){
         if(!validarCodi(email,codi)) throw new IllegalArgumentException("Codi invàlid o expirat");
@@ -191,6 +250,12 @@ public class UsuariLogic {
         tokenRepo.deleteByEmail(email); //elimina el token
     }
     
+    /**
+     * Converteix un objecte {@link Usuari} en un {@link UsuariAndroidDto} per a ús a Android.
+     *
+     * @param usuari l'usuari a convertir.
+     * @return l'objecte {@link UsuariAndroidDto} corresponent.
+     */
     public UsuariAndroidDto convertirAAndroidDTO(Usuari usuari) {
         if (usuari == null) return null;
 
@@ -211,6 +276,12 @@ public class UsuariLogic {
         return dto;
     }
     
+    /**
+     * Actualitza les dades d'un usuari des de l'app Android.
+     *
+     * @param email el correu de l'usuari a actualitzar.
+     * @param dto les noves dades de l'usuari en format {@link UsuariAndroidDto}.
+     */
     public void actualitzarUsuariAndroid(String email, UsuariAndroidDto dto){
         Usuari existent = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat"));

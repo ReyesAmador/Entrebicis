@@ -19,7 +19,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * Servei encarregat de gestionar tota la lògica relacionada amb les recompenses
+ * a l'aplicació Entrebicis.
+ * 
+ * <p>Permet crear, eliminar, reservar, assignar, recollir recompenses i consultar
+ * recompenses associades als usuaris.</p>
+ * 
+ * <p>Detectat automàticament per Spring Boot gràcies a {@link Service}.</p>
+ * 
+ * <p>Utilitza {@link RecompensaRepo} per accedir a les recompenses i {@link UsuariRepo}
+ * per accedir als usuaris.</p>
+ * 
  * @author reyes
  */
 @Service
@@ -31,14 +41,31 @@ public class RecompensaLogic {
     @Autowired
     UsuariRepo usuariRepo;
     
+    /**
+     * Obté la llista de totes les recompenses existents.
+     *
+     * @return una llista de {@link Recompensa}.
+     */
     public List<Recompensa> obtenirTotes(){
         return repo.findAll();
     }
     
+    /**
+     * Obté una recompensa concreta pel seu identificador.
+     *
+     * @param id l'ID de la recompensa a consultar.
+     * @return l'objecte {@link Recompensa} trobat.
+     * @throws NotFoundException si no es troba la recompensa.
+     */
     public Recompensa getRecompensa(Long id){
         return repo.findById(id).orElseThrow(() -> new NotFoundException("Recompensa amb id " + id + " no trobada."));
     }
     
+    /**
+     * Crea una nova recompensa establint el seu estat inicial i la data de creació.
+     *
+     * @param r la recompensa a crear.
+     */
     public void crearRecompensa(Recompensa r){
         
         r.setDescripcio(r.getDescripcio() != null ? r.getDescripcio().trim() : null);
@@ -54,6 +81,13 @@ public class RecompensaLogic {
         repo.save(r);
     }
     
+    /**
+     * Elimina una recompensa si es troba en estat DISPONIBLE.
+     *
+     * @param id l'ID de la recompensa a eliminar.
+     * @throws NotFoundException si no es troba la recompensa.
+     * @throws IllegalStateException si la recompensa no està en estat DISPONIBLE.
+     */
     public void eliminarRecompensa(Long id){
         Recompensa recompensa = repo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
@@ -65,6 +99,12 @@ public class RecompensaLogic {
         repo.delete(recompensa);
     }
     
+    /**
+     * Obté la llista de recompenses disponibles o associades a un usuari específic.
+     *
+     * @param email el correu electrònic de l'usuari.
+     * @return una llista de {@link Recompensa}.
+     */
     public List<Recompensa> obtenirRecompensesPropies(String email){
         List<Recompensa> totes = repo.findAll();
         
@@ -74,6 +114,16 @@ public class RecompensaLogic {
                 .toList();
     }
     
+    /**
+     * Reserva una recompensa per a un usuari si té saldo suficient i no té una altra recompensa reservada.
+     *
+     * @param email el correu de l'usuari.
+     * @param idRecompensa l'ID de la recompensa a reservar.
+     * @throws NotFoundUsuariException si l'usuari no es troba.
+     * @throws NotFoundException si la recompensa no existeix.
+     * @throws SaldoInsuficientException si l'usuari no té saldo suficient.
+     * @throws RecompensaReservadaException si ja té una altra recompensa reservada.
+     */
     public void reservarRecompensa(String email, Long idRecompensa){
         Usuari usuari = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUsuariException(email));
@@ -100,6 +150,14 @@ public class RecompensaLogic {
         repo.save(recompensa);
     }
     
+    /**
+     * Assigna una recompensa reservada a un usuari si té saldo suficient.
+     *
+     * @param idRecompensa l'ID de la recompensa a assignar.
+     * @throws NotFoundException si la recompensa no existeix.
+     * @throws SaldoInsuficientException si l'usuari no té saldo suficient.
+     * @throws RecompensaReservadaException si ja té una recompensa assignada.
+     */
     public void assignarRecompensa (Long idRecompensa){
         Recompensa recompensa = repo.findById(idRecompensa)
                 .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
@@ -126,6 +184,13 @@ public class RecompensaLogic {
         usuariRepo.save(usuari);
     }
     
+    /**
+     * Marca una recompensa com a recollida per part de l'usuari propietari.
+     *
+     * @param email el correu electrònic de l'usuari.
+     * @param idRecompensa l'ID de la recompensa a recollir.
+     * @throws RuntimeException si la recompensa no pertany a l'usuari o no està en estat ASSIGNADA.
+     */
     public void recollirRecompensa(String email, Long idRecompensa){
         Recompensa recompensa = repo.findById(idRecompensa)
                 .orElseThrow(() -> new NotFoundException("Recompensa no trobada"));
@@ -142,6 +207,12 @@ public class RecompensaLogic {
         repo.save(recompensa);
     }
     
+    /**
+     * Obté totes les recompenses associades a un usuari.
+     *
+     * @param email el correu electrònic de l'usuari.
+     * @return una llista de recompenses.
+     */
     public List<Recompensa> getRecompensesByUsuari(String email) {
         return repo.findByUsuariEmail(email);
     }

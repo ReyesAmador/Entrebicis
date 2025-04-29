@@ -24,7 +24,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * Servei encarregat de gestionar tota la lògica relacionada amb les rutes
+ * a l'aplicació Entrebicis.
+ * 
+ * <p>Permet iniciar, afegir punts, finalitzar, validar, invalidar i consultar
+ * rutes dels usuaris, calculant estadístiques com la distància, temps i velocitats.</p>
+ * 
+ * <p>Detectat automàticament per Spring Boot gràcies a {@link Service}.</p>
+ * 
+ * <p>Utilitza {@link RutaRepo}, {@link PuntGpsRepo}, {@link UsuariRepo} i {@link ParametresSistemaLogic}.</p>
+ * 
  * @author reyes
  */
 @Service
@@ -42,10 +51,21 @@ public class RutaLogic {
     @Autowired
     ParametresSistemaLogic parLogic;
     
+    /**
+     * Obté totes les rutes existents, ordenades per ID descendent.
+     * 
+     * @return una llista de {@link Ruta}.
+     */
     public List<Ruta> getAllRutes(){
         return rutaRepo.findAllByOrderByIdDesc();
     }
     
+    /**
+     * Obté totes les rutes finalitzades d'un usuari.
+     * 
+     * @param email correu de l'usuari.
+     * @return una llista de {@link RutaSenseGps}.
+     */
     public List<RutaSenseGps> obtenirRutesUsuari(String email){
         return rutaRepo.findByUsuariEmailAndEstatFalse(email)
                 .stream()
@@ -66,6 +86,12 @@ public class RutaLogic {
                 .toList();
     }
     
+    /**
+     * Afegeix un punt GPS a la ruta activa de l'usuari o inicia una nova ruta si no existeix.
+     * 
+     * @param email correu de l'usuari.
+     * @param dto dades del punt GPS a afegir.
+     */
     public void afegirPuntGps(String email, PuntGpsDTO dto){
         
         Usuari usuari = usuariRepo.findById(email)
@@ -89,6 +115,11 @@ public class RutaLogic {
         puntRepo.save(punt);
     }
     
+    /**
+     * Finalitza la ruta activa d'un usuari i calcula les estadístiques de la ruta.
+     * 
+     * @param email correu de l'usuari.
+     */
     public void finalitzarRuta(String email){
         Usuari usuari = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
@@ -116,6 +147,12 @@ public class RutaLogic {
         rutaRepo.save(ruta);
     }
     
+    /**
+     * Calcula la distància total recorreguda en una ruta.
+     *
+     * @param ruta ruta a calcular.
+     * @return distància total en quilòmetres.
+     */
     private double calcularDistanciaTotal(Ruta ruta){
         
         List<PuntGps> punts = ruta.getPunts();
@@ -128,6 +165,13 @@ public class RutaLogic {
         return distancia; //en quilòmetres
     }
     
+    /**
+     * Calcula la distància entre dos punts GPS utilitzant la fórmula de Haversine.
+     *
+     * @param p1 primer punt GPS.
+     * @param p2 segon punt GPS.
+     * @return distància entre els dos punts en quilòmetres.
+     */
     private double calcularDistanciaEntrePunts(PuntGps p1, PuntGps p2){
         double R = 6371e3; // radi de la terra en metres
         /*Convierte las latitudes de ambos puntos de grados a radianes, 
@@ -154,6 +198,12 @@ public class RutaLogic {
         return (R * c) / 1000.0; // retorna en quilòmetres
     }
     
+    /**
+     * Calcula el temps total entre el primer i últim punt de la ruta en segons.
+     *
+     * @param ruta ruta a calcular.
+     * @return temps en segons.
+     */
     private long calcularTempsEnSegons(Ruta ruta){
         List<PuntGps> punts = ruta.getPunts();
         if(punts.isEmpty()) return 0;
@@ -166,6 +216,12 @@ public class RutaLogic {
         return segons;
     }
     
+    /**
+     * Calcula el temps total en format hh:mm:ss.
+     *
+     * @param ruta ruta a calcular.
+     * @return temps formatat.
+     */
     private String calcularTempsTotal (Ruta ruta){
         List<PuntGps> punts = ruta.getPunts();
         if(punts.isEmpty()) return "00:00:00";
@@ -181,6 +237,13 @@ public class RutaLogic {
         return String.format("%02d:%02d:%02d", hores,minuts,segons);
     }
     
+    /**
+     * Calcula la velocitat mitjana d'una ruta en km/h.
+     *
+     * @param distanciaKm distància recorreguda en km.
+     * @param tempsSegons temps total en segons.
+     * @return velocitat mitjana en km/h.
+     */
     private double calcularVelocitatMitjana(double distanciaKm, double tempsSegons){
         
         if(tempsSegons == 0) return 0.0;
@@ -188,6 +251,12 @@ public class RutaLogic {
         return (distanciaKm / tempsSegons) * 3600; //km/h
     }
     
+    /**
+     * Calcula la velocitat màxima registrada entre els punts GPS d'una ruta.
+     *
+     * @param ruta ruta a analitzar.
+     * @return velocitat màxima en km/h.
+     */
     private double calcularVelocitatMaxima(Ruta ruta){
         List<PuntGps> punts = ruta.getPunts();
         double maxVelocitat = 0.0;
@@ -212,18 +281,36 @@ public class RutaLogic {
         return redondejar2Decimals(maxVelocitat);
     }
     
+    /**
+     * Redondeja un valor decimal a 2 decimals.
+     *
+     * @param valor valor a redondejar.
+     * @return valor redondejat.
+     */
     private double redondejar2Decimals(double valor) {
         return BigDecimal.valueOf(valor)
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();
     }
     
+    /**
+     * Redondeja un valor decimal a 1 decimal.
+     *
+     * @param valor valor a redondejar.
+     * @return valor redondejat.
+     */
     private double redondejar1Decimal(double valor) {
         return BigDecimal.valueOf(valor)
                 .setScale(1, RoundingMode.HALF_UP)
                 .doubleValue();
     }
     
+    /**
+     * Obté el detall de l'última ruta finalitzada d'un usuari, incloent els punts GPS.
+     * 
+     * @param email correu de l'usuari.
+     * @return una instància de {@link RutaAmbPuntsGps}.
+     */
     public RutaAmbPuntsGps  getDetallUltimaRutaFinalitzada(String email){
         Usuari usuari = usuariRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
@@ -249,6 +336,12 @@ public class RutaLogic {
         );
     }
     
+    /**
+     * Obté el detall d'una ruta específica amb els seus punts GPS.
+     * 
+     * @param idRuta ID de la ruta.
+     * @return una instància de {@link RutaAmbPuntsGps}.
+     */
     public RutaAmbPuntsGps getDetallRutaAmbPunts (Long idRuta){
         Ruta ruta = rutaRepo.findById(idRuta)
                 .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
@@ -275,6 +368,11 @@ public class RutaLogic {
         );
     }
     
+    /**
+     * Valida una ruta, afegint el saldo associat a l'usuari.
+     * 
+     * @param idRuta ID de la ruta a validar.
+     */
     public void validarRuta(Long idRuta){
         Ruta ruta = rutaRepo.findById(idRuta)
                 .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
@@ -289,6 +387,11 @@ public class RutaLogic {
         usuariRepo.save(usuari);
     }
     
+    /**
+     * Invalida una ruta, restant el saldo corresponent de l'usuari.
+     * 
+     * @param idRuta ID de la ruta a invalidar.
+     */
     public void invalidarRuta(Long idRuta){
         Ruta ruta = rutaRepo.findById(idRuta)
                 .orElseThrow(() -> new RuntimeException("Ruta no trobada"));
@@ -308,6 +411,12 @@ public class RutaLogic {
         usuariRepo.save(usuari);
     }
     
+    /**
+     * Obté totes les rutes d'un usuari.
+     * 
+     * @param email correu de l'usuari.
+     * @return una llista de {@link Ruta}.
+     */
     public List<Ruta> obtenirRutaUsuari(String email){
         return rutaRepo.findByUsuariEmail(email);
     }
