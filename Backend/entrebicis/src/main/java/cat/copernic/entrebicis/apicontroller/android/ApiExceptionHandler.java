@@ -15,7 +15,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- *
+ * Classe que gestiona de manera centralitzada totes les excepcions que poden ocórrer
+ * durant les peticions a la API REST del backend.
+ * 
+ * <p>Proporciona respostes HTTP adequades segons el tipus d'error detectat,
+ * com errors de validació de dades, recursos no trobats, duplicats o errors inesperats.
+ * També registra missatges d'error utilitzant {@code Logger} per facilitar el seguiment i diagnosi.</p>
+ * 
+ * <p>És detectada automàticament per Spring Boot gràcies a {@link RestControllerAdvice}.</p>
  * @author reyes
  */
 @RestControllerAdvice
@@ -31,18 +38,21 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(errorMsg);
     }
     
+    // Captura errors quan no es troba un usuari
     @ExceptionHandler(NotFoundUsuariException.class)
     public ResponseEntity<?> handleNotFoundException(NotFoundUsuariException ex) {
         logger.error("❌ Usuari no trobat: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    // Captura errors per intents de crear dades duplicades
     @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<?> handleDuplicateException(DuplicateException ex) {
         logger.warn("⚠️ Duplicat detectat: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
+    // Captura errors quan es passen arguments invàlids
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
         logger.warn("⚠️ Argument il·legal: {}", ex.getMessage());

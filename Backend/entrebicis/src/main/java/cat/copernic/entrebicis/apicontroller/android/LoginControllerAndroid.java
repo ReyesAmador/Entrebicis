@@ -12,7 +12,6 @@ import cat.copernic.entrebicis.dto.ResetPasswordRequest;
 import cat.copernic.entrebicis.dto.UsuariAndroidDto;
 import cat.copernic.entrebicis.dto.ValidateCodeRequest;
 import cat.copernic.entrebicis.entities.Usuari;
-import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,7 +32,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
+ * Controlador REST encarregat de gestionar les operacions d'autenticació
+ * i gestió d'usuaris per a la part Android de l'aplicació Entrebicis.
+ * 
+ * <p>Inclou funcionalitats com iniciar sessió, recuperar l'usuari a partir
+ * del token JWT, iniciar el procés de recuperació de contrasenya, validar codis 
+ * de recuperació i reiniciar contrasenyes.</p>
+ * 
+ * <p>Utilitza JWT per l'autenticació i proporciona respostes HTTP adequades
+ * segons el resultat de cada operació.</p>
+ * 
+ * <p>És detectat automàticament per Spring Boot gràcies a {@link RestController}.</p>
+ * 
  * @author reyes
  */
 @RestController
@@ -54,6 +64,7 @@ public class LoginControllerAndroid {
     @Autowired
     private UsuariLogic usuariLogic;
     
+    //Autentica un usuari amb email i contrasenya, i retorna un token JWT si les credencials són correctes.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginReq){
         try{
@@ -72,6 +83,7 @@ public class LoginControllerAndroid {
         return ResponseEntity.ok(new LoginResponse(jwt));
     }
     
+    //Recupera les dades de l'usuari autenticat a partir del token JWT proporcionat.
     @GetMapping("/usuari")
     public ResponseEntity<?> getUsuari(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
@@ -97,6 +109,7 @@ public class LoginControllerAndroid {
         return ResponseEntity.ok(dto);
     }
     
+    // Inicia el procés de recuperació de contrasenya enviant un codi de verificació al correu electrònic.
     @PostMapping("/forgot-pass")
     public ResponseEntity<?> passwordOblidada(@Valid @RequestBody ForgotPasswordRequest request){
         usuariLogic.iniciarRecuperacio(request.getEmail());
@@ -104,6 +117,7 @@ public class LoginControllerAndroid {
         return ResponseEntity.ok("Codi enviat");
     }
     
+    //Valida un codi de recuperació enviat per correu electrònic.
     @PostMapping("/validate-code")
     public ResponseEntity<?> validarCodi(@Valid @RequestBody ValidateCodeRequest request){
         boolean valid = usuariLogic.validarCodi(request.getEmail(), request.getCodi());
@@ -116,6 +130,7 @@ public class LoginControllerAndroid {
         }
     }
     
+    //Permet reiniciar la contrasenya d'un usuari si el codi de recuperació és vàlid.
     @PostMapping("/reset-pass")
     public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPasswordRequest request){
         usuariLogic.canviarContrasenya(request.getEmail(), request.getCodi(), request.getNovaContrasenya());

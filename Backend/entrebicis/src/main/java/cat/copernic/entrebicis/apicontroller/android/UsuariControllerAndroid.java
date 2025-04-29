@@ -21,7 +21,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- *
+ * Controlador REST encarregat de gestionar l'actualització de les dades
+ * dels usuaris des de la part Android de l'aplicació Entrebicis.
+ * 
+ * <p>Permet als usuaris modificar el seu perfil, controlant errors de
+ * duplicats, usuaris inexistents o altres incidències.</p>
+ * 
+ * <p>Utilitza {@link UsuariLogic} per aplicar els canvis i {@link JwtUtil}
+ * per validar el token i identificar l'usuari.</p>
+ * 
+ * <p>És detectat automàticament per Spring Boot gràcies a {@link Controller}.</p>
+ * 
  * @author reyes
  */
 @Controller
@@ -36,6 +46,7 @@ public class UsuariControllerAndroid {
     @Autowired
     private JwtUtil jwtUtil;
     
+    // Actualitza les dades de perfil de l'usuari autenticat a partir del token JWT.
     @PatchMapping("/actualitzar")
     public ResponseEntity<?> actualitzarUsuariAndroid(HttpServletRequest request,
             @RequestBody UsuariAndroidDto usuariDto

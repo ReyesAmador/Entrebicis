@@ -28,6 +28,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
+ * Controlador REST encarregat de gestionar les operacions relacionades
+ * amb les recompenses dels usuaris a la part Android de l'aplicació Entrebicis.
+ * 
+ * <p>Permet llistar recompenses pròpies, reservar recompenses disponibles,
+ * visualitzar el detall d'una recompensa i confirmar-ne la recollida.</p>
+ * 
+ * <p>Utilitza {@link RecompensaLogic} per delegar la lògica de negoci
+ * i gestiona tant casos d'error com excepcions específiques de recompenses.</p>
+ * 
+ * <p>És detectat automàticament per Spring Boot gràcies a {@link Controller}.</p>
  * @author reyes
  */
 @Controller
@@ -39,6 +49,7 @@ public class RecompensaControllerAndroid {
     @Autowired
     RecompensaLogic recoLogic;
     
+    // Retorna la llista de recompenses associades a l'usuari autenticat.
     @GetMapping
     public ResponseEntity<List<Recompensa>> llistarRecompensesPropies(Principal principal){
         String email = principal.getName();
@@ -49,6 +60,7 @@ public class RecompensaControllerAndroid {
         return ResponseEntity.ok(recompenses);
     }
     
+    // Permet a l'usuari reservar una recompensa si compleix les condicions.
     @PostMapping("/reservar/{id}")
     public ResponseEntity<?> reservarRecompensa(Principal principal, @PathVariable Long id){
         String email = principal.getName();
@@ -68,6 +80,7 @@ public class RecompensaControllerAndroid {
         }
     }
     
+    // Mostra el detall d'una recompensa específica, validant permisos d'accés.
     @GetMapping("/{id}")
     public ResponseEntity<?> mostrarRecompensa(@PathVariable Long id, Principal principal){
         try{
@@ -89,6 +102,7 @@ public class RecompensaControllerAndroid {
         }
     }
     
+    // Marca una recompensa com a recollida per part de l'usuari.
     @PatchMapping("/recollir/{id}")
     public ResponseEntity<?> recollirRecompensa(@PathVariable Long id, Principal principal){
         String email = principal.getName();
