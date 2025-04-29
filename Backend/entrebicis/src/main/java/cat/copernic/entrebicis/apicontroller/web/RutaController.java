@@ -7,6 +7,8 @@ package cat.copernic.entrebicis.apicontroller.web;
 import cat.copernic.entrebicis.dto.RutaAmbPuntsGps;
 import cat.copernic.entrebicis.logic.ParametresSistemaLogic;
 import cat.copernic.entrebicis.logic.RutaLogic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/rutes")
 public class RutaController {
     
+    private static final Logger logger = LoggerFactory.getLogger(RutaController.class);
+    
     @Autowired
     RutaLogic rutaLogic;
     
@@ -34,6 +38,7 @@ public class RutaController {
     public String llistarRutes(Model model){
         model.addAttribute("llistaRutes", rutaLogic.getAllRutes());
         model.addAttribute("velocitatMaxima", parametresLogic.obtenirVelocitatMaxima());
+        logger.info("📄 Llista de rutes carregada correctament.");
         return "llista-rutes";
     }
    
@@ -42,11 +47,15 @@ public class RutaController {
         try{
             RutaAmbPuntsGps detall = rutaLogic.getDetallRutaAmbPunts(id);
             model.addAttribute("detall", detall);
+            
+            logger.info("🔍 Detalls de la ruta carregats per a ruta ID: {}", id);
 
             return "detall-ruta";
         }catch (IllegalStateException e) {
+            logger.warn("⚠️ Error en obtenir detalls de la ruta ID {}: {}", id, e.getMessage());
             redirectAttrs.addFlashAttribute("error", e.getMessage());
         } catch (RuntimeException e) {
+            logger.error("❌ Ruta no trobada o error inesperat per ruta ID: {}", id);
             redirectAttrs.addFlashAttribute("error", "Ruta no trobada.");
         }
         
@@ -57,10 +66,13 @@ public class RutaController {
     public String validarRuta(@PathVariable Long id, RedirectAttributes redirectAttrs){
         try{
             rutaLogic.validarRuta(id);
+            logger.info("✅ Ruta ID {} validada correctament.", id);
             redirectAttrs.addFlashAttribute("missatgeSuccess", "Ruta validada correctament!");
         }catch(RuntimeException e){
+            logger.warn("⚠️ Error al validar la ruta ID {}: {}", id, e.getMessage());
             redirectAttrs.addFlashAttribute("error", e.getMessage());
         }catch (Exception e) {
+            logger.error("❌ Error inesperat en validar la ruta ID {}: {}", id, e.getMessage());
             redirectAttrs.addFlashAttribute("error", "No s'ha pogut validar la ruta: " + e.getMessage());
         }
         
@@ -71,10 +83,13 @@ public class RutaController {
     public String invalidarRuta(@PathVariable Long id, RedirectAttributes redirectAttrs){
         try{
             rutaLogic.invalidarRuta(id);
+            logger.info("🚫 Ruta ID {} invalidada correctament.", id);
             redirectAttrs.addFlashAttribute("missatgeSuccess", "Ruta invalidada correctament!");
         }catch(RuntimeException e){
+            logger.warn("⚠️ Error al invalidar la ruta ID {}: {}", id, e.getMessage());
             redirectAttrs.addFlashAttribute("error", e.getMessage());
         }catch (Exception e) {
+            logger.error("❌ Error inesperat en invalidar la ruta ID {}: {}", id, e.getMessage());
             redirectAttrs.addFlashAttribute("error", "No s'ha pogut validar la ruta: " + e.getMessage());
         }
         

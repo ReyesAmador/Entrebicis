@@ -7,6 +7,8 @@ package cat.copernic.entrebicis.apicontroller.web;
 import cat.copernic.entrebicis.entities.ParametresSistema;
 import cat.copernic.entrebicis.logic.ParametresSistemaLogic;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,12 +27,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/parametres")
 public class ParametresSistemaController {
     
+    private static final Logger logger = LoggerFactory.getLogger(ParametresSistemaController.class);
+    
     @Autowired
     ParametresSistemaLogic logic;
     
     @GetMapping
     public String mostrarParametres(Model model){
         model.addAttribute("parametres", logic.obtenirParametres());
+        logger.info("🛠️ Paràmetres del sistema carregats correctament.");
         return "parametres-sistema";
     }
     
@@ -40,9 +45,11 @@ public class ParametresSistemaController {
                                     Model model,
                                     RedirectAttributes redirectAttrs){
         if(result.hasErrors()){
+            logger.warn("⚠️ Errors de validació en guardar paràmetres del sistema.");
             return "parametres-sistema";
         }
         logic.guardarParametres(parametres);
+        logger.info("✅ Paràmetres del sistema guardats correctament.");
         redirectAttrs.addFlashAttribute("missatge", "Paràmetres guardats correctament");
         return "redirect:/admin/parametres";
     }

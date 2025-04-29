@@ -11,6 +11,8 @@ import cat.copernic.entrebicis.exceptions.RecompensaReservadaException;
 import cat.copernic.entrebicis.exceptions.SaldoInsuficientException;
 import cat.copernic.entrebicis.logic.RecompensaLogic;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/recompenses")
 public class RecompensaController {
     
+    private static final Logger logger = LoggerFactory.getLogger(RecompensaController.class);
+    
     @Autowired
     RecompensaLogic recompensaLogic;
     
@@ -37,12 +41,15 @@ public class RecompensaController {
     public String llistarRecompenses(Model model){
         model.addAttribute("llistaRecompenses", recompensaLogic.obtenirTotes());
         
+        logger.info("📜 Llista de recompenses carregada correctament.");
+        
         return "llista-recompenses";
     }
     
     @GetMapping("/crear")
     public String mostrarFormulariCrear(Model model){
         model.addAttribute("recompensa", new Recompensa());    
+        logger.info("📝 Formulari per crear recompensa mostrat.");
         return "formulari-crear-recompensa";
     }
     
@@ -52,10 +59,13 @@ public class RecompensaController {
                                     Model model,
                                     RedirectAttributes redirectAtt){
         if(result.hasErrors()){
+            logger.warn("⚠️ Errors de validació en crear recompensa.");
             return "formulari-crear-recompensa";
         }
         
         recompensaLogic.crearRecompensa(recompensa);
+        
+        logger.info("✅ Recompensa '{}' creada correctament.", recompensa.getDescripcio());
         
         //Missatge flash
         redirectAtt.addFlashAttribute("missatgeSuccess", "Recompensa creada correctament");
@@ -67,10 +77,13 @@ public class RecompensaController {
     public String eliminarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
         try{
             recompensaLogic.eliminarRecompensa(id);
+            logger.info("🗑️ Recompensa ID {} eliminada correctament.", id);
             redirectAtt.addFlashAttribute("missatgeSuccess", "Recompensa eliminada correctament");
         }catch(IllegalStateException e){
+            logger.warn("⚠️ Error en eliminar recompensa ID {}: {}", id, e.getMessage());
             redirectAtt.addFlashAttribute("error", e.getMessage());
         }catch(NotFoundException e){
+            logger.error("❌ Recompensa no trobada per eliminar ID {}.", id);
             redirectAtt.addFlashAttribute("error", e.getMessage());
         }
         
@@ -81,8 +94,10 @@ public class RecompensaController {
     public String assignarRecompensa(@PathVariable Long id, RedirectAttributes redirectAtt){
         try{
             recompensaLogic.assignarRecompensa(id);
+            logger.info("🎯 Recompensa ID {} assignada correctament.", id);
             redirectAtt.addFlashAttribute("missatgeSuccess", "Recompensa assignada correctament.");
         }catch(NotFoundException | SaldoInsuficientException | RecompensaReservadaException e){
+            logger.warn("⚠️ Error en assignar recompensa ID {}: {}", id, e.getMessage());
             redirectAtt.addFlashAttribute("error", e.getMessage());
         }
         
@@ -94,9 +109,12 @@ public class RecompensaController {
         try{
             RecompensaDetallDTO dto = RecompensaDetallDTO.from(recompensaLogic.getRecompensa(id));
             model.addAttribute("recompensa", dto);
+            
+            logger.info("🔍 Detall de la recompensa ID {} carregat correctament.", id);
 
             return "detall-recompensa";
         }catch(NotFoundException e){
+            logger.error("❌ Recompensa no trobada per mostrar ID {}.", id);
             redirectAtt.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/recompenses";

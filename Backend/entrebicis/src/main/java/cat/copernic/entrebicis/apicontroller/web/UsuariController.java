@@ -18,6 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +44,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/usuaris")
 public class UsuariController {
     
+    private static final Logger logger = LoggerFactory.getLogger(UsuariController.class);
+    
     @Autowired
     UsuariLogic usuariLogic;
     
@@ -56,12 +60,16 @@ public class UsuariController {
         List<Usuari> usuaris = usuariLogic.obtenirTotsUsuaris();
         model.addAttribute("usuaris", usuaris);
         
+        logger.info("📄 Llista d'usuaris carregada correctament. Total: {}", usuaris.size());
+        
         return "usuaris";
     }
     
     @GetMapping("/formulari-crear")
     public String mostrarFormulari(Model model){
         model.addAttribute("usuari", new Usuari());
+        
+        logger.info("📝 Formulari de creació d'usuari mostrat.");
         
         return "formulari-crear-usuari";
     }
@@ -72,18 +80,24 @@ public class UsuariController {
             Model model, RedirectAttributes redirectAtt){
         
         //Si falla alguna validació automàtica
-        if(result.hasErrors())
+        if(result.hasErrors()){
+            
+            logger.warn("⚠️ Errors de validació en crear usuari.");
             return "formulari-crear-usuari";
+        }
         
         try{
             usuariLogic.crearUsuari(usuari,imatge);
+            logger.info("✅ Usuari {} creat correctament.", usuari.getEmail());
         }catch(DuplicateException e){
+            logger.warn("⚠️ Duplicat detectat en crear usuari: {}", e.getMessage());
             if(e.getMessage().toLowerCase().contains("correu"))
                 result.rejectValue("email", "error.usuari", e.getMessage());
             if(e.getMessage().toLowerCase().contains("mòbil"))
                 result.rejectValue("mobil", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
         }catch(CampBuitException e){
+            logger.warn("⚠️ Error en camps obligatoris en crear usuari: {}", e.getMessage());
             if(e.getMessage().toLowerCase().contains("contrasenya"))
                 result.rejectValue("paraula", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
@@ -96,6 +110,7 @@ public class UsuariController {
                 result.rejectValue("imatge", "error.usuari", e.getMessage());
             return "formulari-crear-usuari";
         }catch(IOException e){
+            logger.error("❌ Error al pujar la imatge de l'usuari.", e);
             result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
             return "formulari-crear-usuari";
         }
@@ -113,7 +128,9 @@ public class UsuariController {
         
             model.addAttribute("usuari", usuari);
             model.addAttribute("lectura", false);
+            logger.info("🔵 Formulari de modificació carregat per a usuari: {}", email);
         }catch(NotFoundUsuariException e){
+            logger.error("❌ Usuari no trobat: {}", email);
             redirectAtt.addFlashAttribute("error", e.getMessage());
             return "redirect:/admin/usuaris";
         }
@@ -128,7 +145,10 @@ public class UsuariController {
         
             model.addAttribute("usuari", usuari);
             model.addAttribute("lectura", true);
+            
+            logger.info("🔍 Visualització de dades per a usuari: {}", email);
         }catch(NotFoundUsuariException e){
+            logger.error("❌ Usuari no trobat: {}", email);
             redirectAtt.addFlashAttribute("error", e.getMessage());
             return "redirect:/admin/usuaris";
         }
@@ -145,19 +165,21 @@ public class UsuariController {
             RedirectAttributes redirectAtt){
         
         if(result.hasErrors()){
+            logger.warn("⚠️ Errors de validació en modificar usuari.");
             model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
         }
         
         try{
             usuariLogic.actualitzarUsuari(email, usuariModificat, imatgeFile);
-        
+            logger.info("✅ Usuari {} actualitzat correctament.", email);
         }catch (DuplicateException e) {
             if (e.getMessage().toLowerCase().contains("mòbil"))
                 result.rejectValue("mobil", "error.usuari", e.getMessage());
             model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
         } catch (IllegalArgumentException e) {
+            logger.warn("⚠️ Error en actualitzar usuari {}: {}", email, e.getMessage());
             if (e.getMessage().toLowerCase().contains("saldo"))
                 result.rejectValue("saldo", "error.usuari", e.getMessage());
             if (e.getMessage().toLowerCase().contains("imatge"))
@@ -165,6 +187,7 @@ public class UsuariController {
             model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
         } catch (IOException e) {
+            logger.error("❌ Error al pujar imatge en modificar usuari.", e);
             result.rejectValue("imatge", "error.usuari", "Error en pujar la imatge.");
             model.addAttribute("lectura", false);
             return "formulari-modificar-usuari";
@@ -183,6 +206,7 @@ public class UsuariController {
 
             byte[] imatge = usuari.getImatge();
             if (imatge == null) {
+                logger.warn("⚠️ L'usuari {} no té imatge.", email);
                 return ResponseEntity.notFound().build();
             }
 
@@ -193,10 +217,13 @@ public class UsuariController {
             } catch (IOException e) {
                 mediaType = MediaType.APPLICATION_OCTET_STREAM;
             }
+            
+            logger.info("🖼️ Imatge retornada per a usuari: {}", email);
 
             return ResponseEntity.ok().contentType(mediaType).body(imatge);
 
         } catch (NotFoundUsuariException e) {
+            logger.error("❌ Usuari no trobat (imatge): {}", email);
             return ResponseEntity.notFound().build();
         }
     }
@@ -211,6 +238,7 @@ public class UsuariController {
     public String historialRutes(@PathVariable String email, Model model) {
         List<Ruta> rutes = rutaLogic.obtenirRutaUsuari(email);
         model.addAttribute("rutes", rutes);
+        logger.info("📜 Historial de rutes carregat per a usuari: {}", email);
         return "fragments/historial-rutes :: historialRutes";
     }
 
@@ -218,6 +246,7 @@ public class UsuariController {
     public String historialRecompenses(@PathVariable String email, Model model) {
         List<Recompensa> recompenses = recoLogic.getRecompensesByUsuari(email);
         model.addAttribute("recompenses", recompenses);
+        logger.info("🎁 Historial de recompenses carregat per a usuari: {}", email);
         return "fragments/historial-recompenses :: historialRecompenses";
     }
 
