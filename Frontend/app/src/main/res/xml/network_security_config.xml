@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Este archivo le dice a Android que confíe en los certificados del sistema y también en el que pondrás tú (my_cert). -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/my_cert" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
