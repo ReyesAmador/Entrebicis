@@ -144,7 +144,8 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
             HomeScreen(
                 onLogout = {
                     navController.navigate("login"){
-                        popUpTo("splash") { inclusive = true }
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             ) }
