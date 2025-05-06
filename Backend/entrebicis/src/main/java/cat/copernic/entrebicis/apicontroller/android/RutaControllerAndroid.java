@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,6 +48,14 @@ public class RutaControllerAndroid {
     
     @Autowired
     RutaLogic rutaLogic;
+    
+    @PostMapping("/iniciar")
+    public ResponseEntity<RutaDTO> iniciarRuta(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        String email = jwtUtil.extractUsername(token);
+        Ruta nova = rutaServiceAndroid.iniciarRuta(email);
+        return ResponseEntity.ok(new RutaDTO(nova));
+    }
     
     // Afegeix un nou punt GPS a la ruta activa de l'usuari.
     @PostMapping("/punt")
