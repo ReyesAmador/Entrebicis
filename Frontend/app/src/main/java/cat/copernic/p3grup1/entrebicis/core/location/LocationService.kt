@@ -133,8 +133,8 @@ class LocationService : Service() {
         val currentTime = System.currentTimeMillis()
         val distanceMoved = location.distanceTo(lastKnownLocation)
 
-        // Si se ha movido más de 5m, se considera movimiento
-        if (distanceMoved > 5f) {
+        // Si se ha movido más de 10m, se considera movimiento
+        if (distanceMoved > 10f) {
             lastMovementTimestamp = currentTime
             val punt = PuntGpsDto(
                 latitud = location.latitude,
