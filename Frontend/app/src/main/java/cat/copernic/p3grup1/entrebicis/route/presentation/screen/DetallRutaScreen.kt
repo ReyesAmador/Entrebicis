@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.presentation.components.InfoCard
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewModel
@@ -197,9 +198,9 @@ fun DetallRutaScreen(
                                     Circle(
                                         center = latLng,
                                         radius = 3.0,
-                                        strokeColor = if (isSelected) Color.Blue else Color.White,
+                                        strokeColor = if (isSelected) Color.Blue else Primary,
                                         strokeWidth = 2f,
-                                        fillColor = if (isSelected) Color(0xFF64B5F6) else Color.White
+                                        fillColor = if (isSelected) Color(0xFF64B5F6) else Primary
                                     )
 
                                     //Marker invisible
