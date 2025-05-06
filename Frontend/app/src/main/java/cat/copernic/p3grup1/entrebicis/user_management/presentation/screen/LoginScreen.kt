@@ -4,12 +4,19 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,23 +48,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import cat.copernic.p3grup1.entrebicis.R
-import cat.copernic.p3grup1.entrebicis.home.presentation.viewmodel.HomeViewModel
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.LoginViewModel
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideLoginViewModelFactory
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(
@@ -85,6 +97,46 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
 
     val scale = remember { Animatable(1f) }
+    var isPressed by remember { mutableStateOf(false) }
+
+    val brushOffset = remember { Animatable(0f) }
+    val brushAlpha = remember { Animatable(1f) }
+
+
+
+    val brush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFA8E6A3).copy(alpha = brushAlpha.value),
+            Color(0xFF4EA72B).copy(alpha = brushAlpha.value)
+        ),
+        start = Offset(brushOffset.value, 0f),
+        end = Offset(brushOffset.value + 200f, 100f)
+    )
+
+    val backgroundModifier = if (isPressed) {
+        Modifier.background(brush, shape = RoundedCornerShape(8.dp))
+    } else {
+        Modifier.background(Color.Transparent, shape = RoundedCornerShape(8.dp))
+    }
+
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            brushOffset.snapTo(0f)
+            brushAlpha.snapTo(1f)
+
+            brushOffset.animateTo(
+                targetValue = 600f,
+                animationSpec = tween(durationMillis = 400, easing = LinearEasing)
+            )
+
+            brushAlpha.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 300)
+            )
+
+            isPressed = false
+        }
+    }
 
     // Si login es correcto, navega
     LaunchedEffect(loginSuccess) {
@@ -254,15 +306,34 @@ fun LoginScreen(
                     .graphicsLayer {
                         scaleX = scale.value
                         scaleY = scale.value
+                    }
+                    .pointerInteropFilter {
+                        when (it.action) {
+                            android.view.MotionEvent.ACTION_DOWN -> isPressed = true
+                            android.view.MotionEvent.ACTION_UP,
+                            android.view.MotionEvent.ACTION_CANCEL -> isPressed = false
+                        }
+                        false
                     },
                 border = BorderStroke(2.dp, Color.White),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White
+                ),
+                contentPadding = PaddingValues()
             ) {
-                Text(
-                    text = "INICIAR SESSIÓ",
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelLarge
-                )
+                Box(
+                    modifier = backgroundModifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "INICIAR SESSIÓ",
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
     }
