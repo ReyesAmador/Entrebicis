@@ -98,6 +98,8 @@ public class UsuariLogic {
      * @throws IOException si hi ha un error en processar la imatge.
      */
     public Usuari crearUsuari(Usuari usuari, MultipartFile imatge) throws IOException{
+        usuari.setEmail(usuari.getEmail().toLowerCase());
+        
         if(usuariRepo.existsByEmail(usuari.getEmail()))
             throw new DuplicateException("El correu ja està registrat.");
         
@@ -124,7 +126,6 @@ public class UsuariLogic {
         usuari.setParaula(passwordEncoder.encode(usuari.getParaula())); //Encriptar contrasenya
         
         usuari.setRol(Rol.CICLISTA);
-        
         return usuariRepo.save(usuari);
     }
     
