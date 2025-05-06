@@ -46,6 +46,7 @@ class LocationService : Service() {
         latitude = 0.0
         longitude = 0.0
     }
+    private var pointsDiscarded = 0
 
     private val handler = Handler(Looper.getMainLooper())
     private val checkInactivityRunnable = object : Runnable {
@@ -118,6 +119,16 @@ class LocationService : Service() {
     }
 
     private fun handleNewLocation(location: Location) {
+        if (location.accuracy > 20) {
+            Log.d("GPS", "Ignorant punt per baixa precisió: ${location.accuracy}m")
+            return
+        }
+
+        if (pointsDiscarded < 3) {
+            pointsDiscarded++
+            Log.d("GPS", "Ignorant punt inicial $pointsDiscarded")
+            return
+        }
 
         val currentTime = System.currentTimeMillis()
         val distanceMoved = location.distanceTo(lastKnownLocation)
