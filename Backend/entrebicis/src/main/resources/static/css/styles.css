@@ -151,3 +151,10 @@ Cartas de detalles
 .form-label {
     font-weight: bold;
 }
+
+/* Oculta el botón de mostrar contraseña de navegadores como Chrome */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-password-toggle-button {
+    display: none !important;
+}
