@@ -87,7 +87,28 @@ public class RutaLogic {
     }
     
     /**
-     * Afegeix un punt GPS a la ruta activa de l'usuari o inicia una nova ruta si no existeix.
+     * Crea una nova ruta sempre de l'usuari i quan no estigui activa
+     * 
+     * @param email correu de l'usuari.
+     */
+    public Ruta iniciarRuta(String email) {
+        Usuari usuari = usuariRepo.findById(email)
+            .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
+
+        // Evita crear duplicadas
+        rutaRepo.findByUsuariAndEstatTrue(usuari)
+            .ifPresent(r -> { throw new RuntimeException("Ja tens una ruta activa"); });
+
+        Ruta nova = new Ruta();
+        nova.setUsuari(usuari);
+        nova.setEstat(true);
+        nova.setInici(LocalDateTime.now());
+
+        return rutaRepo.save(nova);
+    }
+    
+    /**
+     * Afegeix un punt GPS a la ruta activa de l'usuari
      * 
      * @param email correu de l'usuari.
      * @param dto dades del punt GPS a afegir.
@@ -98,13 +119,7 @@ public class RutaLogic {
                 .orElseThrow(() -> new RuntimeException("Usuari no trobat"));
         
         Ruta ruta = rutaRepo.findByUsuariAndEstatTrue(usuari)
-                .orElseGet(() -> {
-                    Ruta nova = new Ruta();
-                    nova.setUsuari(usuari);
-                    nova.setEstat(true);
-                    nova.setInici(LocalDateTime.now());
-                    return rutaRepo.save(nova);
-                });
+                .orElseThrow(() -> new RuntimeException("No hi ha cap ruta activa"));
         
         PuntGps punt = new PuntGps();
         punt.setTemps(Instant.ofEpochMilli(dto.getTemps()).atZone(ZoneId.systemDefault()).toLocalDateTime());
