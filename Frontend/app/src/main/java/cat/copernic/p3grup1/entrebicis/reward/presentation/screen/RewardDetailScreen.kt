@@ -1,6 +1,8 @@
 package cat.copernic.p3grup1.entrebicis.reward.presentation.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,7 +42,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.reward.presentation.components.InfoRow
@@ -93,14 +97,28 @@ fun RewardDetailScreen(
                     tint = Color.White
                 )
             }
-            Text(
-                text = "Recompensa",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-            )
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.logo_white_small),
+                    contentDescription = "Logo Entrebicis",
+                    modifier = Modifier
+                        .width(170.dp)
+                        .height(82.dp)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Recompensa",
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineLarge
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(40.dp))

@@ -140,6 +140,7 @@ fun HomeScreen(
                 contentDescription = "Logo Entrebicis"
             )
 
+            Spacer(Modifier.height(48.dp))
 
             Text(
                 "Benvingut, ${usuari?.nom ?: "..."}",
