@@ -6,7 +6,9 @@ package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.dto.PuntGpsDTO;
 import cat.copernic.entrebicis.dto.RutaAmbPuntsGps;
+import cat.copernic.entrebicis.dto.RutaDTO;
 import cat.copernic.entrebicis.dto.RutaSenseGps;
+import cat.copernic.entrebicis.entities.Ruta;
 import cat.copernic.entrebicis.logic.RutaLogic;
 import java.security.Principal;
 import java.util.List;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,10 +51,9 @@ public class RutaControllerAndroid {
     RutaLogic rutaLogic;
     
     @PostMapping("/iniciar")
-    public ResponseEntity<RutaDTO> iniciarRuta(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String email = jwtUtil.extractUsername(token);
-        Ruta nova = rutaServiceAndroid.iniciarRuta(email);
+    public ResponseEntity<RutaDTO> iniciarRuta(Principal principal) {
+        String email = principal.getName();
+        Ruta nova = rutaLogic.iniciarRuta(email);
         return ResponseEntity.ok(new RutaDTO(nova));
     }
     
