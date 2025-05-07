@@ -55,6 +55,7 @@ public class RutaControllerAndroid {
         String email = principal.getName();
         try{
             Ruta nova = rutaLogic.iniciarRuta(email);
+            logger.info("📍 Nova ruta iniciada per l'usuari {}", email);
             return ResponseEntity.ok(new RutaDTO(nova));
         }catch (RuntimeException e) {
             return ResponseEntity
