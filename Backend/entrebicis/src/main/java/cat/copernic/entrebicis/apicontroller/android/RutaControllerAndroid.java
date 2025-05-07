@@ -51,10 +51,16 @@ public class RutaControllerAndroid {
     RutaLogic rutaLogic;
     
     @PostMapping("/iniciar")
-    public ResponseEntity<RutaDTO> iniciarRuta(Principal principal) {
+    public ResponseEntity<?> iniciarRuta(Principal principal) {
         String email = principal.getName();
-        Ruta nova = rutaLogic.iniciarRuta(email);
-        return ResponseEntity.ok(new RutaDTO(nova));
+        try{
+            Ruta nova = rutaLogic.iniciarRuta(email);
+            return ResponseEntity.ok(new RutaDTO(nova));
+        }catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
     }
     
     // Afegeix un nou punt GPS a la ruta activa de l'usuari.
