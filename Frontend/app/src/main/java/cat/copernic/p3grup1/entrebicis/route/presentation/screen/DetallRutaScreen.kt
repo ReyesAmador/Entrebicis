@@ -132,7 +132,7 @@ fun DetallRutaScreen(
 
             Column(
                 modifier = Modifier
-                    .padding(padding)
+                    .padding()
                     .fillMaxSize()
             ) {
 

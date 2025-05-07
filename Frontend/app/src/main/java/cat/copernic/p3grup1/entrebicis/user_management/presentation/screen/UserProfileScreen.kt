@@ -129,11 +129,11 @@ fun UserProfileScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     )
-    { paddingValues ->
+    { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding()
         ) {
             // CABECERA
             Box(

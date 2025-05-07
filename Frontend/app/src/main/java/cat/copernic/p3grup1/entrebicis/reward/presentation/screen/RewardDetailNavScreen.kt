@@ -73,7 +73,7 @@ fun RewardDetailNavScreen(
                 onRecollir = { id -> viewModel.recollirRecompensa(id) },
                 entregat = entregat,
                 onTancarDialog = { viewModel.resetEntrega() },
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.padding()
             )
         }
     }

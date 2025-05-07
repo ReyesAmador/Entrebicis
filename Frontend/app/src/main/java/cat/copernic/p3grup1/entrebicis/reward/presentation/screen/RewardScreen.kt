@@ -106,7 +106,7 @@ fun RewardScreen(
     ) { padding ->
 
         Column(modifier = Modifier.fillMaxSize()
-            .padding(padding)) {
+            .padding()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
