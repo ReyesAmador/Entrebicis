@@ -93,6 +93,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
             )
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun iniciarRuta() {
         if (_rutaActiva.value) return
         _rutaActiva.value = true
