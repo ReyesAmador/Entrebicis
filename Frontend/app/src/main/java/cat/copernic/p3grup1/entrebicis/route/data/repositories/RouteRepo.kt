@@ -3,9 +3,25 @@ package cat.copernic.p3grup1.entrebicis.route.data.repositories
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RutaAmbPuntsDto
+import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RutaDTO
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RutaSensePuntsDto
 
 class RouteRepo(private val api: RouteApi) {
+
+    suspend fun iniciarRuta(token: String): Result<RutaDTO>{
+        return try {
+            val response = api.iniciarRuta("Bearer $token")
+            if (response.isSuccessful){
+                response.body()?.let { Result.success(it) }
+                    ?: Result.failure(Exception("Cos del missatge buit"))
+            }else {
+                val errorMsg = response.errorBody()?.string() ?: "Error desconegut"
+                Result.failure(Exception(errorMsg))
+            }
+        }catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     suspend fun enviarPunt(punt: PuntGpsDto): Result<Unit>{
         return try{

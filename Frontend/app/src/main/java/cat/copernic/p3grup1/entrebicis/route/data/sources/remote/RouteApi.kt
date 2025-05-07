@@ -37,6 +37,14 @@ data class RutaSensePuntsDto(
     val saldo: Double
 )
 
+data class RutaDTO(
+    val id: Long,
+    val inici: String,
+    val estat: Boolean,
+    val validada: Boolean,
+    val nomUsuari: String
+)
+
 interface RouteApi {
 
     @POST("ruta/punt")
@@ -56,4 +64,7 @@ interface RouteApi {
 
     @GET("ruta/detall/{id}")
     suspend fun getDetallRuta(@Path("id") id: Long): Response<RutaAmbPuntsDto>
+
+    @POST("ruta/iniciar")
+    suspend fun iniciarRuta(@Header("Authorization") token: String): Response<RutaDTO>
 }

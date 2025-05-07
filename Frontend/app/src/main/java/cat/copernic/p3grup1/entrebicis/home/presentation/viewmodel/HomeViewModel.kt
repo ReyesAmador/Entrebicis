@@ -99,15 +99,37 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         prefs.edit().putBoolean("ruta_activa", true).apply()
         iniciRutaTimestamp = System.currentTimeMillis()
         startCronometre()
+        iniciarServeiRuta()
+        iniciarRutaBackend()
+    }
+
+    private fun iniciarServeiRuta(){
         val intent = Intent(appContext, LocationService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             appContext.startForegroundService(intent)
         } else {
             appContext.startService(intent)
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun iniciarRutaBackend(){
         val timestamp = System.currentTimeMillis()
         Log.d("RUTA", "Ruta iniciada manualment a $timestamp")
         LogRutaUtils.appendLog(appContext, "Ruta iniciada manualment a $timestamp")
+
+        val token = prefs.getString("token", null)
+        if (token != null){
+            viewModelScope.launch {
+                repoRuta.iniciarRuta(token).onSuccess {
+                    Log.d("RUTA", "✅ Ruta creada al backend: ${it.id}")
+                }.onFailure {
+                    Log.e("RUTA", "❌ Error creant ruta al backend: ${it.message}")
+                }
+            }
+        }else {
+            Log.e("RUTA", "❌ No s'ha pogut obtenir el token per crear la ruta")
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
