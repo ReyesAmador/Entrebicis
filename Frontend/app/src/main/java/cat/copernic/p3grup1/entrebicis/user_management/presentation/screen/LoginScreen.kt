@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -189,12 +190,14 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(64.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.logo_white),
+                painter = painterResource(id = R.drawable.logo_white_small),
                 contentDescription = "Logo Entrebicis",
-                modifier = Modifier.size(220.dp)
+                modifier = Modifier
+                    .width(287.dp)
+                    .height(141.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             Text(
                 text = "LOGIN",
@@ -202,7 +205,7 @@ fun LoginScreen(
                 color = Color.White
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(84.dp))
 
             OutlinedTextField(
                 value = email,
@@ -253,7 +256,7 @@ fun LoginScreen(
                 )
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Contrasenya oblidada?",

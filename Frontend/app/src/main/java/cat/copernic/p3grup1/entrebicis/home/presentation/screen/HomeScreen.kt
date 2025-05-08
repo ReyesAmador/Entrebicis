@@ -136,11 +136,14 @@ fun HomeScreen(
             Spacer(Modifier.height(48.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.logo_black),
-                contentDescription = "Logo Entrebicis"
+                painter = painterResource(id = R.drawable.logo_black_small),
+                contentDescription = "Logo Entrebicis",
+                modifier = Modifier
+                    .width(287.dp)
+                    .height(141.dp)
             )
 
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(28.dp))
 
             Text(
                 "Benvingut, ${usuari?.nom ?: "..."}",
