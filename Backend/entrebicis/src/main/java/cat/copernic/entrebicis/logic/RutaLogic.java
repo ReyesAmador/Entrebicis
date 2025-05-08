@@ -148,7 +148,7 @@ public class RutaLogic {
         double distancia = calcularDistanciaTotal(ruta);
         double conversio = parLogic.obtenirConversioKmPunts();
         String temps = calcularTempsTotal(ruta);
-        long segons = calcularTempsEnSegons(ruta);
+        double segons = calcularTempsEnSegons(ruta);
         double velocitat = calcularVelocitatMitjana(distancia,segons);
         double velocitatMax = calcularVelocitatMaxima(ruta);
         double saldo = distancia * conversio;
@@ -219,16 +219,16 @@ public class RutaLogic {
      * @param ruta ruta a calcular.
      * @return temps en segons.
      */
-    private long calcularTempsEnSegons(Ruta ruta){
+    private double calcularTempsEnSegons(Ruta ruta){
         List<PuntGps> punts = ruta.getPunts();
         if(punts.isEmpty()) return 0;
         
         LocalDateTime inici = punts.get(0).getTemps();
         LocalDateTime fi = punts.get(punts.size() - 1).getTemps();
         
-        long segons = Duration.between(inici, fi).getSeconds();
+        long milisegons = Duration.between(inici, fi).toMillis();
         
-        return segons;
+        return milisegons / 1000.0;
     }
     
     /**
@@ -283,9 +283,10 @@ public class RutaLogic {
             PuntGps actual = punts.get(i);
             
             double distanciaKm = calcularDistanciaEntrePunts(anterior,actual);
-            long segons = Duration.between(anterior.getTemps(), actual.getTemps()).getSeconds();
+            long milisegons = Duration.between(anterior.getTemps(), actual.getTemps()).toMillis();
             
-            if(segons > 0){
+            if(milisegons > 0){
+                double segons = milisegons / 1000.0;
                 double velocitat = (distanciaKm/segons) * 3600; //Km/h
                 if(velocitat > maxVelocitat){
                     maxVelocitat = velocitat;
