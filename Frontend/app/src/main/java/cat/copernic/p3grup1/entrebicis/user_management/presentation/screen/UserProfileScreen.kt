@@ -112,6 +112,7 @@ fun UserProfileScreen(
     var novaContrasenya by remember { mutableStateOf("") }
     var repetirContrasenya by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
+    var showCurrentPassword by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.carregarUsuari()
@@ -244,13 +245,13 @@ fun UserProfileScreen(
                 ProfileTextField(
                     value = contrasenyaActual,
                     onValueChange = { contrasenyaActual = it },
-                    enabled = true,
+                    enabled = editMode,
                     modifier = Modifier,
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (showCurrentPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        IconButton(onClick = { showPassword = !showPassword }) {
+                        IconButton(onClick = { showCurrentPassword = !showCurrentPassword }) {
                             Icon(
-                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                imageVector = if (showCurrentPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                 contentDescription = null
                             )
                         }
@@ -259,7 +260,7 @@ fun UserProfileScreen(
                 ProfileTextField(
                     value = novaContrasenya,
                     onValueChange = { novaContrasenya = it },
-                    enabled = true,
+                    enabled = contrasenyaActual.isNotBlank(),
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { showPassword = !showPassword }) {
@@ -274,7 +275,7 @@ fun UserProfileScreen(
                 ProfileTextField(
                     value = repetirContrasenya,
                     onValueChange = { repetirContrasenya = it },
-                    enabled = true,
+                    enabled = contrasenyaActual.isNotBlank(),
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { showPassword = !showPassword }) {

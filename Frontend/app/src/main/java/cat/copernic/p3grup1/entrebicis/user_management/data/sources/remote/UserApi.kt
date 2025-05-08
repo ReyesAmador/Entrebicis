@@ -59,7 +59,7 @@ interface UserApi {
     @PATCH("usuari/actualitzar")
     suspend fun actualitzarUsuari(@Header("Authorization") token: String, @Body usuari: Usuari): Response<Unit>
 
-    @POST("canvi-pass")
+    @POST("usuari/canvi-pass")
     suspend fun canviContrasenya(
         @Header("Authorization") token: String,
         @Body request: CanviContrasenyaRequest
