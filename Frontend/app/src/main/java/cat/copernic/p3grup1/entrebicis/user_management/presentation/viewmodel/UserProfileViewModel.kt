@@ -34,8 +34,8 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     private val _errorActualitzacio = MutableStateFlow<String?>(null)
     val errorActualitzacio: StateFlow<String?> = _errorActualitzacio
 
-    private val _imatgeBase64 = MutableStateFlow<String?>(null)
-    val imatgeBase64: StateFlow<String?> = _imatgeBase64
+    private val _uploadExitosa = MutableStateFlow(false)
+    val uploadExitosa: StateFlow<Boolean> = _uploadExitosa
 
     private val _missatgeContrasenya = MutableStateFlow<String?>(null)
     val missatgeContrasenya: StateFlow<String?> = _missatgeContrasenya
@@ -105,19 +105,19 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
-    fun uploadImatgeUsuari(imageBytes: ByteArray) {
-        val token = getToken() ?: return
-        viewModelScope.launch {
-            repo.uploadUserImage(token, imageBytes).fold(
+    suspend fun uploadImatgeUsuari(imageBytes: ByteArray): Boolean {
+        val token = getToken() ?: return false
+            return repo.uploadUserImage(token, imageBytes).fold(
                 onSuccess = {
                     Log.d("UPLOAD_IMAGE", "✅ Imatge pujada correctament")
-                    carregarUsuari()
+                    _uploadExitosa.value = true
+                    true
                 },
                 onFailure = {
                     Log.e("UPLOAD_IMAGE", "❌ Error pujant imatge: ${it.message}")
+                    false
                 }
             )
-        }
     }
 
     fun resetActualitzacioFlags() {
@@ -129,12 +129,12 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         _missatgeContrasenya.value = null
     }
 
-    fun setImatgeBase64(base64: String) {
-        _imatgeBase64.value = base64
-    }
-
     fun getToken(): String? {
         return prefs.getString("token", null)
+    }
+
+    fun resetUploadExitosa() {
+        _uploadExitosa.value = false
     }
 
 }

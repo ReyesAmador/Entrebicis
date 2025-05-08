@@ -76,6 +76,8 @@ fun UserProfileScreen(
     val viewModel: UserProfileViewModel = viewModel(
         factory = provideUserProfileViewModelFactory(context.applicationContext as Application)
     )
+    var novaImatge by remember { mutableStateOf<ByteArray?>(null) }
+    val cacheKey = remember { mutableStateOf(System.currentTimeMillis()) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -83,10 +85,17 @@ fun UserProfileScreen(
             val inputStream = contentResolver.openInputStream(it)
             val bytes = inputStream?.readBytes()
             if (bytes != null) {
-                viewModel.uploadImatgeUsuari(bytes)
+                novaImatge = bytes
+                cacheKey.value = System.currentTimeMillis()
                 Log.d("IMATGE_ANDROID", "✅ Imatge enviada (${bytes.size} bytes)")
             }
 
+        }
+    }
+
+    val bitmapSeleccionada = remember(novaImatge) {
+        novaImatge?.let {
+            BitmapFactory.decodeByteArray(it, 0, it.size)
         }
     }
 
@@ -104,6 +113,7 @@ fun UserProfileScreen(
 
     val actualitzacioExitosa by viewModel.actualitzacioExitosa.collectAsState()
     val errorActualitzacio by viewModel.errorActualitzacio.collectAsState()
+    val uploadExitosa by viewModel.uploadExitosa.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -115,8 +125,16 @@ fun UserProfileScreen(
     var showPassword by remember { mutableStateOf(false) }
     var showCurrentPassword by remember { mutableStateOf(false) }
 
+
     LaunchedEffect(Unit) {
         viewModel.carregarUsuari()
+    }
+
+    LaunchedEffect(uploadExitosa) {
+        if (uploadExitosa) {
+            cacheKey.value = System.currentTimeMillis()
+            viewModel.resetUploadExitosa()
+        }
     }
 
     LaunchedEffect(usuari) {
@@ -219,11 +237,21 @@ fun UserProfileScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Imagen por coil
-                PerfilImage(
-                    imageUrl = "https://entrebicis.ddns.net:8443/api/usuari/imatge",
-                    token = token ?: ""
-                )
+                if (bitmapSeleccionada != null) {
+                    Image(
+                        bitmap = bitmapSeleccionada.asImageBitmap(),
+                        contentDescription = "Nova imatge seleccionada",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                    )
+                }else{
+                    // Imagen por coil
+                    PerfilImage(
+                        imageUrl = "https://entrebicis.ddns.net:8443/api/usuari/imatge?ts=${cacheKey.value}",
+                        token = token ?: ""
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -347,25 +375,33 @@ fun UserProfileScreen(
                                 return@Button // <- evita continuar si hay error
                             }
 
-                            val imatgeFinal = viewModel.imatgeBase64.value ?: usuari?.imatge ?: ""
+
                             val usuariActualitzat = Usuari(
                                 email,
                                 "",
                                 nom,
                                 usuari?.rol ?: Rol.CICLISTA,
-                                imatgeFinal,
+                                "",
                                 usuari?.saldo ?: 0.0,
                                 usuari?.observacions ?: "",
                                 mobil,
                                 poblacio
                             )
-                            Log.d(
-                                "IMATGE_ANDROID",
-                                "Enviant usuari amb imatge: ${imatgeFinal.take(100)}"
-                            )
-                            viewModel.actualitzarUsuari(usuariActualitzat)
-                            if (contrasenyaActual.isNotBlank()) {
-                                viewModel.canviContrasenya(contrasenyaActual, novaContrasenya, repetirContrasenya)
+
+                            coroutineScope.launch {
+                                if (novaImatge != null) {
+                                    val success = viewModel.uploadImatgeUsuari(novaImatge!!)
+                                    if (success) {
+                                        cacheKey.value = System.currentTimeMillis()
+                                        novaImatge = null
+                                    }
+                                }
+
+                                viewModel.actualitzarUsuari(usuariActualitzat)
+
+                                if (contrasenyaActual.isNotBlank()) {
+                                    viewModel.canviContrasenya(contrasenyaActual, novaContrasenya, repetirContrasenya)
+                                }
                             }
                         }else{
                             editMode = true
