@@ -33,6 +33,12 @@ data class ResetPasswordRequest(
     val novaContrasenya: String
 )
 
+data class CanviContrasenyaRequest(
+    val actual: String,
+    val nova: String,
+    val repetirNova: String
+)
+
 interface UserApi {
 
     @POST("login")
@@ -52,5 +58,11 @@ interface UserApi {
 
     @PATCH("usuari/actualitzar")
     suspend fun actualitzarUsuari(@Header("Authorization") token: String, @Body usuari: Usuari): Response<Unit>
+
+    @POST("canvi-pass")
+    suspend fun canviContrasenya(
+        @Header("Authorization") token: String,
+        @Body request: CanviContrasenyaRequest
+    ): Response<String>
 
 }

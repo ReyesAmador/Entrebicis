@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
+import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.CanviContrasenyaRequest
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.ForgotPasswordRequest
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.LoginRequest
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.LoginResponse
@@ -124,6 +125,19 @@ class LoginRepo(private val api: UserApi) {
             } catch (e: Exception) {
                 Result.failure(e)
             }
+        }
+    }
+
+    suspend fun canviContrasenya(token: String, request: CanviContrasenyaRequest): Result<String>{
+        return try {
+            val response = api.canviContrasenya("Bearer $token", request)
+            if (response.isSuccessful && response.body() != null){
+                Result.success(response.body()!!)
+            }else{
+                Result.failure(Exception(response.errorBody()?.string() ?: "Error canviant contrasenya"))
+            }
+        }catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }
