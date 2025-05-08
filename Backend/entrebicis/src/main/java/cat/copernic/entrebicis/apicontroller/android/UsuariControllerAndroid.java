@@ -5,6 +5,7 @@
 package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.configuration.JwtUtil;
+import cat.copernic.entrebicis.dto.CanviContrasenyaRequest;
 import cat.copernic.entrebicis.dto.UsuariAndroidDto;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -74,4 +76,15 @@ public class UsuariControllerAndroid {
         
     }
     
+    @PostMapping("/canvi-pass")
+    public ResponseEntity<?> canviContrasenya(HttpServletRequest request, @RequestBody CanviContrasenyaRequest dto){
+        String email = jwtUtil.extractUsername(request.getHeader("Authorization").substring(7));
+        
+        try{
+            usuariLogic.canviarContrasenyaPerfil(email, dto.getActual(), dto.getNova(), dto.getRepetirNova());
+            return ResponseEntity.ok("Contrasenya canviada correctament");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

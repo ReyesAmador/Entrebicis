@@ -302,4 +302,28 @@ public class UsuariLogic {
         
         usuariRepo.save(existent);
     }
+    
+    public void canviarContrasenyaPerfil(String email, String actual, String nova, String repetirNova){
+        Usuari usuari = usuariRepo.findByEmail(email)
+        .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat"));
+        
+        // Validar contrasenya actual
+        if (!passwordEncoder.matches(actual, usuari.getParaula())) {
+            throw new IllegalArgumentException("La contrasenya actual no és correcta");
+        }
+
+        // Validar que les dues noves coincideixen
+        if (!nova.equals(repetirNova)) {
+            throw new IllegalArgumentException("La nova contrasenya no coincideix en ambdós camps");
+        }
+
+        // Validar que la nova contrasenya compleix requisits
+        if (!nova.matches(regex)) {
+            throw new IllegalArgumentException("La nova contrasenya ha de tenir almenys 4 caràcters, una minúscula, una majúscula i un símbol, sense espais");
+        }
+
+        // Guardar nova contrasenya encriptada
+        usuari.setParaula(passwordEncoder.encode(nova));
+        usuariRepo.save(usuari);
+    }
 }
