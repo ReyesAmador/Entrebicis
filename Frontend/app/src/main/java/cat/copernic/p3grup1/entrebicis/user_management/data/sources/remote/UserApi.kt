@@ -63,6 +63,6 @@ interface UserApi {
     suspend fun canviContrasenya(
         @Header("Authorization") token: String,
         @Body request: CanviContrasenyaRequest
-    ): Response<String>
+    ): Response<ResponseBody>
 
 }

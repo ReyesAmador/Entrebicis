@@ -132,7 +132,8 @@ class LoginRepo(private val api: UserApi) {
         return try {
             val response = api.canviContrasenya("Bearer $token", request)
             if (response.isSuccessful && response.body() != null){
-                Result.success(response.body()!!)
+                val msg = response.body()!!.string()
+                Result.success(msg)
             }else{
                 Result.failure(Exception(response.errorBody()?.string() ?: "Error canviant contrasenya"))
             }
