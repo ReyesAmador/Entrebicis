@@ -44,9 +44,11 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         val token = prefs.getString("token", null) ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
         viewModelScope.launch {
+            val start = System.currentTimeMillis()
             repo.getUsuari(token).fold(
                 onSuccess = {
                     Log.d("PROFILE_DEBUG", "Imatge Base64: ${it.imatge?.take(20)}")
+                    Log.d("PROFILE", "Temps total: ${System.currentTimeMillis() - start} ms")
                     _usuari.value = it },
                 onFailure = { error ->
                     Log.e("HOME", "Error: ${error.message}")
