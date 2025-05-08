@@ -1,42 +1,38 @@
 package cat.copernic.p3grup1.entrebicis.user_management.presentation.components
 
-import android.graphics.BitmapFactory
-import android.util.Base64
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cat.copernic.p3grup1.entrebicis.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 @Composable
-fun PerfilImage(base64: String?,
-                modifier: Modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
+fun PerfilImage(
+    imageUrl: String?,
+    token: String,
+    modifier: Modifier = Modifier
+        .size(100.dp)
+        .clip(CircleShape)
 ) {
 
-    val bitmap = remember(base64) {
-        try {
-            base64?.takeIf { it.isNotBlank() }?.let {
-                val decoded = Base64.decode(it, Base64.DEFAULT)
-                BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    if (bitmap != null) {
-        Image(
-            bitmap = bitmap.asImageBitmap(),
+    if (imageUrl != null) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .addHeader("Authorization", "Bearer $token")
+                .crossfade(true)
+                .build(),
             contentDescription = "Imatge usuari",
+            placeholder = painterResource(R.drawable.default_profile),
+            error = painterResource(R.drawable.default_profile),
             modifier = modifier
         )
     } else {

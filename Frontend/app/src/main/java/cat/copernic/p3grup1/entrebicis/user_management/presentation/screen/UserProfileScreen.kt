@@ -82,10 +82,11 @@ fun UserProfileScreen(
         uri?.let {
             val inputStream = contentResolver.openInputStream(it)
             val bytes = inputStream?.readBytes()
-            val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-            viewModel.setImatgeBase64(base64)
-            Log.d("IMATGE_ANDROID", "Imatge seleccionada - Base64 length: ${base64.length}")
-            Log.d("IMATGE_ANDROID", "Primeros 100 carácteres: ${base64.take(100)}")
+            if (bytes != null) {
+                viewModel.uploadImatgeUsuari(bytes)
+                Log.d("IMATGE_ANDROID", "✅ Imatge enviada (${bytes.size} bytes)")
+            }
+
         }
     }
 
@@ -100,13 +101,13 @@ fun UserProfileScreen(
     var nomError by remember { mutableStateOf<String?>(null) }
     var mobilError by remember { mutableStateOf<String?>(null) }
     var poblacioError by remember { mutableStateOf<String?>(null) }
-    val imatgeBase64 by viewModel.imatgeBase64.collectAsState()
 
     val actualitzacioExitosa by viewModel.actualitzacioExitosa.collectAsState()
     val errorActualitzacio by viewModel.errorActualitzacio.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+    val token = viewModel.getToken()
 
     var contrasenyaActual by remember { mutableStateOf("") }
     var novaContrasenya by remember { mutableStateOf("") }
@@ -218,8 +219,11 @@ fun UserProfileScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Imagen perfil desde Base64
-                PerfilImage(base64 = imatgeBase64 ?: usuari?.imatge)
+                // Imagen por coil
+                PerfilImage(
+                    imageUrl = "https://entrebicis.ddns.net:8443/api/usuari/imatge",
+                    token = token ?: ""
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 

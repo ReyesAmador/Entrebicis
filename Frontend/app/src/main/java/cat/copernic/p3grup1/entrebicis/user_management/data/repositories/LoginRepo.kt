@@ -14,6 +14,10 @@ import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.UserA
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.ValidateCodeRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 
@@ -108,6 +112,28 @@ class LoginRepo(private val api: UserApi) {
             }
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun uploadUserImage(token: String, imageBytes: ByteArray): Result<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val requestBody: RequestBody = imageBytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                val response = api.uploadUserImage("Bearer $token", requestBody)
+                if (response.isSuccessful && response.body() != null) {
+                    Result.success(response.body()!!)
+                } else {
+                    Result.failure(Exception(response.errorBody()?.string() ?: "Error pujant imatge"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun getUserImage(token: String): Response<ResponseBody> {
+        return withContext(Dispatchers.IO) {
+            api.getUserImage("Bearer $token")
         }
     }
 

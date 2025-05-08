@@ -41,7 +41,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     val missatgeContrasenya: StateFlow<String?> = _missatgeContrasenya
 
     fun carregarUsuari() {
-        val token = prefs.getString("token", null) ?: return
+        val token = getToken() ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
         viewModelScope.launch {
             val start = System.currentTimeMillis()
@@ -62,7 +62,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     }
 
     fun actualitzarUsuari(usuari: Usuari){
-        val token = prefs.getString("token", null) ?: return
+        val token = getToken() ?: return
         viewModelScope.launch {
             repo.actualitzarUsuari(token, usuari).fold(
                 onSuccess = {
@@ -79,7 +79,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     }
 
     fun canviContrasenya(actual: String, nova: String, repetir: String) {
-        val token = prefs.getString("token", null) ?: return
+        val token = getToken() ?: return
 
         if (nova != repetir) {
             _missatgeContrasenya.value = "❌ Les contrasenyes noves no coincideixen"
@@ -105,6 +105,21 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
+    fun uploadImatgeUsuari(imageBytes: ByteArray) {
+        val token = getToken() ?: return
+        viewModelScope.launch {
+            repo.uploadUserImage(token, imageBytes).fold(
+                onSuccess = {
+                    Log.d("UPLOAD_IMAGE", "✅ Imatge pujada correctament")
+                    carregarUsuari()
+                },
+                onFailure = {
+                    Log.e("UPLOAD_IMAGE", "❌ Error pujant imatge: ${it.message}")
+                }
+            )
+        }
+    }
+
     fun resetActualitzacioFlags() {
         _actualitzacioExitosa.value = null
         _errorActualitzacio.value = null
@@ -116,6 +131,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
 
     fun setImatgeBase64(base64: String) {
         _imatgeBase64.value = base64
+    }
+
+    fun getToken(): String? {
+        return prefs.getString("token", null)
     }
 
 }
