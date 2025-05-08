@@ -7,7 +7,9 @@ package cat.copernic.entrebicis.apicontroller.android;
 import cat.copernic.entrebicis.configuration.JwtUtil;
 import cat.copernic.entrebicis.dto.CanviContrasenyaRequest;
 import cat.copernic.entrebicis.dto.UsuariAndroidDto;
+import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
+import cat.copernic.entrebicis.exceptions.NotFoundException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.logic.UsuariLogic;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -86,5 +90,23 @@ public class UsuariControllerAndroid {
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+    
+    @GetMapping("/imatge")
+    public ResponseEntity<byte[]> getImatge(HttpServletRequest request) {
+        String email = jwtUtil.extractUsername(request.getHeader("Authorization").substring(7));
+        try {
+            byte[] imatge = usuariLogic.obtenirImatgeUsuari(email);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imatge);
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @PostMapping("/imatge")
+    public ResponseEntity<?> actualitzarImatge(HttpServletRequest request, @RequestBody byte[] imatge) {
+        String email = jwtUtil.extractUsername(request.getHeader("Authorization").substring(7));
+        usuariLogic.actualitzarImatgeUsuari(email, imatge);
+        return ResponseEntity.ok("Imatge actualitzada correctament");
     }
 }

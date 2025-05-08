@@ -19,5 +19,4 @@ public class UsuariAndroidDto {
     private String observacions;
     private String mobil;
     private String poblacio;
-    private String imatgeBase64;
 }

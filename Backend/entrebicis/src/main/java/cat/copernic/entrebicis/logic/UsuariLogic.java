@@ -10,6 +10,7 @@ import cat.copernic.entrebicis.entities.Usuari;
 import cat.copernic.entrebicis.enums.Rol;
 import cat.copernic.entrebicis.exceptions.CampBuitException;
 import cat.copernic.entrebicis.exceptions.DuplicateException;
+import cat.copernic.entrebicis.exceptions.NotFoundException;
 import cat.copernic.entrebicis.exceptions.NotFoundUsuariException;
 import cat.copernic.entrebicis.repository.ContrasenyaResetTokenRepo;
 import cat.copernic.entrebicis.repository.UsuariRepo;
@@ -268,12 +269,7 @@ public class UsuariLogic {
         dto.setObservacions(usuari.getObservacions());
         dto.setMobil(usuari.getMobil());
         dto.setPoblacio(usuari.getPoblacio());
-
-        if (usuari.getImatge() != null) {
-            String base64 = Base64.getEncoder().encodeToString(usuari.getImatge());
-            dto.setImatgeBase64(base64);
-        }
-
+        
         return dto;
     }
     
@@ -294,13 +290,25 @@ public class UsuariLogic {
         existent.setNom(dto.getNom());
         existent.setMobil(dto.getMobil());
         existent.setPoblacio(dto.getPoblacio());
-        
-        if(dto.getImatgeBase64() != null && !dto.getImatgeBase64().isEmpty()){
-            byte[] imatge = Base64.getDecoder().decode(dto.getImatgeBase64());
-            existent.setImatge(imatge);
-        }
-        
+
         usuariRepo.save(existent);
+    }
+    
+    public void actualitzarImatgeUsuari(String email, byte[] imatge) {
+        Usuari usuari = usuariRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat"));
+
+        usuari.setImatge(imatge);
+        usuariRepo.save(usuari);
+    }
+
+    public byte[] obtenirImatgeUsuari(String email) {
+        Usuari usuari = usuariRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundUsuariException("Usuari no trobat"));
+
+        if (usuari.getImatge() == null) throw new NotFoundException("No hi ha imatge");
+
+        return usuari.getImatge();
     }
     
     public void canviarContrasenyaPerfil(String email, String actual, String nova, String repetirNova){
