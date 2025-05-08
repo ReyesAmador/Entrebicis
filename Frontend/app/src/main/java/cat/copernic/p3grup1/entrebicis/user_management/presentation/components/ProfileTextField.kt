@@ -11,6 +11,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.core.theme.Secondary
@@ -23,7 +24,9 @@ fun ProfileTextField(
     enabled : Boolean = false,
     isError: Boolean = false,
     errorMessage: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null
 ){
     Column {
         OutlinedTextField(
@@ -33,6 +36,8 @@ fun ProfileTextField(
             isError = isError,
             singleLine = true,
             modifier = modifier.fillMaxWidth(),
+            visualTransformation = visualTransformation,
+            trailingIcon = trailingIcon,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,

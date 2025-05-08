@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -50,6 +52,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
@@ -86,6 +90,7 @@ fun UserProfileScreen(
     }
 
     val usuari by viewModel.usuari.collectAsState()
+    val missatgeContrasenya by viewModel.missatgeContrasenya.collectAsState()
     var editMode by remember { mutableStateOf(false) }
 
     var nom by remember { mutableStateOf("") }
@@ -102,6 +107,11 @@ fun UserProfileScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+
+    var contrasenyaActual by remember { mutableStateOf("") }
+    var novaContrasenya by remember { mutableStateOf("") }
+    var repetirContrasenya by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.carregarUsuari()
@@ -125,6 +135,13 @@ fun UserProfileScreen(
                 snackbarHostState.showSnackbar("❌ Error al desar: ${errorActualitzacio ?: "Desconegut"}")
             }
             viewModel.resetActualitzacioFlags()
+        }
+    }
+
+    LaunchedEffect(missatgeContrasenya) {
+        missatgeContrasenya?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            viewModel.resetMissatgeContrasenya()
         }
     }
 
@@ -224,6 +241,50 @@ fun UserProfileScreen(
                     enabled = editMode, isError = mobilError != null, errorMessage = mobilError)
                 ProfileTextField(poblacio, { poblacio = it; poblacioError = null },
                     enabled = editMode, isError = poblacioError != null, errorMessage = poblacioError)
+                ProfileTextField(
+                    value = contrasenyaActual,
+                    onValueChange = { contrasenyaActual = it },
+                    enabled = true,
+                    modifier = Modifier,
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+                ProfileTextField(
+                    value = novaContrasenya,
+                    onValueChange = { novaContrasenya = it },
+                    enabled = true,
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+
+                ProfileTextField(
+                    value = repetirContrasenya,
+                    onValueChange = { repetirContrasenya = it },
+                    enabled = true,
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -298,6 +359,9 @@ fun UserProfileScreen(
                                 "Enviant usuari amb imatge: ${imatgeFinal.take(100)}"
                             )
                             viewModel.actualitzarUsuari(usuariActualitzat)
+                            if (contrasenyaActual.isNotBlank()) {
+                                viewModel.canviContrasenya(contrasenyaActual, novaContrasenya, repetirContrasenya)
+                            }
                         }else{
                             editMode = true
                         }

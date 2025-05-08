@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
+import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.CanviContrasenyaRequest
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.UserApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +36,9 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
 
     private val _imatgeBase64 = MutableStateFlow<String?>(null)
     val imatgeBase64: StateFlow<String?> = _imatgeBase64
+
+    private val _missatgeContrasenya = MutableStateFlow<String?>(null)
+    val missatgeContrasenya: StateFlow<String?> = _missatgeContrasenya
 
     fun carregarUsuari() {
         val token = prefs.getString("token", null) ?: return
@@ -71,9 +75,41 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
             )
         }
     }
+
+    fun canviContrasenya(actual: String, nova: String, repetir: String) {
+        val token = prefs.getString("token", null) ?: return
+
+        if (nova != repetir) {
+            _missatgeContrasenya.value = "❌ Les contrasenyes noves no coincideixen"
+            return
+        }
+
+        val pattern = "^(?=\\S+$)(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_]).{4,}$"
+        if (!nova.matches(pattern.toRegex())) {
+            _missatgeContrasenya.value = "❌ Contrasenya invàlida: mínim 4 caràcters, 1 minúscula, 1 majúscula i 1 símbol"
+            return
+        }
+
+        viewModelScope.launch {
+            val result = repo.canviContrasenya(token, CanviContrasenyaRequest(actual, nova, repetir))
+            result.fold(
+                onSuccess = {
+                    _missatgeContrasenya.value = "✅ Contrasenya canviada correctament"
+                },
+                onFailure = {
+                    _missatgeContrasenya.value = "❌ ${it.message}"
+                }
+            )
+        }
+    }
+
     fun resetActualitzacioFlags() {
         _actualitzacioExitosa.value = null
         _errorActualitzacio.value = null
+    }
+
+    fun resetMissatgeContrasenya() {
+        _missatgeContrasenya.value = null
     }
 
     fun setImatgeBase64(base64: String) {
