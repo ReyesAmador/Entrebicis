@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,8 +45,14 @@ fun RutaScreen(
     viewModel: RutaViewModel = viewModel(),
     onBack: () -> Unit,
     onRutaClick: (Long) -> Unit
-){
+) {
     val rutes by viewModel.rutesFinalitzades.collectAsState()
+    val refreshing by viewModel.isRefreshing.collectAsState()
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = refreshing,
+        onRefresh = { viewModel.carregarRutesFinalitzades() }
+    )
 
     LaunchedEffect(Unit) {
         viewModel.carregarRutesFinalitzades()
@@ -133,7 +138,10 @@ fun RutaScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RutaCard(ruta, modifier = Modifier.weight(1f), onClick = {onRutaClick(ruta.id)})
+                        RutaCard(
+                            ruta,
+                            modifier = Modifier.weight(1f),
+                            onClick = { onRutaClick(ruta.id) })
                         Spacer(Modifier.width(8.dp))
                         Box(
                             modifier = Modifier

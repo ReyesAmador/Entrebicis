@@ -31,6 +31,8 @@ class RutaViewModel(
     val loading: StateFlow<Boolean> = _loading
     private val _rutesFinalitzades = MutableStateFlow<List<RutaSensePuntsDto>>(emptyList())
     val rutesFinalitzades: StateFlow<List<RutaSensePuntsDto>> = _rutesFinalitzades
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
 
     fun carregarRuta(id: Long? = null){
@@ -55,11 +57,14 @@ class RutaViewModel(
     fun carregarRutesFinalitzades(){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
+            _isRefreshing.value = true
+
             repo.getRutesFinalitzades(token).onSuccess {
                 _rutesFinalitzades.value = it
             }.onFailure {
                 Log.e("RUTES", "Error carregant rutes: ${it.message}")
             }
+            _isRefreshing.value = false
         }
     }
 }
