@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,6 +59,9 @@ fun HomeScreen(
     onLogout: () -> Unit,
     homeViewModel: HomeViewModel = viewModel()
 ) {
+
+    val isDarkTheme = isSystemInDarkTheme()
+    val logo = if(isDarkTheme) R.drawable.logo_white_small else R.drawable.logo_black_small
 
     val usuari by homeViewModel.usuari.collectAsState()
     val navegarLogin by homeViewModel.navegarLogin.collectAsState()
@@ -136,7 +140,7 @@ fun HomeScreen(
             Spacer(Modifier.height(48.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.logo_black_small),
+                painter = painterResource(id = logo),
                 contentDescription = "Logo Entrebicis",
                 modifier = Modifier
                     .width(287.dp)
