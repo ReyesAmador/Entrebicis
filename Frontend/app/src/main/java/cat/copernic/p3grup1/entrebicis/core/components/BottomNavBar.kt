@@ -31,7 +31,10 @@ fun BottomNavBar(navController: NavController) {
 
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination
 
-    NavigationBar(contentColor = Color.White) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground
+    ) {
         items.forEach { item ->
             val isSelected = currentDestination?.route?.startsWith(item.route) == true
 
@@ -54,7 +57,7 @@ fun BottomNavBar(navController: NavController) {
                                 color = if (isSelected)
                                     MaterialTheme.colorScheme.tertiary.copy(alpha = 0.25f)
                                 else
-                                    Color.White,
+                                    MaterialTheme.colorScheme.surface,
                             )
                     ) {
                         Icon(
