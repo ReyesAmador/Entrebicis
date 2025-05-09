@@ -56,7 +56,7 @@ fun RutaScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
             modifier = Modifier
@@ -111,8 +111,7 @@ fun RutaScreen(
 
             Text(
                 text = "Tens un total de: ${rutes.size} rutes",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.Black
+                style = MaterialTheme.typography.headlineMedium
             )
 
             Spacer(Modifier.height(16.dp))

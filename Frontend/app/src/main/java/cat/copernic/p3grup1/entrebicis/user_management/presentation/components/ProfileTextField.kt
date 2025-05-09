@@ -39,16 +39,17 @@ fun ProfileTextField(
             visualTransformation = visualTransformation,
             trailingIcon = trailingIcon,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Tertiary.copy(alpha = 0.5f),
-                errorContainerColor = Color.White,
-                focusedIndicatorColor = Primary,
-                unfocusedIndicatorColor = Primary,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                disabledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                errorContainerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
                 errorIndicatorColor = Color.Red,
-                focusedTextColor = Secondary,
-                unfocusedTextColor = Secondary,
-                disabledTextColor = Secondary
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                errorTextColor = MaterialTheme.colorScheme.onSurface
             )
         )
 

@@ -172,6 +172,7 @@ fun UserProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding()
         ) {
             // CABECERA
