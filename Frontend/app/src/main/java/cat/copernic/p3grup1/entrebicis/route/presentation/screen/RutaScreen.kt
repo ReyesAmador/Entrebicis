@@ -3,7 +3,6 @@ package cat.copernic.p3grup1.entrebicis.route.presentation.screen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,9 +39,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
+import cat.copernic.p3grup1.entrebicis.core.components.RefreshIndicator
 import cat.copernic.p3grup1.entrebicis.route.presentation.components.RutaCard
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewModel
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Indicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -141,8 +139,9 @@ fun RutaScreen(
                 modifier = Modifier.fillMaxSize(),
                 state = pullState,
                 indicator = {
-                    Indicator(
-
+                    RefreshIndicator(
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        isRefreshing = isRefreshing
                     )
                 }
             ) {
