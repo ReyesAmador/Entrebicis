@@ -32,6 +32,8 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
+import cat.copernic.p3grup1.entrebicis.core.components.RefreshIndicator
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.reward.presentation.components.RewardCard
 import cat.copernic.p3grup1.entrebicis.reward.presentation.viewmodel.RewardViewModel
@@ -67,6 +70,9 @@ fun RewardScreen(
     val reservaSuccess by viewModel.reservaSuccess.collectAsState()
     val error by viewModel.error.collectAsState()
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val pullState = rememberPullToRefreshState()
 
     LaunchedEffect(Unit) {
         viewModel.carregarRecompenses()
@@ -110,7 +116,8 @@ fun RewardScreen(
         }
     ) { padding ->
 
-        Column(modifier = Modifier.fillMaxSize()
+        Column(modifier = Modifier
+            .fillMaxSize()
             .padding()) {
             Box(
                 modifier = Modifier
@@ -174,24 +181,39 @@ fun RewardScreen(
                 )
             }
 
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(recompenses) { recompensa ->
-                    RewardCard(
-                        recompensa = recompensa,
-                        onReservar = {
-                            viewModel.reservarRecompensa(it)
-                            viewModel.carregarRecompenses()},
-                        onClick = { onRewardClick(it) },
-                        onRecollir = {viewModel.recollirRecompensa(it)},
-                        entregat = viewModel.recompensaEntregada.collectAsState().value,
-                        onTancarDialog = {
-                            viewModel.resetEntrega()
-                            viewModel.carregarRecompenses()
-                        }
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { viewModel.carregarRecompenses() },
+                modifier = Modifier.fillMaxSize(),
+                state = pullState,
+                indicator = {
+                    RefreshIndicator(
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        isRefreshing = isRefreshing
                     )
+                }
+            ) {
+
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(recompenses) { recompensa ->
+                        RewardCard(
+                            recompensa = recompensa,
+                            onReservar = {
+                                viewModel.reservarRecompensa(it)
+                                viewModel.carregarRecompenses()
+                            },
+                            onClick = { onRewardClick(it) },
+                            onRecollir = { viewModel.recollirRecompensa(it) },
+                            entregat = viewModel.recompensaEntregada.collectAsState().value,
+                            onTancarDialog = {
+                                viewModel.resetEntrega()
+                                viewModel.carregarRecompenses()
+                            }
+                        )
+                    }
                 }
             }
         }

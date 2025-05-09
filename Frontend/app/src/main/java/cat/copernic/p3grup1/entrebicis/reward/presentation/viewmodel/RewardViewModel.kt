@@ -34,13 +34,19 @@ class RewardViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
+
     fun carregarRecompenses(){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
+            _isRefreshing.value = true
+
             rewardRepo.getRecompenses(token).fold(
                 onSuccess = {_recompenses.value = it},
                 onFailure = {_error.value = it.message}
             )
+            _isRefreshing.value = false
         }
     }
 
@@ -62,6 +68,7 @@ class RewardViewModel(
     fun carregarRecompensa(id: Long){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
+            _isRefreshing.value = true
             rewardRepo.getRecompensa(token,id).fold(
                 onSuccess = {
                     _recompensa.value = it
@@ -70,6 +77,7 @@ class RewardViewModel(
                     Log.e("REWARD_DETAIL", "Error carregant recompensa: ${it.message}")
                 }
             )
+            _isRefreshing.value = false
         }
     }
 

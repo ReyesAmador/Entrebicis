@@ -35,7 +35,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cat.copernic.p3grup1.entrebicis.R
+import cat.copernic.p3grup1.entrebicis.core.components.RefreshIndicator
 import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
 import cat.copernic.p3grup1.entrebicis.core.theme.Primary
 import cat.copernic.p3grup1.entrebicis.reward.presentation.components.InfoRow
@@ -52,14 +57,16 @@ import cat.copernic.p3grup1.entrebicis.reward.presentation.components.InfoRow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RewardDetailScreen(
-    recompensa : RecompensaDetall,
+    recompensa: RecompensaDetall,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onBack: () -> Unit,
     onReservar: (Long) -> Unit,
     onRecollir: (Long) -> Unit,
     entregat: Boolean,
     onTancarDialog: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     val mostrarBoto = when (recompensa.estat) {
         "DISPONIBLE" -> true
         "ASSIGNADA" -> true
@@ -74,6 +81,7 @@ fun RewardDetailScreen(
 
     val scrollState = rememberScrollState()
     val showDialog = remember { mutableStateOf(false) }
+    val pullState = rememberPullToRefreshState()
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -89,7 +97,7 @@ fun RewardDetailScreen(
                 onClick = { onBack() },
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(start = 8.dp,top = 8.dp)
+                    .padding(start = 8.dp, top = 8.dp)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -121,145 +129,173 @@ fun RewardDetailScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Descripció
-        Text(
-            text = recompensa.descripcio,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .width(140.dp)
-                .height(1.dp)
-                .align(Alignment.CenterHorizontally)
-                .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.small)
-                .background(Color.Black)
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // Estat
-        Text(
-            text = recompensa.estat,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .verticalScroll(scrollState)) {
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            InfoRow(
-                icon = Icons.Default.CalendarToday,
-                label = "Data creació:",
-                value = recompensa.dataCreacio
-            )
-            if (recompensa.nomUsuari.isNotBlank()) {
-                InfoRow(
-                    icon = Icons.Default.Person,
-                    label = "Usuari:",
-                    value = recompensa.nomUsuari
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            state = pullState,
+            modifier = modifier.fillMaxSize(),
+            indicator = {
+                RefreshIndicator(
+                    isRefreshing = isRefreshing,
+                    modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
-            InfoRow(
-                icon = Icons.Default.Store,
-                label = "Punt de recollida:",
-                value = recompensa.nomPunt
-            )
-            InfoRow(icon = Icons.Default.LocationOn, label = "Adreça: ", value = recompensa.direccio)
-            InfoRow(
-                icon = Icons.Default.BookmarkAdded,
-                label = "Data de reserva:",
-                value = recompensa.dataReserva
-            )
-            InfoRow(
-                icon = Icons.Default.AssignmentInd,
-                label = "Data assignació:",
-                value = recompensa.dataAssignacio
-            )
-            InfoRow(
-                icon = Icons.Default.CheckCircle,
-                label = "Data recollida:",
-                value = recompensa.dataRecollida
-            )
-            InfoRow(
-                icon = Icons.Default.Visibility,
-                label = "Observacions:",
-                value = recompensa.observacions
-            )
+        ) {
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .fillMaxSize()
+                    .padding(top = 32.dp, bottom = 32.dp, start = 24.dp, end = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            if(showDialog.value){
-                AlertDialog(
-                    onDismissRequest = {
-                        showDialog.value = false
-                        onTancarDialog()
-                    },
-                    title = {
-                        Text(text = recompensa.descripcio, style = MaterialTheme.typography.headlineLarge)
-                    },
-                    text = {
-                        if(!entregat){
-                            Text(text = recompensa.nomPunt, style = MaterialTheme.typography.headlineMedium)
-                        }else{
-                            Text("✅ ENTREGAT", style = MaterialTheme.typography.headlineLarge, color = Primary)
-                        }
-                    },
-                    confirmButton = {
-                        if(!entregat){
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Button(onClick = { onRecollir(recompensa.id) }) {
-                                    Text("ENTREGAT")
-                                }
-                            }
-                        }else{
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Button(onClick = {
-                                    showDialog.value = false
-                                    onTancarDialog()
-                                    onBack()
-                                }) {
-                                    Text("TANCAR")
-                                }
-                            }
-                        }
-                    }
+                // Descripció
+                Text(
+                    text = recompensa.descripcio,
+                    style = MaterialTheme.typography.headlineMedium,
                 )
-            }
 
-            if (mostrarBoto) {
-                Button(
-                    onClick = {
-                        when(recompensa.estat){
-                            "DISPONIBLE" -> onReservar(recompensa.id)
-                            "ASSIGNADA" -> showDialog.value = true
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                Spacer(modifier = Modifier.height(28.dp))
+
+                Box(
                     modifier = Modifier
-                        .height(38.dp)
-                        .fillMaxWidth(0.8f)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(
-                        text = textBoto,
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelLarge
+                        .width(140.dp)
+                        .height(1.dp)
+                        .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.small)
+                        .background(Color.Black)
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                // Estat
+                Text(
+                    text = recompensa.estat,
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                InfoRow(
+                    icon = Icons.Default.CalendarToday,
+                    label = "Data creació:",
+                    value = recompensa.dataCreacio
+                )
+                if (recompensa.nomUsuari.isNotBlank()) {
+                    InfoRow(
+                        icon = Icons.Default.Person,
+                        label = "Usuari:",
+                        value = recompensa.nomUsuari
                     )
+                }
+                InfoRow(
+                    icon = Icons.Default.Store,
+                    label = "Punt de recollida:",
+                    value = recompensa.nomPunt
+                )
+                InfoRow(
+                    icon = Icons.Default.LocationOn,
+                    label = "Adreça: ",
+                    value = recompensa.direccio
+                )
+                InfoRow(
+                    icon = Icons.Default.BookmarkAdded,
+                    label = "Data de reserva:",
+                    value = recompensa.dataReserva
+                )
+                InfoRow(
+                    icon = Icons.Default.AssignmentInd,
+                    label = "Data assignació:",
+                    value = recompensa.dataAssignacio
+                )
+                InfoRow(
+                    icon = Icons.Default.CheckCircle,
+                    label = "Data recollida:",
+                    value = recompensa.dataRecollida
+                )
+                InfoRow(
+                    icon = Icons.Default.Visibility,
+                    label = "Observacions:",
+                    value = recompensa.observacions
+                )
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                if (showDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showDialog.value = false
+                            onTancarDialog()
+                        },
+                        title = {
+                            Text(
+                                text = recompensa.descripcio,
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                        },
+                        text = {
+                            if (!entregat) {
+                                Text(
+                                    text = recompensa.nomPunt,
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
+                            } else {
+                                Text(
+                                    "✅ ENTREGAT",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    color = Primary
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            if (!entregat) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Button(onClick = { onRecollir(recompensa.id) }) {
+                                        Text("ENTREGAT")
+                                    }
+                                }
+                            } else {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Button(onClick = {
+                                        showDialog.value = false
+                                        onTancarDialog()
+                                        onBack()
+                                    }) {
+                                        Text("TANCAR")
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+
+                if (mostrarBoto) {
+                    Button(
+                        onClick = {
+                            when (recompensa.estat) {
+                                "DISPONIBLE" -> onReservar(recompensa.id)
+                                "ASSIGNADA" -> showDialog.value = true
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                        modifier = Modifier
+                            .height(38.dp)
+                            .fillMaxWidth(0.8f)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(
+                            text = textBoto,
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
             }
         }
