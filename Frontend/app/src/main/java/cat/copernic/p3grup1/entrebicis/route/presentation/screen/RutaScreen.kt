@@ -3,6 +3,7 @@ package cat.copernic.p3grup1.entrebicis.route.presentation.screen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,10 +21,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +43,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.copernic.p3grup1.entrebicis.R
 import cat.copernic.p3grup1.entrebicis.route.presentation.components.RutaCard
 import cat.copernic.p3grup1.entrebicis.route.presentation.viewmodel.RutaViewModel
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Indicator
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RutaScreen(
@@ -47,12 +54,9 @@ fun RutaScreen(
     onRutaClick: (Long) -> Unit
 ) {
     val rutes by viewModel.rutesFinalitzades.collectAsState()
-    val refreshing by viewModel.isRefreshing.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = { viewModel.carregarRutesFinalitzades() }
-    )
+    val pullState  = rememberPullToRefreshState()
 
     LaunchedEffect(Unit) {
         viewModel.carregarRutesFinalitzades()
@@ -131,33 +135,45 @@ fun RutaScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(rutes) { ruta ->
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RutaCard(
-                            ruta,
-                            modifier = Modifier.weight(1f),
-                            onClick = { onRutaClick(ruta.id) })
-                        Spacer(Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (ruta.validada) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.secondary
-                                ),
-                            contentAlignment = Alignment.Center
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { viewModel.carregarRutesFinalitzades() },
+                modifier = Modifier.fillMaxSize(),
+                state = pullState,
+                indicator = {
+                    Indicator(
+
+                    )
+                }
+            ) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(rutes) { ruta ->
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                "${"%.1f".format(ruta.saldo)}p",
-                                color = Color.White,
-                                style = MaterialTheme.typography.headlineSmall
-                            )
+                            RutaCard(
+                                ruta,
+                                modifier = Modifier.weight(1f),
+                                onClick = { onRutaClick(ruta.id) })
+                            Spacer(Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (ruta.validada) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.secondary
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "${"%.1f".format(ruta.saldo)}p",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                            }
                         }
                     }
                 }
