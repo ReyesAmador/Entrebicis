@@ -144,6 +144,7 @@ public class RecompensaLogic {
         
         //aplicar canvis
         recompensa.setUsuari(usuari);
+        recompensa.setDataReserva(LocalDate.now());
         recompensa.setEstat(EstatRecompensa.RESERVADA);
         
         //guardar canvis
@@ -204,6 +205,7 @@ public class RecompensaLogic {
         }
         
         recompensa.setEstat(EstatRecompensa.RECOLLIDA);
+        recompensa.setDataRecollida(LocalDate.now());
         repo.save(recompensa);
     }
     
