@@ -4,6 +4,7 @@
  */
 package cat.copernic.entrebicis.configuration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 public class Temporals {
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private static final DateTimeFormatter formatterDateOnly = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     /**
      * Dona format a un objecte {@link LocalDateTime} seguint el patró "dd/MM/yyyy HH:mm:ss".
@@ -36,4 +38,9 @@ public class Temporals {
         if (dateTime == null) return "";
         return dateTime.format(formatter);
     }   
+    
+    public String format(LocalDate date) {
+        if (date == null) return "";
+        return date.format(formatterDateOnly);
+    }
 }
