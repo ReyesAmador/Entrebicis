@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import cat.copernic.p3grup1.entrebicis.core.utils.isInternetAvailable
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,11 @@ class LoginViewModel(
     @RequiresApi(Build.VERSION_CODES.O)
     fun login(email: String, paraula: String){
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorMessage.value = "No hi ha connexió a internet"
+                _loginSuccess.value = false
+                return@launch
+            }
             val result = repo.login(email,paraula)
             result.fold(
                 onSuccess = { response ->

@@ -15,6 +15,7 @@ import cat.copernic.p3grup1.entrebicis.core.models.PuntGps
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
 import cat.copernic.p3grup1.entrebicis.core.utils.LogRutaUtils
+import cat.copernic.p3grup1.entrebicis.core.utils.isInternetAvailable
 import cat.copernic.p3grup1.entrebicis.route.data.repositories.RouteRepo
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
@@ -77,6 +78,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
             }
         }
         viewModelScope.launch {
+            if (!isInternetAvailable(appContext)) {
+                Log.e("NETWORK", "No hi ha connexió a internet")
+                return@launch
+            }
             repo.getUsuari(token).fold(
                 onSuccess = {
                     Log.d("HOME_VM", "Usuari rebut: ${it.nom} - ${it.saldo}")
@@ -122,6 +127,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         val token = prefs.getString("token", null)
         if (token != null){
             viewModelScope.launch {
+                if (!isInternetAvailable(appContext)) {
+                    Log.e("RUTA", "❌ No hi ha connexió per iniciar la ruta al backend")
+                    return@launch
+                }
                 repoRuta.iniciarRuta(token).onSuccess {
                     Log.d("RUTA", "✅ Ruta creada al backend: ${it.id}")
                 }.onFailure {
@@ -148,6 +157,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
 
         // Notificamos al backend que la ruta ha terminado
         viewModelScope.launch {
+            if (!isInternetAvailable(appContext)) {
+                Log.e("RUTA", "❌ No hi ha connexió per finalitzar la ruta al backend")
+                return@launch
+            }
             repoRuta.finalitzarRuta().onSuccess {
                 _mostrarDetallRuta.value = true
                 Log.d("RUTA", "Ruta finalitzada correctament al backend")

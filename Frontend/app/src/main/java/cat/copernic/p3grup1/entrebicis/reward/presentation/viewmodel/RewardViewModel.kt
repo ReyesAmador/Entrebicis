@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cat.copernic.p3grup1.entrebicis.core.models.Recompensa
 import cat.copernic.p3grup1.entrebicis.core.models.RecompensaDetall
+import cat.copernic.p3grup1.entrebicis.core.utils.isInternetAvailable
 import cat.copernic.p3grup1.entrebicis.reward.data.repositories.RewardRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +42,11 @@ class RewardViewModel(
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
             _isRefreshing.value = true
+            if (!isInternetAvailable(getApplication())) {
+                _error.value = "No hi ha connexió a internet"
+                _isRefreshing.value = false
+                return@launch
+            }
 
             rewardRepo.getRecompenses(token).fold(
                 onSuccess = {_recompenses.value = it},
@@ -53,6 +59,11 @@ class RewardViewModel(
     fun reservarRecompensa(id: Long) {
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _error.value = "No hi ha connexió a internet"
+                _isRefreshing.value = false
+                return@launch
+            }
             rewardRepo.reservarRecompensa(id, token).fold(
                 onSuccess = {
                     _reservaSuccess.value = true
@@ -69,6 +80,11 @@ class RewardViewModel(
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
             _isRefreshing.value = true
+            if (!isInternetAvailable(getApplication())) {
+                _error.value = "No hi ha connexió a internet"
+                _isRefreshing.value = false
+                return@launch
+            }
             rewardRepo.getRecompensa(token,id).fold(
                 onSuccess = {
                     _recompensa.value = it
@@ -84,6 +100,11 @@ class RewardViewModel(
     fun recollirRecompensa(id: Long){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _error.value = "No hi ha connexió a internet"
+                _isRefreshing.value = false
+                return@launch
+            }
             rewardRepo.recollirRecompensa(token, id).onSuccess {
                 _recompensaEntregada.value = true
             }.onFailure {

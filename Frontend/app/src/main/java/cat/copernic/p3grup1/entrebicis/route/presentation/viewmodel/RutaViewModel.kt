@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
+import cat.copernic.p3grup1.entrebicis.core.utils.isInternetAvailable
 import cat.copernic.p3grup1.entrebicis.route.data.repositories.RouteRepo
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.PuntGpsDto
 import cat.copernic.p3grup1.entrebicis.route.data.sources.remote.RouteApi
@@ -38,6 +39,10 @@ class RutaViewModel(
     fun carregarRuta(id: Long? = null){
         viewModelScope.launch {
             _loading.value = true
+            if (!isInternetAvailable(getApplication())) {
+                _loading.value = false
+                return@launch
+            }
             val resultat = if (id != null){
                 repo.getDetallRutaEspecifica(id)
             }else{
@@ -58,6 +63,10 @@ class RutaViewModel(
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
             _isRefreshing.value = true
+            if (!isInternetAvailable(getApplication())) {
+                _loading.value = false
+                return@launch
+            }
 
             repo.getRutesFinalitzades(token).onSuccess {
                 _rutesFinalitzades.value = it

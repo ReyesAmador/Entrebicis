@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cat.copernic.p3grup1.entrebicis.core.models.Usuari
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
+import cat.copernic.p3grup1.entrebicis.core.utils.isInternetAvailable
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.CanviContrasenyaRequest
 import cat.copernic.p3grup1.entrebicis.user_management.data.sources.remote.UserApi
@@ -44,6 +45,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         val token = getToken() ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorActualitzacio.value = "No hi ha connexió a internet"
+                return@launch
+            }
             val start = System.currentTimeMillis()
             repo.getUsuari(token).fold(
                 onSuccess = {
@@ -64,6 +69,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     fun actualitzarUsuari(usuari: Usuari){
         val token = getToken() ?: return
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorActualitzacio.value = "No hi ha connexió a internet"
+                return@launch
+            }
             repo.actualitzarUsuari(token, usuari).fold(
                 onSuccess = {
                     _actualitzacioExitosa.value = true
@@ -93,6 +102,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         }
 
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorActualitzacio.value = "No hi ha connexió a internet"
+                return@launch
+            }
             val result = repo.canviContrasenya(token, CanviContrasenyaRequest(actual, nova, repetir))
             result.fold(
                 onSuccess = {
@@ -107,6 +120,9 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
 
     suspend fun uploadImatgeUsuari(imageBytes: ByteArray): Boolean {
         val token = getToken() ?: return false
+        if (!isInternetAvailable(getApplication())) {
+            return false
+        }
             return repo.uploadUserImage(token, imageBytes).fold(
                 onSuccess = {
                     Log.d("UPLOAD_IMAGE", "✅ Imatge pujada correctament")

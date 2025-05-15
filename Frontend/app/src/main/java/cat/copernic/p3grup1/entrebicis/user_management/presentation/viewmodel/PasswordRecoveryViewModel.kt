@@ -3,6 +3,7 @@ package cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import cat.copernic.p3grup1.entrebicis.core.utils.isInternetAvailable
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,11 @@ class PasswordRecoveryViewModel(
 
     fun forgotPassword() {
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorMessage.value = "No hi ha connexió a internet"
+                _success.value = false
+                return@launch
+            }
             val result = repo.forgotPass(_email.value)
             result.fold(
                 onSuccess = {
@@ -57,6 +63,11 @@ class PasswordRecoveryViewModel(
 
     fun validateCode() {
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorMessage.value = "No hi ha connexió a internet"
+                _success.value = false
+                return@launch
+            }
             val result = repo.validateCode(_email.value, _code.value)
             result.fold(
                 onSuccess = {
@@ -72,6 +83,11 @@ class PasswordRecoveryViewModel(
 
     fun resetPassword() {
         viewModelScope.launch {
+            if (!isInternetAvailable(getApplication())) {
+                _errorMessage.value = "No hi ha connexió a internet"
+                _success.value = false
+                return@launch
+            }
             val result = repo.resetPassword(_email.value, _code.value, _newPassword.value)
             result.fold(
                 onSuccess = {
