@@ -69,6 +69,7 @@ fun RewardScreen(
     val recompenses by viewModel.recompenses.collectAsState()
     val reservaSuccess by viewModel.reservaSuccess.collectAsState()
     val error by viewModel.error.collectAsState()
+    val errorConnexio by viewModel.errorConnexio.collectAsState()
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
     val isRefreshing by viewModel.isRefreshing.collectAsState()
@@ -76,6 +77,13 @@ fun RewardScreen(
 
     LaunchedEffect(Unit) {
         viewModel.carregarRecompenses()
+    }
+
+    LaunchedEffect(errorConnexio) {
+        errorConnexio?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearErrorConnexio()
+        }
     }
 
     LaunchedEffect(mostraSnackbarReserva) {

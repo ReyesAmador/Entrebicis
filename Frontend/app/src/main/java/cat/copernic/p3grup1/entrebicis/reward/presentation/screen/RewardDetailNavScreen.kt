@@ -35,11 +35,19 @@ fun RewardDetailNavScreen(
     val entregat by viewModel.recompensaEntregada.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val error by viewModel.error.collectAsState()
+    val errorConnexio by viewModel.errorConnexio.collectAsState()
 
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
     LaunchedEffect(id) {
         viewModel.carregarRecompensa(id)
+    }
+
+    LaunchedEffect(errorConnexio) {
+        errorConnexio?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearErrorConnexio()
+        }
     }
 
     // Mostrar feedback tras reserva

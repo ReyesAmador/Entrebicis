@@ -35,6 +35,9 @@ class RewardViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _errorConnexio = MutableStateFlow<String?>(null)
+    val errorConnexio: StateFlow<String?> = _errorConnexio
+
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
@@ -43,7 +46,7 @@ class RewardViewModel(
         viewModelScope.launch {
             _isRefreshing.value = true
             if (!isInternetAvailable(getApplication())) {
-                _error.value = "No hi ha connexió a internet"
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 _isRefreshing.value = false
                 return@launch
             }
@@ -60,8 +63,7 @@ class RewardViewModel(
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
             if (!isInternetAvailable(getApplication())) {
-                _error.value = "No hi ha connexió a internet"
-                _isRefreshing.value = false
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             rewardRepo.reservarRecompensa(id, token).fold(
@@ -81,7 +83,7 @@ class RewardViewModel(
         viewModelScope.launch {
             _isRefreshing.value = true
             if (!isInternetAvailable(getApplication())) {
-                _error.value = "No hi ha connexió a internet"
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 _isRefreshing.value = false
                 return@launch
             }
@@ -101,8 +103,7 @@ class RewardViewModel(
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
             if (!isInternetAvailable(getApplication())) {
-                _error.value = "No hi ha connexió a internet"
-                _isRefreshing.value = false
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             rewardRepo.recollirRecompensa(token, id).onSuccess {
@@ -119,6 +120,10 @@ class RewardViewModel(
 
     fun clearError() {
         _error.value = null
+    }
+
+    fun clearErrorConnexio() {
+        _errorConnexio.value = null
     }
 
     fun clearReservaStatus() {
