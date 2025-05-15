@@ -51,6 +51,26 @@
                            style="max-width: 96px;" th:field="*{tempsMaximRecollida}" required>
                     <div class="text-danger" th:if="${#fields.hasErrors('tempsMaximRecollida')}" th:errors="*{tempsMaximRecollida}"></div>
                 </div>
+                
+                <div class="mb-4 text-center">
+                    <label class="form-label">Interval actualització GPS (en milisegons)</label>
+                    <small class="form-text text-muted">
+                        Temps entre captures consecutives del GPS. Recomanat: entre 2000 i 10000. A més gran, pitjor es mostrará la ruta
+                    </small>
+                    <input type="number" class="form-control border-success text-center mx-auto" 
+                           style="max-width: 96px;" th:field="*{intervalActualitzacioGps}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('intervalActualitzacioGps')}" th:errors="*{intervalActualitzacioGps}"></div>
+                </div>
+
+                <div class="mb-4 text-center">
+                    <label class="form-label">Distància mínima GPS (en metres)</label>
+                    <small class="form-text text-muted">
+                        Distància minima recorreguda per agafar un punt GPS. Recomenat: entre 5 i 20. Si es molt petita agafarà punts erronis.
+                    </small>
+                    <input type="number" step="0.1" class="form-control border-success text-center mx-auto" 
+                           style="max-width: 96px;" th:field="*{distanciaMinimaGps}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('distanciaMinimaGps')}" th:errors="*{distanciaMinimaGps}"></div>
+                </div>
 
                 <div class="d-flex justify-content-center mt-4">
                     <button type="submit" class="btn btn-success px-4">Guardar</button>

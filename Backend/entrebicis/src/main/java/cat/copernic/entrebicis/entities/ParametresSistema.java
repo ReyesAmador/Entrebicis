@@ -41,4 +41,12 @@ public class ParametresSistema {
     @Min(value = 0, message = "El valor no pot ser negatiu")
     private int tempsMaximRecollida;
     
+    @Column(name = "interval_actualitzacio_gps")
+    @Min(value = 0, message = "El valor no pot ser negatiu")
+    private int intervalActualitzacioGps; // en milisegons
+
+    @Column(name = "distancia_minima_gps")
+    @Min(value = 0, message = "El valor no pot ser negatiu")
+    private float distanciaMinimaGps; // en metres
+    
 }

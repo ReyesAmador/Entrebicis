@@ -41,6 +41,8 @@ public class ParametresSistemaLogic {
             p.setTempsMaximAturat(5);
             p.setConversio(1);
             p.setTempsMaximRecollida(72);
+            p.setIntervalActualitzacioGps(2000);
+            p.setDistanciaMinimaGps(10);
             repo.save(p);
         };
     }
@@ -99,6 +101,30 @@ public class ParametresSistemaLogic {
         ParametresSistema parametres = repo.findById(1L)
                 .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
         return parametres.getConversio();
+    }
+    
+    /**
+     * Obté l'interval de milisegons entre un punt i l'altre.
+     *
+     * @return el valor de l'interval en milisegons.
+     * @throws RuntimeException si no es troben els paràmetres del sistema.
+     */
+    public int obtenirIntervalActualitzacioGps() {
+        ParametresSistema parametres = repo.findById(1L)
+            .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
+        return parametres.getIntervalActualitzacioGps();
+    }
+    
+    /**
+     * Obté la distància minima que s'ha de recorrer l'usuari entre un punt i l'altre.
+     *
+     * @return el valor de la distància minima en metres.
+     * @throws RuntimeException si no es troben els paràmetres del sistema.
+     */
+    public float obtenirDistanciaMinimaGps() {
+        ParametresSistema parametres = repo.findById(1L)
+            .orElseThrow(() -> new RuntimeException("Paràmetres del sistema no trobats"));
+        return parametres.getDistanciaMinimaGps();
     }
     
 }

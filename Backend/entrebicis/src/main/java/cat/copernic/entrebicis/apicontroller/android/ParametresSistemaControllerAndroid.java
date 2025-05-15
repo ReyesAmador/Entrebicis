@@ -5,6 +5,8 @@
 package cat.copernic.entrebicis.apicontroller.android;
 
 import cat.copernic.entrebicis.logic.ParametresSistemaLogic;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,5 +46,13 @@ public class ParametresSistemaControllerAndroid {
         int temps = parLogic.obtenirTempsMaximAturat();
         logger.info("⏱️ Temps màxim d'aturada obtingut: {} minuts", temps);
         return ResponseEntity.ok(temps);
+    }
+    
+    @GetMapping("/gps")
+    public ResponseEntity<Map<String, Object>> obtenirParametresGps() {
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("intervalMs", parLogic.obtenirIntervalActualitzacioGps());
+        resposta.put("distanciaMinima", parLogic.obtenirDistanciaMinimaGps());
+        return ResponseEntity.ok(resposta);
     }
 }
