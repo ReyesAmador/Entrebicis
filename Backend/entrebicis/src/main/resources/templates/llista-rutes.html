@@ -27,6 +27,7 @@
         <thead>
             <tr>
                 <th>NOM COMPLET</th>
+                <th>DATA</th>
                 <th>DISTÀNCIA</th>
                 <th>TEMPS TOTAL</th>
                 <th>VEL. MITJANA</th>
@@ -39,6 +40,7 @@
         <tbody>
             <tr th:each="ruta : ${llistaRutes}">
                 <td th:text="${ruta.usuari.nom}"></td>
+                <td th:text="${@temporals.format(ruta.inici)}"></td>
                 <td th:text="${ruta.km_total + ' Km'}"></td>
                 <td th:text="${ruta.temps_total}"></td>
                 <td th:text="${ruta.velocitat_mitjana + ' Km/h'}"></td>
