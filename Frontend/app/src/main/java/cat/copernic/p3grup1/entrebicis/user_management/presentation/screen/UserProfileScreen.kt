@@ -114,6 +114,7 @@ fun UserProfileScreen(
     val actualitzacioExitosa by viewModel.actualitzacioExitosa.collectAsState()
     val errorActualitzacio by viewModel.errorActualitzacio.collectAsState()
     val uploadExitosa by viewModel.uploadExitosa.collectAsState()
+    val errorConnexio by viewModel.errorConnexio.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -134,6 +135,13 @@ fun UserProfileScreen(
         if (uploadExitosa) {
             cacheKey.value = System.currentTimeMillis()
             viewModel.resetUploadExitosa()
+        }
+    }
+
+    LaunchedEffect(errorConnexio) {
+        errorConnexio?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearErrorConnexio()
         }
     }
 

@@ -41,12 +41,15 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     private val _missatgeContrasenya = MutableStateFlow<String?>(null)
     val missatgeContrasenya: StateFlow<String?> = _missatgeContrasenya
 
+    private val _errorConnexio = MutableStateFlow<String?>(null)
+    val errorConnexio: StateFlow<String?> = _errorConnexio
+
     fun carregarUsuari() {
         val token = getToken() ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
         viewModelScope.launch {
             if (!isInternetAvailable(getApplication())) {
-                _errorActualitzacio.value = "No hi ha connexió a internet"
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             val start = System.currentTimeMillis()
@@ -70,7 +73,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         val token = getToken() ?: return
         viewModelScope.launch {
             if (!isInternetAvailable(getApplication())) {
-                _errorActualitzacio.value = "No hi ha connexió a internet"
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             repo.actualitzarUsuari(token, usuari).fold(
@@ -103,7 +106,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
 
         viewModelScope.launch {
             if (!isInternetAvailable(getApplication())) {
-                _errorActualitzacio.value = "No hi ha connexió a internet"
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             val result = repo.canviContrasenya(token, CanviContrasenyaRequest(actual, nova, repetir))
@@ -121,7 +124,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     suspend fun uploadImatgeUsuari(imageBytes: ByteArray): Boolean {
         val token = getToken() ?: return false
         if (!isInternetAvailable(getApplication())) {
-            _errorActualitzacio.value = "No hi ha connexió a internet"
+            _errorConnexio.value = "⚠️ No hi ha connexió a internet"
             return false
         }
             return repo.uploadUserImage(token, imageBytes).fold(
@@ -152,6 +155,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
 
     fun resetUploadExitosa() {
         _uploadExitosa.value = false
+    }
+
+    fun clearErrorConnexio() {
+        _errorConnexio.value = null
     }
 
 }
