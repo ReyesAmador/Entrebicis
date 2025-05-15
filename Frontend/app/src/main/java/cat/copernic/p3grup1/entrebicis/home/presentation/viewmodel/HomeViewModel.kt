@@ -104,6 +104,18 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun iniciarRuta() {
+        val rutaPendent = prefs.getBoolean("ruta_finalitzada_pendent", false)
+        if (rutaPendent) {
+            Log.d("RUTA", "Finalitzant ruta pendent anterior...")
+            viewModelScope.launch {
+                repoRuta.finalitzarRuta().onSuccess {
+                    Log.d("RUTA", "✅ Ruta pendent finalitzada")
+                    prefs.edit().remove("ruta_finalitzada_pendent").apply()
+                }.onFailure {
+                    Log.e("RUTA", "❌ Error finalitzant ruta pendent: ${it.message}")
+                }
+            }
+        }
         if (_rutaActiva.value) return
         _rutaActiva.value = true
         prefs.edit().putBoolean("ruta_activa", true).apply()
@@ -163,8 +175,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         // Notificamos al backend que la ruta ha terminado
         viewModelScope.launch {
             if (!isInternetAvailable(appContext)) {
-                Log.e("RUTA", "❌ No hi ha connexió per finalitzar la ruta al backend")
-                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
+                prefs.edit().putBoolean("ruta_finalitzada_pendent", true).apply()
                 return@launch
             }
             repoRuta.finalitzarRuta().onSuccess {
