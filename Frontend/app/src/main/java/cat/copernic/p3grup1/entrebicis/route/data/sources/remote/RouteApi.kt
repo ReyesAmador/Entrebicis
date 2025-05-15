@@ -53,6 +53,9 @@ interface RouteApi {
     @GET("parametres/temps-maxim-aturada")
     suspend fun getTempsMaximAturada(): Response<Int>
 
+    @GET("parametres/gps")
+    suspend fun getGpsParams(): Response<Map<String, Any>>
+
     @PATCH("ruta/finalitzar")
     suspend fun finalitzarRuta(): Response<Void>
 

@@ -46,6 +46,8 @@ class LocationService : Service() {
         latitude = 0.0
         longitude = 0.0
     }
+    private var intervalUpdateMs: Long = 5000L
+    private var distanciaMinima: Float = 10f
     private var pointsDiscarded = 0
 
     private val handler = Handler(Looper.getMainLooper())
@@ -89,6 +91,15 @@ class LocationService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             routeRepo.getTempsMaximAturada().onSuccess { minuts ->
                 tempsMaximAturadaMillis = minuts * 60_000L
+
+                // 🔄 Obtenir paràmetres GPS
+                routeRepo.getGpsParams().onSuccess { (interval, dist) ->
+                    intervalUpdateMs = interval
+                    distanciaMinima = dist
+                    Log.d("GPS_PARAM", "Interval: $interval ms, Distància mínima: $dist m")
+                }.onFailure {
+                    Log.w("GPS_PARAM", "Error obtenint paràmetres GPS, usant per defecte")
+                }
                 startLocationUpdates() // solo iniciar si tenemos el valor
                 handler.postDelayed(checkInactivityRunnable, 5_000L)
                 Log.d("RUTA", "Temps màxim aturat rebut: $minuts minuts")
@@ -102,8 +113,8 @@ class LocationService : Service() {
     private fun startLocationUpdates() {
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            2_000L // cada 10s
-        ).setMinUpdateDistanceMeters(5f).build()
+            intervalUpdateMs
+        ).build()
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -134,7 +145,7 @@ class LocationService : Service() {
         val distanceMoved = location.distanceTo(lastKnownLocation)
 
         // Si se ha movido más de 10m, se considera movimiento
-        if (distanceMoved > 10f) {
+        if (distanceMoved > distanciaMinima) {
             lastMovementTimestamp = currentTime
             val punt = PuntGpsDto(
                 latitud = location.latitude,
