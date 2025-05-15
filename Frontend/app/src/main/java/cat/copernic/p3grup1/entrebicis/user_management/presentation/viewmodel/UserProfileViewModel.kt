@@ -121,6 +121,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     suspend fun uploadImatgeUsuari(imageBytes: ByteArray): Boolean {
         val token = getToken() ?: return false
         if (!isInternetAvailable(getApplication())) {
+            _errorActualitzacio.value = "No hi ha connexió a internet"
             return false
         }
             return repo.uploadUserImage(token, imageBytes).fold(

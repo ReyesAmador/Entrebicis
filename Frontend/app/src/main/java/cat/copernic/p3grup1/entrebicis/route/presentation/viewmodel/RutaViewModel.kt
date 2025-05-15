@@ -35,11 +35,15 @@ class RutaViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
+    private val _errorConnexio = MutableStateFlow<String?>(null)
+    val errorConnexio: StateFlow<String?> = _errorConnexio
+
 
     fun carregarRuta(id: Long? = null){
         viewModelScope.launch {
             _loading.value = true
             if (!isInternetAvailable(getApplication())) {
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 _loading.value = false
                 return@launch
             }
@@ -64,6 +68,7 @@ class RutaViewModel(
         viewModelScope.launch {
             _isRefreshing.value = true
             if (!isInternetAvailable(getApplication())) {
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 _loading.value = false
                 return@launch
             }

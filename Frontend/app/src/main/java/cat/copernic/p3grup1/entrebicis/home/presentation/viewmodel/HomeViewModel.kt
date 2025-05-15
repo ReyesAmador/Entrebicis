@@ -50,6 +50,9 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     private val _mostrarDetallRuta = MutableStateFlow(false)
     val mostrarDetallRuta: StateFlow<Boolean> = _mostrarDetallRuta
 
+    private val _errorConnexio = MutableStateFlow<String?>(null)
+    val errorConnexio: StateFlow<String?> = _errorConnexio
+
     private var cronometreHandler: Handler? = null
     private var cronometreRunnable: Runnable? = null
     private var iniciRutaTimestamp: Long = 0L
@@ -80,6 +83,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch {
             if (!isInternetAvailable(appContext)) {
                 Log.e("NETWORK", "No hi ha connexió a internet")
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             repo.getUsuari(token).fold(
@@ -129,6 +133,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
             viewModelScope.launch {
                 if (!isInternetAvailable(appContext)) {
                     Log.e("RUTA", "❌ No hi ha connexió per iniciar la ruta al backend")
+                    _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                     return@launch
                 }
                 repoRuta.iniciarRuta(token).onSuccess {
@@ -159,6 +164,7 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch {
             if (!isInternetAvailable(appContext)) {
                 Log.e("RUTA", "❌ No hi ha connexió per finalitzar la ruta al backend")
+                _errorConnexio.value = "⚠️ No hi ha connexió a internet"
                 return@launch
             }
             repoRuta.finalitzarRuta().onSuccess {
