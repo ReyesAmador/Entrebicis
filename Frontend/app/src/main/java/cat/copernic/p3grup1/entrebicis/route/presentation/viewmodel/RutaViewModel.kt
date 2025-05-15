@@ -81,4 +81,8 @@ class RutaViewModel(
             _isRefreshing.value = false
         }
     }
+
+    fun clearErrorConnexio() {
+        _errorConnexio.value = null
+    }
 }

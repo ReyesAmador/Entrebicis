@@ -31,6 +31,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -84,9 +86,19 @@ fun DetallRutaScreen(
     val mostrarMissatgeZoom = remember { mutableStateOf(false) }
     val selectedPunt = remember { mutableStateOf<PuntGpsDto?>(null) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val errorConnexio by viewModel.errorConnexio.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.carregarRuta()
         hasStartedLoading.value = true
+    }
+
+    LaunchedEffect(errorConnexio) {
+        errorConnexio?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearErrorConnexio()
+        }
     }
 
     LaunchedEffect(idRuta) {
@@ -130,7 +142,9 @@ fun DetallRutaScreen(
         }
     }
 
-    Scaffold { padding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { padding ->
         detallRuta?.let { ruta ->
             val punts = ruta.punts.map { LatLng(it.latitud, it.longitud) }
 

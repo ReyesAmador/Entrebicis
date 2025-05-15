@@ -70,6 +70,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val snackbarHostState = remember { SnackbarHostState() }
+    val errorConnexio by homeViewModel.errorConnexio.collectAsState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -92,6 +93,13 @@ fun HomeScreen(
     LaunchedEffect(navegarLogin) {
         if (navegarLogin) {
             onLogout() // redirige al login
+        }
+    }
+
+    LaunchedEffect(errorConnexio) {
+        errorConnexio?.let {
+            snackbarHostState.showSnackbar(it)
+            homeViewModel.clearErrorConnexio()
         }
     }
 

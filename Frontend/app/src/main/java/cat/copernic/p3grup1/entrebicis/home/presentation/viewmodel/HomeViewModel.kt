@@ -199,4 +199,8 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         _mostrarDetallRuta.value = false
     }
 
+    fun clearErrorConnexio() {
+        _errorConnexio.value = null
+    }
+
 }
