@@ -9,6 +9,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel per gestionar el procés de recuperació de contrasenya.
+ * Permet enviar correu, validar codi i restablir contrasenya.
+ *
+ * @property repo Repositori amb accés a les rutes de recuperació.
+ */
 class PasswordRecoveryViewModel(
     application: Application,
     private val repo: LoginRepo

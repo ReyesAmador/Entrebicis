@@ -31,6 +31,14 @@ import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.Lo
 import cat.copernic.p3grup1.entrebicis.user_management.presentation.viewmodel.provideLoginViewModelFactory
 import kotlinx.coroutines.delay
 
+/**
+ * Pantalla inicial de l'aplicació (SplashScreen).
+ * Mostra el logo amb una animació de rotació mentre es comprova si hi ha un token de sessió guardat.
+ * Segons el resultat, redirigeix a la pantalla de login o a la pantalla principal (Home).
+ *
+ * @param onNavigateToLogin Funció de navegació cap a la pantalla de login si no hi ha sessió iniciada.
+ * @param onNavigateToHome Funció de navegació cap a la pantalla principal si la sessió està activa.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SplashScreen(

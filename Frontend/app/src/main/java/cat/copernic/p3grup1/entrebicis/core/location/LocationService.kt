@@ -32,6 +32,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * Servei en segon pla encarregat de capturar la localització GPS de l’usuari
+ * i enviar-la periòdicament al backend mentre una ruta està activa.
+ * Finalitza automàticament la ruta si detecta inactivitat prolongada.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 class LocationService : Service() {
 
@@ -66,6 +71,11 @@ class LocationService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    /**
+     * S'executa quan el servei es crea per primera vegada.
+     * Inicialitza els components de localització, canal de notificació
+     * i comença a escoltar ubicacions després d'obtenir els paràmetres del backend.
+     */
     override fun onCreate() {
         super.onCreate()
 
@@ -110,6 +120,10 @@ class LocationService : Service() {
         }
     }
 
+    /**
+     * Inicia les actualitzacions de localització segons els paràmetres configurats
+     * de precisió i interval. Requereix permisos de localització atorgats.
+     */
     private fun startLocationUpdates() {
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
@@ -129,6 +143,13 @@ class LocationService : Service() {
         }
     }
 
+    /**
+     * Gestiona cada nova localització rebuda pel sistema.
+     * Ignora ubicacions amb baixa precisió o punts inicials, i envia només
+     * aquells que superen la distància mínima configurada.
+     *
+     * @param location Ubicació GPS recent detectada.
+     */
     private fun handleNewLocation(location: Location) {
         if (location.accuracy > 20) {
             Log.d("GPS", "Ignorant punt per baixa precisió: ${location.accuracy}m")
@@ -159,6 +180,10 @@ class LocationService : Service() {
         lastKnownLocation = location
     }
 
+    /**
+     * Finalitza automàticament la ruta per inactivitat (temps sense moviment superat),
+     * notifica al backend i atura el servei.
+     */
     private fun finalizarRutaPerInactivitat() {
         rutaActiva = false
         Log.d("RUTA", "Ruta finalitzada automàticament per aturada. Temps quiet superat.")
@@ -173,6 +198,12 @@ class LocationService : Service() {
         stopSelf()
     }
 
+    /**
+     * Crea una notificació persistent que mostra que la ruta està en marxa.
+     * És necessària per mantenir el servei actiu en primer pla.
+     *
+     * @return Notificació construïda per mostrar a l’usuari.
+     */
     private fun buildNotification(): Notification {
         return NotificationCompat.Builder(this, "route_channel")
             .setContentTitle("Ruta en marxa")
@@ -181,6 +212,10 @@ class LocationService : Service() {
             .build()
     }
 
+    /**
+     * Crea el canal de notificació necessari per mostrar notificacions
+     * a dispositius amb Android O o superior.
+     */
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             "route_channel",
@@ -191,6 +226,10 @@ class LocationService : Service() {
         manager.createNotificationChannel(channel)
     }
 
+    /**
+     * S'executa quan el servei és destruït, per exemple, quan la ruta finalitza o l'app es tanca.
+     * Finalitza la ruta si encara està activa i allibera recursos.
+     */
     override fun onDestroy() {
         super.onDestroy()
         if (rutaActiva) {
@@ -203,6 +242,10 @@ class LocationService : Service() {
         Log.d("LocationService", "Servicio detenido (parada o tiempo excedido)")
     }
 
+    /**
+     * Envia un broadcast local per notificar que la ruta ha estat finalitzada automàticament,
+     * útil per alertar el ViewModel o la pantalla principal.
+     */
     private fun sendFinalizationBroadcast() {
         val intent = Intent("com.entrebicis.RUTA_FINALITZADA_AUTO")
         intent.setPackage(packageName)

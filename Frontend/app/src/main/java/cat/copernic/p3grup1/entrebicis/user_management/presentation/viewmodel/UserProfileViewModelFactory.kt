@@ -6,6 +6,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 
+/**
+ * Fàbrica de ViewModel per a [UserProfileViewModel].
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun provideUserProfileViewModelFactory(application: Application) = viewModelFactory {
     initializer {

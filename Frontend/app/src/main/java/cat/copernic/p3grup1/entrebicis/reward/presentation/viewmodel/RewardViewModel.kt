@@ -13,6 +13,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel encarregat de gestionar la lògica de recompenses:
+ * - Llistat de recompenses disponibles
+ * - Visualització del detall
+ * - Reserves i recollida
+ * - Control d'errors i estat de càrrega
+ *
+ * @property rewardRepo Repositori amb les crides a l'API de recompenses
+ */
 class RewardViewModel(
     application: Application,
     private val rewardRepo: RewardRepo
@@ -41,6 +50,10 @@ class RewardViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
+    /**
+     * Carrega la llista de recompenses disponibles per l’usuari actual.
+     * Comprova la connexió abans d'enviar la petició.
+     */
     fun carregarRecompenses(){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
@@ -59,6 +72,11 @@ class RewardViewModel(
         }
     }
 
+    /**
+     * Envia una petició per reservar una recompensa específica.
+     *
+     * @param id ID de la recompensa a reservar.
+     */
     fun reservarRecompensa(id: Long) {
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
@@ -78,6 +96,11 @@ class RewardViewModel(
         }
     }
 
+    /**
+     * Carrega el detall d’una recompensa concreta per mostrar informació completa.
+     *
+     * @param id ID de la recompensa.
+     */
     fun carregarRecompensa(id: Long){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
@@ -99,6 +122,11 @@ class RewardViewModel(
         }
     }
 
+    /**
+     * Marca una recompensa com a recollida. Només es pot fer si hi ha connexió.
+     *
+     * @param id ID de la recompensa a recollir.
+     */
     fun recollirRecompensa(id: Long){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
@@ -114,6 +142,9 @@ class RewardViewModel(
         }
     }
 
+    /**
+     * Reinicia l’estat que indica si una recompensa ha estat entregada.
+     */
     fun resetEntrega() {
         _recompensaEntregada.value = false
     }
@@ -122,10 +153,16 @@ class RewardViewModel(
         _error.value = null
     }
 
+    /**
+     * Neteja els errors de connexió detectats.
+     */
     fun clearErrorConnexio() {
         _errorConnexio.value = null
     }
 
+    /**
+     * Neteja l’estat de reserva i els missatges d’error relacionats.
+     */
     fun clearReservaStatus() {
         _reservaSuccess.value = null
         _error.value = null

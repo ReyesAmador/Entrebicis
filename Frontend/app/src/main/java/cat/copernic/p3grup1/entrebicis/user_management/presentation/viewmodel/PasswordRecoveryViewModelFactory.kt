@@ -8,6 +8,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
 import cat.copernic.p3grup1.entrebicis.user_management.data.repositories.LoginRepo
 
+/**
+ * Fàbrica de ViewModel per a [PasswordRecoveryViewModel].
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun passwordRecoveryViewModelFactory(application: Application) = viewModelFactory {
     initializer {

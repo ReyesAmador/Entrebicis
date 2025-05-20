@@ -8,6 +8,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import cat.copernic.p3grup1.entrebicis.core.network.RetrofitClient
 import cat.copernic.p3grup1.entrebicis.reward.data.repositories.RewardRepo
 
+/**
+ * Proporciona una instància de [RewardViewModel] amb la seva dependència [RewardRepo].
+ *
+ * Aquesta fàbrica s’utilitza per crear el ViewModel amb accés a l’API mitjançant Retrofit.
+ *
+ * @param application L’aplicació actual per obtenir el context i configurar Retrofit.
+ * @return Una fàbrica per a [RewardViewModel].
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun provideRewardViewModelFactory(application: Application) = viewModelFactory {
     initializer {

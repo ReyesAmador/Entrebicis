@@ -19,6 +19,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel encarregat de gestionar les dades relacionades amb les rutes:
+ * - Carrega la ruta actual amb punts GPS.
+ * - Carrega el llistat de rutes finalitzades.
+ * - Controla els estats de càrrega i errors de connexió.
+ *
+ * @property repo Repositori per accedir a l’API de rutes.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 class RutaViewModel(
     application: Application,
@@ -38,7 +46,13 @@ class RutaViewModel(
     private val _errorConnexio = MutableStateFlow<String?>(null)
     val errorConnexio: StateFlow<String?> = _errorConnexio
 
-
+    /**
+     * Carrega la ruta amb punts GPS.
+     * Si es proporciona un ID, carrega una ruta específica; si no, carrega l’última ruta finalitzada.
+     * Comprova primer si hi ha connexió a Internet.
+     *
+     * @param id Identificador de la ruta concreta, opcional.
+     */
     fun carregarRuta(id: Long? = null){
         viewModelScope.launch {
             _loading.value = true
@@ -63,6 +77,10 @@ class RutaViewModel(
         }
     }
 
+    /**
+     * Carrega totes les rutes finalitzades per l’usuari.
+     * Només s’executa si es disposa del token i connexió.
+     */
     fun carregarRutesFinalitzades(){
         val token = prefs.getString("token", null) ?: return
         viewModelScope.launch {
@@ -82,6 +100,9 @@ class RutaViewModel(
         }
     }
 
+    /**
+     * Neteja el missatge d’error de connexió, si n’hi havia.
+     */
     fun clearErrorConnexio() {
         _errorConnexio.value = null
     }

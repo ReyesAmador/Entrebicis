@@ -17,6 +17,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel per la gestió del perfil d'usuari:
+ * - Consulta de dades
+ * - Actualització de perfil
+ * - Canvi de contrasenya
+ * - Upload de la imatge de perfil
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 class UserProfileViewModel(application: Application): AndroidViewModel(application) {
 
@@ -44,6 +51,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
     private val _errorConnexio = MutableStateFlow<String?>(null)
     val errorConnexio: StateFlow<String?> = _errorConnexio
 
+    /** Carrega les dades de l'usuari loguejat. */
     fun carregarUsuari() {
         val token = getToken() ?: return
         Log.d("TOKEN_DEBUG", "Token: $token")
@@ -69,6 +77,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
+    /** Envia una petició per actualitzar les dades de l’usuari. */
     fun actualitzarUsuari(usuari: Usuari){
         val token = getToken() ?: return
         viewModelScope.launch {
@@ -90,6 +99,10 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
+    /**
+     * Valida i envia una petició per canviar la contrasenya.
+     * Comprova si coincideixen i compleixen la política.
+     */
     fun canviContrasenya(actual: String, nova: String, repetir: String) {
         val token = getToken() ?: return
 
@@ -121,6 +134,7 @@ class UserProfileViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
+    /** Sube la imatge de perfil al backend. */
     suspend fun uploadImatgeUsuari(imageBytes: ByteArray): Boolean {
         val token = getToken() ?: return false
         if (!isInternetAvailable(getApplication())) {

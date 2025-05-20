@@ -20,6 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+/**
+ * Composable que mostra la barra de navegació inferior amb els ítems definits a [BottomNavItem].
+ *
+ * Aquesta barra permet navegar entre diferents pantalles de l’aplicació.
+ *
+ * @param navController Controlador de navegació utilitzat per gestionar els canvis de ruta.
+ */
 @Composable
 fun BottomNavBar(navController: NavController) {
     val items = listOf(

@@ -26,6 +26,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel principal de la pantalla de Home. Gestiona l’estat de l’usuari,
+ * la sessió, la gestió de rutes GPS i la sincronització amb el backend.
+ *
+ * @constructor Crea el ViewModel amb l’[Application] com a context.
+ */
 class HomeViewModel(application: Application): AndroidViewModel(application) {
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -57,6 +63,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
     private var cronometreRunnable: Runnable? = null
     private var iniciRutaTimestamp: Long = 0L
 
+    /**
+     * Esborra les dades de sessió (SharedPreferences), reinicia Retrofit i
+     * registra al log que s'ha fet logout.
+     */
     fun logout() {
         prefs.edit().clear().apply()
         RetrofitClient.reset()
@@ -64,6 +74,11 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         Log.d("LOGOUT_CHECK", "Token después del logout: $token") // null = sesión cerrada
     }
 
+    /**
+     * Carrega les dades de l'usuari des del backend.
+     * Si detecta una ruta activa anterior no tancada correctament, la finalitza.
+     * També valida si hi ha connexió i gestiona errors d'autenticació.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     fun carregarUsuari() {
         val token = prefs.getString("token", null) ?: return
@@ -102,6 +117,12 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
             )
         }
     }
+
+    /**
+     * Inicia una nova ruta:
+     * - Finalitza si hi ha una ruta pendent prèvia.
+     * - Marca com a activa, inicia el cronòmetre i l'servei de localització.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     fun iniciarRuta() {
         val rutaPendent = prefs.getBoolean("ruta_finalitzada_pendent", false)
@@ -125,6 +146,9 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         iniciarRutaBackend()
     }
 
+    /**
+     * Inicia el servei en segon pla [LocationService] que captura punts GPS.
+     */
     private fun iniciarServeiRuta(){
         val intent = Intent(appContext, LocationService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -134,6 +158,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Notifica al backend que s’ha iniciat una nova ruta.
+     * Guarda un registre en el log i valida la connexió abans d’enviar.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun iniciarRutaBackend(){
         val timestamp = System.currentTimeMillis()
@@ -159,6 +187,12 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Finalitza la ruta activa:
+     * - Atura cronòmetre i servei GPS.
+     * - Notifica el backend o marca com pendent si no hi ha connexió.
+     * - Habilita la navegació a la vista de detall de ruta.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     fun finalitzarRuta() {
         if (!_rutaActiva.value) return
@@ -187,6 +221,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Inicia el cronòmetre que mesura el temps transcorregut des que comença la ruta.
+     * Actualitza el valor cada segon.
+     */
     private fun startCronometre() {
         cronometreHandler = Handler(Looper.getMainLooper())
         cronometreRunnable = object : Runnable {
@@ -199,6 +237,9 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         cronometreHandler?.post(cronometreRunnable!!)
     }
 
+    /**
+     * Atura i reinicia el cronòmetre.
+     */
     private fun stopCronometre() {
         cronometreHandler?.removeCallbacks(cronometreRunnable!!)
         cronometreHandler = null
