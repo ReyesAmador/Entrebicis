@@ -1,6 +1,8 @@
 # 🚲 EntreBicis
 
-![Logo](./Documentació/images/logo_black.png)
+<p align="center">
+  <img src="./Documentacio/images/logo_black.png"/>
+</p>
 
 Una solució digital per fomentar l’ús de la bicicleta com a mitjà de transport sostenible a Vilanova i la Geltrú. **Entrebicis** permet als usuaris registrar les seves rutes en bicicleta, guanyar punts per cada quilòmetre recorregut i bescanviar-los per recompenses en comerços locals.
 
