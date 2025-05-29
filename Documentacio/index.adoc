@@ -1,7 +1,7 @@
 :author: Reyes Amador
 :email: reyesamju@hotmail.com
-:revdate: 13/03/2025
-:revnumber: 1.5
+:revdate: 29/05/2025
+:revnumber: 1.6
 :doctype: book
 :encoding: utf-8
 :lang: ca
@@ -170,7 +170,7 @@ En el cas de l’usuari ciclista, visualitzarà les dades del seu perfil.
 
 [options="header"]
 |===
-| Administrador | Ciclista
+| Administrador | Ciclista | Sistema
 
 a|
 * RF01: Validar uta
@@ -203,6 +203,9 @@ a|
 * RF26: Visualitzar detalls de l’usuari
 * RF27: Recuperar password usuari
 * RF29: Login / Logout
+
+a|
+* RF05: Finalitzar ruta
 |===
 
 == Diagrama d’arquitectura
