@@ -1,0 +1,88 @@
+:author: Reyes Amador
+:email: reyesamju@hotmail.com
+:revdate: 29/05/2025
+:revnumber: 1.0
+:doctype: book
+:encoding: utf-8
+:lang: ca
+:toc: left
+:toclevels: 3
+:icons: font
+:imagesdir: ./Documentacio/images
+
+= EntreBicis
+
+image::logo_black.png[]
+
+Una solució digital per fomentar l’ús de la bicicleta com a mitjà de transport sostenible a Vilanova i la Geltrú. Entrebicis permet als usuaris registrar les seves rutes en bicicleta, guanyar punts per cada quilòmetre recorregut i bescanviar-los per recompenses en comerços locals.
+
+Aquest repositori conté tot el desenvolupament de la solució:
+- L'aplicació mòbil per a usuaris (Android)
+- El panell web d'administració (Spring Boot + Thymeleaf)
+- Documentació tècnica i funcional
+
+== 🎯 Objectiu del projecte
+
+Promoure la mobilitat sostenible i el comerç local mitjançant un sistema de recompenses per l’ús de la bicicleta.
+
+[link=Documentacio/video/Presentacio.mp4]
+image::play-button.png[width=80, title="Clica per veure el vídeo"]
+
+
+== 📱 Aplicació mòbil (Android)
+
+- Registre i inici de sessió mitjançant autenticació JWT
+- Inici i finalització de rutes amb GPS, guardant localitzacions
+- Acumulació de punts segons la distància recorreguda
+- Bescanvi de recompenses des de l’app
+- Recuperació de contrasenya
+- Disseny modern amb Jetpack Compose
+
+[cols="3*", frame=none, grid=none]
+|===
+| image::android1.png[width=30%]
+| image::android2.png[width=30%]
+| image::android3.png[width=30%]
+| image::android4.png[width=30%]
+| image::android5.png[width=30%]
+| image::android6.png[width=30%]
+|===
+
+== 🖥️ Aplicació web (admin)
+
+- Gestió d’usuaris, rutes i recompenses
+- Visualització de rutes amb mapa
+- Estadístiques d’ús i saldo de punts
+- Canviar els parámetres del sistema
+- Formularis amb validacions i càrrega d’imatge per perfils
+
+[cols="3*", frame=none, grid=none]
+|===
+| image::web1.png[width=30%]
+| image::web2.png[width=30%]
+| image::web3.png[width=30%]
+| image::web4.png[width=30%]
+| image::web5.png[width=30%]
+| image::web6.png[width=30%]
+|===
+
+== 🛠️ Tecnologies utilitzades
+
+- 🔙 **Backend**: Java 21 + Spring Boot + Spring Security + JWT + MySQL
+- 🖥️ **Frontend Web**: Thymeleaf + Bootstrap 5
+- 📱 **Frontend Android**: Kotlin + Jetpack Compose + Clean Architecture
+- 🛰️ **Comunicació**: API REST
+- ☁️ **Desplegament**: Docker Compose + MySQL + servidor EC2 (AWS)
+
+== 📂 Estructura del repositori
+
+- `Documentació/`: documentació tècnica (`index.adoc`, diagrames, etc.)
+- `Backend/`: projecte Spring Boot (controladors, seguretat, entitats, serveis, etc.)
+- `Frontend/`: aplicació Android (Jetpack Compose, repositoris, viewmodels, etc.)
+- `index.adoc`: aquest arxiu de presentació general del projecte
+
+== 🤝 Crèdits
+
+Desenvolupat per: _Reyes Amador_  
+Centre: _Institut Nicolau Copèrnic_  
+Any: _2025_
