@@ -25,6 +25,8 @@ Aquest repositori conté tot el desenvolupament de la solució:
 
 Promoure la mobilitat sostenible i el comerç local mitjançant un sistema de recompenses per l’ús de la bicicleta.
 
+== 🎥 Vídeo de presentació
+
 [link=Documentacio/video/Presentacio.mp4]
 image::play-button.png[width=80, title="Clica per veure el vídeo"]
 
@@ -40,12 +42,12 @@ image::play-button.png[width=80, title="Clica per veure el vídeo"]
 
 [cols="3*", frame=none, grid=none]
 |===
-| image::android1.png[width=30%]
-| image::android2.png[width=30%]
-| image::android3.png[width=30%]
-| image::android4.png[width=30%]
-| image::android5.png[width=30%]
-| image::android6.png[width=30%]
+| image::android1.png[width=30%] +++<br/>+++&#x200B;
+| image::android2.png[width=30%] +++<br/>+++&#x200B;
+| image::android3.png[width=30%] +++<br/>+++&#x200B;
+| image::android4.png[width=30%] +++<br/>+++&#x200B;
+| image::android5.png[width=30%] +++<br/>+++&#x200B;
+| image::android6.png[width=30%] +++<br/>+++&#x200B;
 |===
 
 == 🖥️ Aplicació web (admin)
