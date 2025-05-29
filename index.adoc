@@ -42,12 +42,12 @@ image::play-button.png[width=80, title="Clica per veure el vídeo"]
 
 [cols="3*", frame=none, grid=none]
 |===
-a| image::android1.png[width=80%] 
-a| image::android2.png[width=80%] 
-a| image::android3.png[width=80%] 
-a| image::android4.png[width=80%] 
-a| image::android5.png[width=80%] 
-a| image::android6.png[width=80%] 
+a| image::android1.png[width=50%] 
+a| image::android2.png[width=50%] 
+a| image::android3.png[width=50%] 
+a| image::android4.png[width=50%] 
+a| image::android5.png[width=50%] 
+a| image::android6.png[width=50%] 
 |===
 
 == 🖥️ Aplicació web (admin)
