@@ -42,12 +42,12 @@ image::play-button.png[width=80, title="Clica per veure el vídeo"]
 
 [cols="3*", frame=none, grid=none]
 |===
-| image::android1.png[width=30%] +++<br/>+++&#x200B;
-| image::android2.png[width=30%] +++<br/>+++&#x200B;
-| image::android3.png[width=30%] +++<br/>+++&#x200B;
-| image::android4.png[width=30%] +++<br/>+++&#x200B;
-| image::android5.png[width=30%] +++<br/>+++&#x200B;
-| image::android6.png[width=30%] +++<br/>+++&#x200B;
+a| image::android1.png[width=80%] 
+a| image::android2.png[width=80%] 
+a| image::android3.png[width=80%] 
+a| image::android4.png[width=80%] 
+a| image::android5.png[width=80%] 
+a| image::android6.png[width=80%] 
 |===
 
 == 🖥️ Aplicació web (admin)
@@ -60,12 +60,12 @@ image::play-button.png[width=80, title="Clica per veure el vídeo"]
 
 [cols="3*", frame=none, grid=none]
 |===
-| image::web1.png[width=30%]
-| image::web2.png[width=30%]
-| image::web3.png[width=30%]
-| image::web4.png[width=30%]
-| image::web5.png[width=30%]
-| image::web6.png[width=30%]
+a| image::web1.png[]
+a| image::web2.png[]
+a| image::web3.png[]
+a| image::web4.png[]
+a| image::web5.png[]
+a| image::web6.png[]
 |===
 
 == 🛠️ Tecnologies utilitzades
